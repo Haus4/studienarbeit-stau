@@ -1,0 +1,194 @@
+% Präambel
+\documentclass[12pt,a4paper,oneside, 
+liststotoc, 					% Tabellen- und Abbildungsverzeichnis ins Inhaltsverzeichnis
+bibtotoc,						% Literaturverzeichnis ins Inhaltsverzeichnis aufnehmen
+titlepage, 						% Titlepage-Umgebung statt \maketitle
+headsepline, 					% horizontale Linie unter Kolumnentitel
+%abstracton,					% Überschrift beim Abstract einschalten, Abstract muss dazu in {abstract}-Umgebung stehen
+%DIV11,							% auskommentieren, um den Seitenspiegel zu vergrößern
+BCOR=6mm,						% Bindekorrektur, die den Seitenspiegel um 6mm nach rechts verschiebt,
+]{scrreprt}			
+\usepackage{ucs} 				% Dokument in utf8-Codierung schreiben und speichern
+\usepackage[utf8x]{inputenc} 	% ermöglicht die direkte Eingabe von Umlauten
+\usepackage[ngerman]{babel} 	% deutsche Trennungsregeln und Übersetzung der festcodierten Überschriften
+\usepackage[T1]{fontenc} 		% Ausgabe aller zeichen in einer T1-Codierung (wichtig für die Ausgabe von Umlauten!)
+\usepackage{graphicx}  			% Einbinden von Grafiken erlauben
+\usepackage{caption}
+%\usepackage{amsmath}
+%\usepackage{amsfonts}
+%\usepackage{amssymb}
+\usepackage{mathpazo} 			% Einstellung der verwendeten Schriftarten
+\usepackage{textcomp} 			% zum Einsatz von Eurozeichen u. a. Symbolen
+\usepackage{listings}			% Datstellung von Quellcode mit den Umgebungen {lstlisting}, \lstinline und \lstinputlisting
+\usepackage{xcolor} 			% einfache Verwendung von Farben in nahezu allen Farbmodellen
+\usepackage{url, hyphenat}
+\usepackage[intoc]{nomencl} 	% zur Erstellung des Abkürzungsberzeichnisses
+\usepackage{fancyhdr}			% Zusatzpaket zur Gestaltung von Fuß und Kopfzeilen
+\usepackage{setspace}
+\usepackage[export]{adjustbox}
+\usepackage[numbers, sort]{natbib}
+\usepackage{pdfpages}
+\usepackage{float}
+\usepackage{lmodern}
+\usepackage{dirtree}
+
+% -----------------------------------------------------------------------------------------------------------------
+% Zum Aktualisieren des Abkürzungsverzeichnisses bitte auf der Kommandozeile folgenden Befehl aufrufen :
+%  makeindex Bachelorarbeit.nlo -s nomencl.ist -o Bachelorarbeit.nls
+% -----------------------------------------------------------------------------------------------------------------
+
+% Hier die persönlichen Daten eingeben:
+
+\newcommand{\untertitel}{Stauerkennung auf Autobahnwebcam-Bildern mit geringer Ressourcenverwendung}
+\newcommand{\arbeit}{Studienarbeit}
+\newcommand{\studiengang}{Angewandte Informatik}
+\newcommand{\autor}{Maurice Heumann \& Mirko Müller}
+\newcommand{\matrikelnr}{3970752 \& 8...}
+\newcommand{\kurs}{TINF16B4}
+\newcommand{\firma}{CAS Software AG}
+\newcommand{\abgabe}{17. September 2018}
+\newcommand{\betreuerfirma}{Dr. Christian Bomhardt}
+
+\newcommand{\jahr}{2018}			% für Angabe im Copyright-Vermerk der Titelseite
+
+% Abkürzungen
+\newcommand{\ua}{\mbox{u.\,a.\ }}
+\newcommand{\oae}{\mbox{o.\,Ä.\ }}
+\newcommand{\zB}{\mbox{z.\,B.\ }}
+\newcommand{\bs}{$\backslash$}
+
+\renewcommand{\nomname}{Abkürzungsverzeichnis}
+\newcommand{\source}[2]{\caption*{\centering \footnotesize Quelle: \url{#1} ({#2})}}
+
+\definecolor{blub}{rgb}{0.1, 0.1, 0.1}
+\newcommand{\dirheader}[1]{{#1}}
+\newcommand{\dirfile}[1]{\textit{#1}}
+
+% ------------------------
+\usepackage[pdftex,
+            pdfauthor={\autor},
+            pdftitle={\untertitel},
+            %pdfsubject={The Subject},
+            %pdfkeywords={Some Keywords},
+            %pdfproducer={Latex with hyperref, or other system},
+            %pdfcreator={pdflatex, or other tool}
+						]{hyperref}
+
+% -------------------------------------------------------------------------------------------
+% Definition der Kopf- und Fußzeilen
+\lhead{}								% Kopf links
+\chead{}								% Kopf mitte
+\rhead{\sffamily{\autor}}								% Kopf rechts
+\lfoot{}								% Fuß links
+\cfoot{\sffamily{\thepage}}			% Fuß mitte
+\rfoot{}				% Fuß rechts
+\renewcommand{\headrulewidth}{0.4pt}	% Liniendicke Kopf
+\renewcommand{\footrulewidth}{0.4pt}	% Liniendicke Fuß
+
+\makenomenclature							% Abkürzungsverzeichnis erstellen
+\input{Inhalt/abkuerzungen}					% Datei mit Abkürzungen laden
+
+% -------------------------------------------------------------------------------------------
+%                     Beginn des Dokumenteninhalts
+% -------------------------------------------------------------------------------------------
+\begin{document}
+\setcounter{secnumdepth}{3}					% Nummerierungstiefe fürs Inhaltsverzeichnis
+\setcounter{tocdepth}{3}
+\sffamily									% für die Titelei serifenlose Schrift verwenden
+
+% ------------------------------ Titelei -----------------------------------------------------
+
+\include{Inhalt/titelseite} 				% erzeugt die Titelseite
+\pagenumbering{Roman}						% große, römische Seitenzahlen für Titelei
+\include{Inhalt/erklaerung} 				% Einbinden der eidestattlichen Erklärung
+\include{Inhalt/abstract}   				% Einbinden des Abstracts
+
+\tableofcontents							% Erzeugen des Inhalsverzeichnisses
+\printnomenclature[2.0cm]					% Erzeugen des Abkürzungsverzeichnisses
+\listoffigures 								% Erzeugen des Abbildungsverzeichnisses 
+%\listoftables 								% Erzeugen des Tabellenverzeichnisses
+\pagebreak
+
+% --------------------------------------------------------------------------------------------
+%                    Inhalt der Bachelorarbeit
+%---------------------------------------------------------------------------------------------
+\pagenumbering{arabic}						% arabische Seitenzahlen für den Hauptteil
+\pagestyle{fancy}				
+\onehalfspacing
+\rmfamily
+
+\renewcommand{\lstlistingname}{Quelltext}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstdefinelanguage{CSS} {
+	morekeywords={color,background,margin,padding,font,weight,display,position,top,left,right,bottom,list,style,border,size,white,space,min,max-width,width}, 
+	sensitive=false, 
+	morecomment=[l]{//}, 
+	morecomment=[s]{/*}{*/}, 
+	morestring=[b]", 
+} 
+
+\lstset{
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  extendedchars=true,
+  keepspaces=true,
+  language=Java,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=2,
+	frame=lines,
+	basicstyle=\footnotesize\ttfamily,
+	backgroundcolor=\color{white},
+	keywordstyle=\color{blue},
+  commentstyle=\color{green!40!black},
+  %identifierstyle=\color{blue},
+  stringstyle=\color{orange}
+}
+
+\sloppy
+\include{Inhalt/einleitung}
+\include{Inhalt/grundlagen}
+\include{Inhalt/hauptteil}
+\include{Inhalt/zusammenfassung}
+
+
+
+% ---------------------------- Literaturverzeichnis ----------------------------------------------
+  \bibliographystyle{plainnat}
+  \bibliography{Inhalt/literatur}
+
+%\begin{thebibliography}{999999}
+
+
+%\bibitem[FoBa03]{foobar2003} Foo, John; Bar, Belinda: \emph{Titel : Untertitel},\\ Verlagsort: Verlag, Jahr der Auflage. S. 10-20
+%\bibitem[Le01]{levy2001} Autor Name: \emph{Titel des Buches}, New York: Penguin Books, 2001
+
+%\end{thebibliography}
+
+% ------------------------------- Anhang ---------------------------------------------------------
+
+\appendix
+\clearpage
+\pagenumbering{Roman}						% römische Seitenzahlen für Anhang
+
+%\includepdf[pages={1}]{Doc/TINF-Praxis-Bestaetigung.pdf}
+%\includepdf[pages={1}]{Doc/TINF-Praxis-Reflexion.pdf}
+
+\end{document}
