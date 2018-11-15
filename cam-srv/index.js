@@ -54,6 +54,40 @@ function work(cameras) {
     });
 }
 
+/*
 CameraLoader.loadCameras().then(c => {
     work(c);
 });
+*/
+
+work([
+    //"KA021",
+    //"KA022",
+    "TU011",
+    "TU012",
+    "S211",
+    "S091",
+    "K8054",
+    "KA031",
+    "KA032",
+    "KA041",
+    "KA042",
+    "KA061",
+    "KA062",
+    "KA151",
+    "KA152",
+    "K8063",
+    "FR042",
+    "FR041",
+    "FR051",
+    "FR011",
+    "FR021",
+    "FR061",
+    "FR031",
+    
+    "EXT030",
+    "KA091",
+    "RLP825",
+    "EXT047",
+    "KA101",
+].map(c => { return {id: c}}));

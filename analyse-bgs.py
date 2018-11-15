@@ -61,8 +61,17 @@ def mergeOverlappingContours(contours):
 
     return res
 
+def getContourSizeForOffset(offset):
+    min = 5
+    max = 20
 
-def findVehicles(img, min_width, min_height):
+    return min + (offset / (480 / (max - min)))
+
+def isValid(contour):
+    size = getContourSizeForOffset(contour[1])
+    return contour[1] >= size and contour[2] >= size
+
+def findVehicles(img):
     im, contours, hierarchy = cv2.findContours(
         img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
 
@@ -70,10 +79,8 @@ def findVehicles(img, min_width, min_height):
 
     for contour in contours:
         (x, y, w, h) = cv2.boundingRect(contour)
-        contour_valid = (w >= min_width) and (
-            h >= min_height)
 
-        if not contour_valid:
+        if not isValid((x, y, w, h)):
             continue
 
         matches.append((x, y, w, h))
@@ -81,14 +88,8 @@ def findVehicles(img, min_width, min_height):
     matches = mergeOverlappingContours(matches)
     return matches
 
-
-def doBGWork(name, bgs, images):
-    print(name)
-    for image in images[:-1]:
-        med = cv2.GaussianBlur(image, (5, 5), 1.2)
-        bgs.apply(med)
-
-    target = images[-1].copy()
+def parseImage(name, img, bgs, i, total):
+    target = img.copy()
 
     med = cv2.GaussianBlur(target, (5, 5), 1.2)
     image = bgs.apply(med)
@@ -107,26 +108,40 @@ def doBGWork(name, bgs, images):
 
     img_dilation = dilation
 
-    vehicles = findVehicles(img_dilation, 2, 2)
+    vehicles = findVehicles(img_dilation)
 
     for vehicle in vehicles:
         cv2.rectangle(target, (vehicle[0], vehicle[1]), (vehicle[0] +
                                                          vehicle[2], vehicle[1] + vehicle[3]), (0, 255, 0))
 
-    if len(vehicles) >= 10:
-        print("Stau")
-    else:
-        print("Kein Stau")
+    #oldVehicles = vehicles
+    #vehicles = []
+
+    #for vehicle in oldVehicles:
+    #    if vehicle[1] >= 150:
+    #        vehicles.append(vehicle)
+
+    text = "Kein Stau"
+    color = (0, 255, 0)
+    if len(vehicles) >= 15:
+        text = "Stau"
+        color = (0,0,255)
+    cv2.putText(target,text,(10,100), cv2.FONT_HERSHEY_SIMPLEX, 2,color,2,cv2.LINE_AA)
 
     #print(bgs)
 
-    cv2.imshow(name, target)
-    #cv2.imshow(name + " bg", bgs.getBackgroundImage())
-    cv2.imshow(name + " fg", img_dilation)
+    if total - i < 2:
+        cv2.imshow(name + " " + str(i) + " Veh: " + str(len(vehicles)), target)
+        #cv2.imshow(name + " bg", bgs.getBackgroundImage())
+        #cv2.imshow(name + str(i) + " fg", img_dilation)
 
+def doBGWork(name, bgs, images):
+    print(name)
+    for i, image in enumerate(images):
+        parseImage(name, image, bgs, i, len(images))
 
-def main():
-    mypath = "cam-srv/data/raw/KA061"
+def doCam(cam):
+    mypath = "cam-srv/data/raw/" + cam
     onlyfiles = [f for f in os.listdir(
         mypath) if os.path.isfile(os.path.join(mypath, f))]
 
@@ -147,7 +162,14 @@ def main():
     ]
 
     for worker in bgWorkers:
-        doBGWork(worker[0], worker[1], images)
+        doBGWork(cam + " " + worker[0], worker[1], images)
+
+def main():
+    doCam("KA091")
+    #doCam("RLP825")
+    doCam("KA061")
+    doCam("KA041")
+    doCam("KA151")
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
