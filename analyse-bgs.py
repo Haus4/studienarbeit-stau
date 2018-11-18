@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy
+import info
 
 def isBetween(p1, p2, t):
     return t >= min(p1, p2) and t <= max(p1, p2)
@@ -140,7 +141,7 @@ def parseImageWithMask(name, img, bgs, i, total, mask):
     text = "Kein Stau"
     color = (0, 255, 0)
     stau = False
-    if len(vehicles) >= 14:
+    if len(vehicles) >= 10:
         text = "Stau"
         color = (0,0,255)
         stau = True
@@ -148,7 +149,7 @@ def parseImageWithMask(name, img, bgs, i, total, mask):
 
     #print(bgs)
 
-    if total - i < 2 or stau:
+    if total - i < 2:# or stau:
         cv2.imshow(name + " " + str(i) + " Veh: " + str(len(vehicles)), target)
         #cv2.imshow(name + " bg", bgs.getBackgroundImage())
         #cv2.imshow(name + str(i) + " fg", img_dilation)
@@ -158,12 +159,30 @@ def parseImageWithMask(name, img, bgs, i, total, mask):
 def parseImage(name, img, bgs, bgs2, i, total, masks):
     left = parseImageWithMask(name, img[1], bgs, i, total, masks[0])
     right = parseImageWithMask(name, img[1], bgs2, i, total, masks[1])
-    print("\"" + img[0] + "\": [" + str(left) + ", " + str(right) + "],")
+    #print("\t\"" + img[0] + "\": [ " + str(left) + ", " + str(right) + " ],")
 
-def doBGWork(name, bgs, bgs2, images, masks):
+    return (left, right)
+
+def doBGWork(name, bgs, bgs2, images, masks, cam):
     print(name)
+
+    correctness = []
+
     for i, image in enumerate(images):
-        parseImage(name, image, bgs, bgs2, i, len(images), masks)
+        res = parseImage(name, image, bgs, bgs2, i, len(images), masks)
+        truth = info.jam_info[cam][image[0]]
+
+        if i > 5: # Ignore first images to train the bgs
+            correctness.append(truth[0] == res[0])
+            correctness.append(truth[1] == res[1])
+
+    correct_count = 0
+    for val in correctness:
+        if val:
+            correct_count += 1
+
+    correctness_level = (correct_count * 1.0) / len(correctness)
+    print("Accuracy: " + str(correctness_level * 100) + "%")
 
 def doCam(cam):
     mypath = "cam-srv/data/raw/" + cam
@@ -192,14 +211,13 @@ def doCam(cam):
     ]
 
     for worker in bgWorkers:
-        doBGWork(cam + " " + worker[0], worker[1], worker[2], images, masks)
+        doBGWork(cam + " " + worker[0], worker[1], worker[2], images, masks, cam)
 
 def main():
     doCam("KA091")
-    #doCam("RLP825")
-    doCam("KA061")
-    doCam("KA041")
-    doCam("KA151")
+    #doCam("KA061")
+    #doCam("KA041")
+    #doCam("KA151")
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
