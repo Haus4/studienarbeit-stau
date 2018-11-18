@@ -88,10 +88,26 @@ def findVehicles(img):
     matches = mergeOverlappingContours(matches)
     return matches
 
-def parseImage(name, img, bgs, i, total):
+def applyMask(l_img, s_img):
+    y_offset = 0
+    x_offset = 0
+
+    y1, y2 = y_offset, y_offset + s_img.shape[0]
+    x1, x2 = x_offset, x_offset + s_img.shape[1]
+
+    alpha_s = s_img[:, :, 3] / 255.0
+    alpha_l = 1.0 - alpha_s
+
+    for c in range(0, 3):
+        l_img[y1:y2, x1:x2, c] = (alpha_s * s_img[:, :, c] + alpha_l * l_img[y1:y2, x1:x2, c])
+
+def parseImageWithMask(name, img, bgs, i, total, mask):
     target = img.copy()
 
     med = cv2.GaussianBlur(target, (5, 5), 1.2)
+    applyMask(med, mask)
+    applyMask(target, mask)
+
     image = bgs.apply(med)
 
     # Remove shadows
@@ -123,22 +139,31 @@ def parseImage(name, img, bgs, i, total):
 
     text = "Kein Stau"
     color = (0, 255, 0)
-    if len(vehicles) >= 15:
+    stau = False
+    if len(vehicles) >= 14:
         text = "Stau"
         color = (0,0,255)
+        stau = True
     cv2.putText(target,text,(10,100), cv2.FONT_HERSHEY_SIMPLEX, 2,color,2,cv2.LINE_AA)
 
     #print(bgs)
 
-    if total - i < 2:
+    if total - i < 2 or stau:
         cv2.imshow(name + " " + str(i) + " Veh: " + str(len(vehicles)), target)
         #cv2.imshow(name + " bg", bgs.getBackgroundImage())
         #cv2.imshow(name + str(i) + " fg", img_dilation)
 
-def doBGWork(name, bgs, images):
+    return stau
+
+def parseImage(name, img, bgs, bgs2, i, total, masks):
+    left = parseImageWithMask(name, img[1], bgs, i, total, masks[0])
+    right = parseImageWithMask(name, img[1], bgs2, i, total, masks[1])
+    print("\"" + img[0] + "\": [" + str(left) + ", " + str(right) + "],")
+
+def doBGWork(name, bgs, bgs2, images, masks):
     print(name)
     for i, image in enumerate(images):
-        parseImage(name, image, bgs, i, len(images))
+        parseImage(name, image, bgs, bgs2, i, len(images), masks)
 
 def doCam(cam):
     mypath = "cam-srv/data/raw/" + cam
@@ -149,7 +174,12 @@ def doCam(cam):
     for file in onlyfiles:
         path = os.path.join(mypath, file)
         image = cv2.imread(path)
-        images.append(image)
+        images.append((file, image))
+
+    masks = [
+        cv2.imread("cam-srv/data/mask/" + cam + "/left.png", -1),
+        cv2.imread("cam-srv/data/mask/" + cam + "/right.png", -1),
+    ]
 
     bgWorkers = [
         #["GSOC", cv2.bgsegm.createBackgroundSubtractorGSOC()],
@@ -158,11 +188,11 @@ def doCam(cam):
         #["CNT", cv2.bgsegm.createBackgroundSubtractorCNT()],
         #["GMG", cv2.bgsegm.createBackgroundSubtractorGMG()],
         #["LSBP", cv2.bgsegm.createBackgroundSubtractorLSBP()],
-        ["MOG", cv2.bgsegm.createBackgroundSubtractorMOG()], # seems to be the best, by far
+        ["MOG", cv2.bgsegm.createBackgroundSubtractorMOG(), cv2.bgsegm.createBackgroundSubtractorMOG()], # seems to be the best, by far
     ]
 
     for worker in bgWorkers:
-        doBGWork(cam + " " + worker[0], worker[1], images)
+        doBGWork(cam + " " + worker[0], worker[1], worker[2], images, masks)
 
 def main():
     doCam("KA091")
