@@ -12,6 +12,7 @@
     "axios": "^0.18.0",
     "decode-html": "^2.0.0",
     "mkdirp": "^0.5.1",
+    "opencv4nodejs": "^4.8.0",
     "proj4": "^2.5.0"
   }
 }

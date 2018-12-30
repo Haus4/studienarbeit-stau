@@ -30,7 +30,7 @@ class CameraImageLoader {
     }
 
     static getUrl(id) {
-        return `https://www.svz-bw.de/kamera/ftpdata/${id}/${id}_gross.jpg`;
+        return `http://www.svz-bw.de/kamera/ftpdata/${id}/${id}_gross.jpg`;
     }
 
     static getReferer() {

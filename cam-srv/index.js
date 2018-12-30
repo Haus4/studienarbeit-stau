@@ -21,17 +21,46 @@ function saveImage(image) {
         })
 }
 
-function saveOnce(cameras) {
-    var operations = cameras.map(c => {
-        console.log(`Loading image for camera ${c.id}`);
-        return CameraImageLoader.loadByCamera(c)
+function promisedSleep(milliseconds) {
+	return new Promise((resolve, reject) => {
+		setTimeout(resolve, milliseconds);
+	});
+}
+
+function saveCamera(c) {
+	console.log(`Loading image for camera ${c.id}`);
+	return CameraImageLoader.loadByCamera(c)
             .then(saveImage)
             .catch(error => {
                 console.error(`Failed to load image for camera  ${c.id}: ${error}`);
             });
-    });
+}
 
-    return Promise.all(operations);
+function saveOnce(cameras) {
+	var promiseContainer = {
+		p: promisedSleep(1)
+	};
+	
+	var first = true;
+	
+	cameras.forEach(c => {
+		var camCopy = c;
+		
+		if(!first) {
+			
+			promiseContainer.p = promiseContainer.p.then(() => {
+				return promisedSleep(1000 * 5);
+			});
+		}
+		
+		first = false;
+		
+		promiseContainer.p = promiseContainer.p.then(() => {
+			return saveCamera(camCopy);
+		});
+    });
+	
+	return promiseContainer.p;
 }
 
 function work(cameras) {
@@ -61,9 +90,15 @@ CameraLoader.loadCameras().then(c => {
 */
 
 work([
+	"S071",
+	"S131",
+	"KA041",
+	"KA061",
+	"KA091",
+	"KA151",
     //"KA021",
     //"KA022",
-    "TU011",
+    /*"TU011",
     "TU012",
     "S211",
     "S091",
@@ -83,11 +118,11 @@ work([
     "FR011",
     "FR021",
     "FR061",
-    "FR031",
+    "FR031",*/
     
-    "EXT030",
+    /*"EXT030",
     "KA091",
     "RLP825",
     "EXT047",
-    "KA101",
+    "KA101",*/
 ].map(c => { return {id: c}}));
