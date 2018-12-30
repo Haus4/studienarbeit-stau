@@ -1,8 +1,9 @@
 import os
-import imageprocessor
 import urllib2
 import email.utils as eut
 import json
+
+import process_bgs
 
 from threading import Thread, Lock
 from time import sleep
@@ -65,12 +66,13 @@ def saveImage(container, image):
 
 def processImage(container, image):
     saveImage(container, image)
-    result = container["processor"].process(image)
+    result = container["processor"].processRaw(image["data"])
 
     data = {}
     data["left"] = result[0]
     data["right"] = result[1]
     data["time"] = image["time_raw"]
+    data["verified"] = False
 
     info = json.dumps(data, indent=4)
 
@@ -91,7 +93,7 @@ def handleCamera(camera):
     container["camera"] = camera
     container["last"] = None
     container["valid"] = None
-    container["processor"] = imageprocessor.ImageProcessor(camera)
+    container["processor"] = process_bgs.ImageProcessor(camera)
 
     while(True):
         printLocked("Downloading image for " + camera)
