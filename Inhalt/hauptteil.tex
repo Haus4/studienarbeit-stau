@@ -1,76 +1,76 @@
 \chapter{Hauptteil}
-* Gliederung in 2 Abschnitte
-* Vorarbeit -> Ausarbeiten des bestmöglichen Algorithmus
-* Implementierung -> Android App mit Algorithmus
+* Gliederung in 2 Abschnitte\newline
+* Vorarbeit -> Ausarbeiten des bestmöglichen Algorithmus\newline
+* Implementierung -> Android App mit Algorithmus\newline
 
-* Verkehrskameras laden
-* Verkehrsbilder laden über Verkehrskameras
-* Auswahl verschiedener Ansätze
-* Vergleich der Ansätze in Bezug auf Ressourcenlast und Effizienz bzw. Effektivität
-* Datensätze generieren, um Vergleichskriterien zu erstellen
+* Verkehrskameras laden\newline
+* Verkehrsbilder laden über Verkehrskameras\newline
+* Auswahl verschiedener Ansätze\newline
+* Vergleich der Ansätze in Bezug auf Ressourcenlast und Effizienz bzw. Effektivität\newline
+* Datensätze generieren, um Vergleichskriterien zu erstellen\newline
 
 \section{Verkehrskameras laden}
-* SVZ-BW stellt Kamerabilder für verschiedene Kameras zur Verfügung
-* Liste von Verkehrskameras laden und verarbeiten % http://www.svz-bw.de/kamera/kamera_A.txt
-* Koordinaten in EPSG:25832 gegeben % http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/
-* Übliche Projektion EPSG:4326 % http://spatialreference.org/ref/epsg/wgs-84/
-* Umrechnen der Koordinaten in Zielprojektion zur Auswertung der Kamerapositionen
+* SVZ-BW stellt Kamerabilder für verschiedene Kameras zur Verfügung\newline
+* Liste von Verkehrskameras laden und verarbeiten\newline % http://www.svz-bw.de/kamera/kamera_A.txt
+* Koordinaten in EPSG:25832 gegeben\newline % http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/
+* Übliche Projektion EPSG:4326\newline % http://spatialreference.org/ref/epsg/wgs-84/
+* Umrechnen der Koordinaten in Zielprojektion zur Auswertung der Kamerapositionen\newline
 
 \section{Verkehrsbilder laden}
-* Über verarbeitete Kameraliste zugriff auf Verkehrskameras
-* Zugriff nur möglich mit korrektem Referrer HTTP-Header (www.svz-bw.de)
-* Bilder zu gewünschten Kameras regelmäßig abfragen
-* SVZ-BW hat timeout und blockt anfragen nach bestimmter Zeit :(
+* Über verarbeitete Kameraliste zugriff auf Verkehrskameras\newline
+* Zugriff nur möglich mit korrektem Referrer HTTP-Header (www.svz-bw.de)\newline
+* Bilder zu gewünschten Kameras regelmäßig abfragen\newline
+* SVZ-BW hat timeout und blockt anfragen nach bestimmter Zeit :(\newline
 
 \section{Vergleichsdatensätze generieren}
-* Zur Auswertung der Ansätze sind Vergleichsdaten nötig
-* Viele Bilder zu Verschiedenen Verkehrskameras laden
-* Verschiedene Tageszeiten verwenden (morgens, mittags, abends, nachts)
-* Verschiedene Witterungsverhältnisse einbeziehen sofern möglich (Nebel, Regen, Sonne, ...)
-* Auswertung ob Stau oder kein Stau (bzw. Verkehrslage einschätzen)
-* Bilder über einen Ansatz Vorkategorisieren und manuell nachbessern
+* Zur Auswertung der Ansätze sind Vergleichsdaten nötig\newline
+* Viele Bilder zu Verschiedenen Verkehrskameras laden\newline
+* Verschiedene Tageszeiten verwenden (morgens, mittags, abends, nachts)\newline
+* Verschiedene Witterungsverhältnisse einbeziehen sofern möglich (Nebel, Regen, Sonne, ...)\newline
+* Auswertung ob Stau oder kein Stau (bzw. Verkehrslage einschätzen)\newline
+* Bilder über einen Ansatz Vorkategorisieren und manuell nachbessern\newline
 
 \section{Neuronales Netz}
-* Gewählter Ansatz des letzten Jahrgangs
-* Vermutlich bester Ansatz, da keine statische Analyse der Bilder durchgeführt wird
+* Gewählter Ansatz des letzten Jahrgangs\newline
+* Vermutlich bester Ansatz, da keine statische Analyse der Bilder durchgeführt wird\newline
 	sondern dynamisch auf konkrete Bilder und Verhältnisse (Perspektive und Situation) trainiert wird
-* Nicht durchgeführt, da feststand, dass der Ansatz zu Ressourcenintensiv ist und Ziel der Arbeit war Ressourcen zu sparen
+* Nicht durchgeführt, da feststand, dass der Ansatz zu Ressourcenintensiv ist und Ziel der Arbeit war Ressourcen zu sparen\newline
 
 \section{Helligkeit}
-* Histogramm des Bildes bilden
-* Grauwertklassen auswerten
-* Anhand von Otsu über Schwellwert Klassifikation des Bildes vornehmen
-* Benötigt wenig Ressourcen, aber schlechte Performance weil zugrundeliegende Bilder 
+* Histogramm des Bildes bilden\newline
+* Grauwertklassen auswerten\newline
+* Anhand von Otsu über Schwellwert Klassifikation des Bildes vornehmen\newline
+* Benötigt wenig Ressourcen, aber schlechte Performance weil zugrundeliegende Bilder \newline
 	natürlich sind und Otsu am besten auf binarisierten Bildern arbeitet (schwarz weiß)
 	
 \section{Haar-Features}
-* Erkennen der Autos auf Bildern über Haar-Features und Anschließend zählen, um Stau festzustellen
-* OpenCV hat Features für Autos vorgegeben
-* Erkennt Autos nicht immer verlässlich
-* Arbeitet besser auf Bildreihen (Videos) um Bewegung der speziellen Autos zur verfolgen
-* Verkehrskameras liefern über die Zeit zwar viele Bilder, aber mit zu großem zeitlichen Abstand
-* Einzelne Autos also nicht verfolgbar
-* Schlechte Resultate zur Stauerkennung
+* Erkennen der Autos auf Bildern über Haar-Features und Anschließend zählen, um Stau festzustellen\newline
+* OpenCV hat Features für Autos vorgegeben\newline
+* Erkennt Autos nicht immer verlässlich\newline
+* Arbeitet besser auf Bildreihen (Videos) um Bewegung der speziellen Autos zur verfolgen\newline
+* Verkehrskameras liefern über die Zeit zwar viele Bilder, aber mit zu großem zeitlichen Abstand\newline
+* Einzelne Autos also nicht verfolgbar\newline
+* Schlechte Resultate zur Stauerkennung\newline
 
 \section{Edge detection}
-* Erkennen der Kanten über Canny
-* Anhand der Kanten Bild Segmentieren und Konturen herausarbeiten zur Erkennung von Merkmalen und Klassifikation
-* Auflösung der Kamerabilder zu gering und Bilder recht unscharf mit viel zu Rauschen
-* Zu viele Kanten werden erkannt, um Autos verlässlich erkennen zu können
-* Mittelung des Bildes über Gauß zeigt keine signifikante Verbesserung aufgrund der zu niedrigen Qualität
+* Erkennen der Kanten über Canny\newline
+* Anhand der Kanten Bild Segmentieren und Konturen herausarbeiten zur Erkennung von Merkmalen und Klassifikation\newline
+* Auflösung der Kamerabilder zu gering und Bilder recht unscharf mit viel zu Rauschen\newline
+* Zu viele Kanten werden erkannt, um Autos verlässlich erkennen zu können\newline
+* Mittelung des Bildes über Gauß zeigt keine signifikante Verbesserung aufgrund der zu niedrigen Qualität\newline
 	
 \section{Background Subtraction}
-* Viele Bilder über möglichst kurzen Zeitabstand aufsummieren
-* Anhanddessen Hintegrund errechnen
-* Hintegrund vom Zielbild abziehen
-* Übrig bleiben nur noch Autos
-* Morphologische Operatoren zur Nachoptimierung
-* Konturen zählen -> Anzahl der Autos
-* Über Anzahl der Autos Rückschlüsse über Verkehrssituation ziehen
-* Verschiedene BGS algorithmen in OpenCV verfügbar (GSOC, KNN, CNT, GMG, LSBP, MOG, MOG2)
-* MOG liefert beste Ergebnisse für konkretes Einsatzgebiet
-* Jedoch mehrere Bilder nötig, um Hintergrund verlässlich zu erkennen
-* Bei absolutem Stau (keine Bewegung der Autos über längere Zeit ~10min) keine Erkennung des Hintergrundes möglich
+* Viele Bilder über möglichst kurzen Zeitabstand aufsummieren\newline
+* Anhanddessen Hintegrund errechnen\newline
+* Hintegrund vom Zielbild abziehen\newline
+* Übrig bleiben nur noch Autos\newline
+* Morphologische Operatoren zur Nachoptimierung\newline
+* Konturen zählen -> Anzahl der Autos\newline
+* Über Anzahl der Autos Rückschlüsse über Verkehrssituation ziehen\newline
+* Verschiedene BGS algorithmen in OpenCV verfügbar (GSOC, KNN, CNT, GMG, LSBP, MOG, MOG2)\newline
+* MOG liefert beste Ergebnisse für konkretes Einsatzgebiet\newline
+* Jedoch mehrere Bilder nötig, um Hintergrund verlässlich zu erkennen\newline
+* Bei absolutem Stau (keine Bewegung der Autos über längere Zeit ~10min) keine Erkennung des Hintergrundes möglich\newline
 
 \section{Android App}
 Blub
