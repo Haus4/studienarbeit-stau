@@ -2,6 +2,7 @@ import os
 import cv2
 import json
 import time
+import random
 import image_utils
 import email.utils as eut
 
@@ -10,7 +11,7 @@ def loadCameras():
     cameras = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
     return cameras
 
-def loadImage(camera, name):
+def loadImage(camera, name, masks):
     path = "data/" + camera
     image = {}
 
@@ -26,13 +27,17 @@ def loadImage(camera, name):
     image["info"]["timestamp"] = time.mktime(image["info"]["time_parsed"])
 
     image["name"] = name
+    image["masks"] = masks
+    image["camera"] = camera
 
     return image
 
 def loadImages(camera):
+    masks = image_utils.loadMasks(camera)
+
     path = "data/" + camera
     files = [f.replace(".jpg", "") for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith(".jpg") and os.path.isfile(os.path.join(path, f.replace(".jpg", ".json")))]
-    images = [loadImage(camera, file) for file in files]
+    images = [loadImage(camera, file, masks) for file in files]
     images.sort(key=lambda x: x["info"]["timestamp"])
     images = [image for image in images if not "verified" in image["info"] or not image["info"]["verified"]]
 
@@ -42,12 +47,7 @@ def buildImageList(cameras):
     imageList = []
 
     for camera in cameras:
-        images = {}
-        images["index"] = 0
-        images["camera"] = camera
-        images["images"] = loadImages(camera)
-        images["masks"] = image_utils.loadMasks(camera)
-        imageList.append(images)
+        imageList += loadImages(camera)
 
     return imageList
 
@@ -63,7 +63,7 @@ def validateSingle(image, mask, info, name):
         color = (0,0,255)
         stau = True
 
-    cv2.putText(img,text,(10,100), cv2.FONT_HERSHEY_SIMPLEX, 2,color,2,cv2.LINE_AA)
+    cv2.putText(img,text,(10,50), cv2.FONT_HERSHEY_SIMPLEX, 1,color,1,cv2.LINE_AA)
 
     cv2.imshow(name, img)
 
@@ -78,11 +78,11 @@ def validateSingle(image, mask, info, name):
     return False
 
 
-def validatePair(image, masks):
+def validatePair(image):
     img = image["data"].copy()
 
-    left = validateSingle(image["data"], masks[0], image["info"]["left"], image["name"])
-    right = validateSingle(image["data"], masks[1], image["info"]["right"], image["name"])
+    left = validateSingle(image["data"], image["masks"][0], image["info"]["left"], image["name"])
+    right = validateSingle(image["data"], image["masks"][1], image["info"]["right"], image["name"])
 
     image["info"]["left"]["jam"] = left
     image["info"]["right"]["jam"] = right
@@ -96,48 +96,20 @@ def saveMetadata(info, name, camera):
     f.write(info)
     f.close()
 
-def tryValidateForCam(imageList, index):
-    camImgList = imageList[index]
-    index = camImgList["index"]
-    camImgList["index"] = index + 1
-
-    images = camImgList["images"]
-
-    if len(images) <= index:
-        return False
-
-    image = images[index]
-
-    print("Processing " + camImgList["camera"] + " " + image["name"])
-    validatePair(image, camImgList["masks"])
-    saveMetadata(image["info"], image["name"], camImgList["camera"])
-
-    return True
-
-def validateNextImage(imageList, counter):
-    initialCounter = counter
-
-    while counter < initialCounter + len(imageList):
-        index = counter % len(imageList)
-        counter += 1
-
-        if tryValidateForCam(imageList, index):
-            return True
-
-    return False
-
+def validateImage(image):
+    validatePair(image)
+    saveMetadata(image["info"], image["name"], image["camera"])
 
 def main():
     cameras = loadCameras()
     imageList = buildImageList(cameras)
+    random.shuffle(imageList)
 
-    counter = 0
-
-    while True:
-        res = validateNextImage(imageList, counter)
-        counter += 1
-        if not res:
-            break
+    count = 0
+    for image in imageList:
+        print("Processing (" + str(count) + "/" + str(len(imageList)) + ") " + image["camera"] + " " + image["name"])
+        count += 1
+        validateImage(image)
     
     print("Done validating")
 
