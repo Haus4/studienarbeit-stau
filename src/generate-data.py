@@ -15,14 +15,14 @@ relevantCams = [
     "KA151"
 ]
 
-mutex = Lock()
+printMutex = Lock()
 
 def printLocked(text):
-    mutex.acquire()
+    printMutex.acquire()
     try:
         print(text)
     finally:
-        mutex.release()
+        printMutex.release()
 
 def getImageUrl(camera):
     return "http://www.svz-bw.de/kamera/ftpdata/" + camera + "/" + camera + "_gross.jpg"
@@ -80,13 +80,13 @@ def processImage(container, image):
     f.write(info)
     f.close()
 
-    mutex.acquire()
+    printMutex.acquire()
     try:
         print("Image parsed for " + container["camera"])
         print("\tL: Jam = " + str(result[0]["jam"]) + " Vehicles = " + str(result[0]["vehicles"]))
         print("\tR: Jam = " + str(result[1]["jam"]) + " Vehicles = " + str(result[1]["vehicles"]))
     finally:
-        mutex.release()
+        printMutex.release()
 
 def handleCamera(camera):
     container = {}

@@ -3,6 +3,9 @@ import cv2
 import json
 import time
 import email.utils as eut
+from threading import Lock
+
+import return_thread
 
 import process_null
 import process_bgs
@@ -18,6 +21,8 @@ imageProcessors = [
 ]
 
 # -------------------------
+
+printMutex = Lock()
 
 def loadCameras():
     path = "data/"
@@ -109,7 +114,8 @@ def analyzeCamera(data, proc):
     camera = data["camera"]
     groups = data["groups"]
 
-    result = [analyzeGroup(camera, group, proc) for group in groups]
+    result = [return_thread.start(target=analyzeGroup, args=(camera, group, proc,)) for group in groups]
+    result = [t.join() for t in result]
     result = reduce(lambda x,y: x + y, result, [])
     accuracy = reduce(lambda x,y: x + y, result, 0)
 
@@ -140,12 +146,17 @@ def buildStatisticSummary(res):
     
 
 def generateStatisticsForProcessor(proc, imageList):
-    print("Statistics for " + proc[1])
 
-    data = [analyzeCamera(x, proc) for x in imageList]
-    res = buildStatisticSummary(data)
+    data = [return_thread.start(target=analyzeCamera, args=(x, proc,)) for x in imageList]
+    data = [t.join() for t in data]
 
-    print("")
+    printMutex.acquire()
+    try:
+        print("Statistics for " + proc[1])
+        res = buildStatisticSummary(data)
+        print("")
+    finally:
+        printMutex.release()
 
     return res
 
@@ -153,12 +164,14 @@ def generateStatistics(imageList):
     accuracy = 0.0
     proc = None
 
-    for imageProcessor in imageProcessors:
-        res = generateStatisticsForProcessor(imageProcessor, imageList)
+    result = [[return_thread.start(target=generateStatisticsForProcessor, args=(imageProcessor, imageList,)), imageProcessor] for imageProcessor in imageProcessors]
+
+    for x in result:
+        res = x[0].join()
 
         if accuracy < res:
             accuracy = res
-            proc = imageProcessor
+            proc = x[1]
 
     if proc is not None:
         print("Optimal processor: " + proc[1] + " (" + str(accuracy) + "%)")
