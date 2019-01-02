@@ -2,6 +2,7 @@ import os
 import urllib2
 import email.utils as eut
 import json
+import cv2
 
 import process_bgs
 
@@ -14,6 +15,8 @@ relevantCams = [
     "KA041",
     "KA151"
 ]
+
+showPreview = False
 
 printMutex = Lock()
 
@@ -66,7 +69,7 @@ def saveImage(container, image):
 
 def processImage(container, image):
     saveImage(container, image)
-    result = container["processor"].processRaw(image["data"])
+    result = container["processor"].processRaw(image["data"], showPreview)
 
     data = {}
     data["left"] = result[0]
@@ -106,7 +109,8 @@ def handleCamera(camera):
             container["valid"] = image
 
         container["last"] = image
-        sleep(60)
+        #sleep(60)
+        cv2.waitKey(60 * 1000)
 
 def main():
     threads = []

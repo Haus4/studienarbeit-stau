@@ -3,7 +3,7 @@ import cv2
 import numpy
 import image_utils
 
-def parseImageWithMask(img, bgs, mask):
+def parseImageWithMask(img, bgs, mask, show, name):
     target = img.copy()
 
     med = cv2.GaussianBlur(target, (5, 5), 1.2)
@@ -27,14 +27,17 @@ def parseImageWithMask(img, bgs, mask):
         cv2.rectangle(target, (vehicle[0], vehicle[1]), (vehicle[0] +
                                                          vehicle[2], vehicle[1] + vehicle[3]), (0, 255, 0))
 
-    #text = "Kein Stau"
-    #color = (0, 255, 0)
+    text = "Kein Stau"
+    color = (0, 255, 0)
     stau = False
     if len(vehicles) >= 10:
-        #text = "Stau"
-        #color = (0,0,255)
+        text = "Stau"
+        color = (0,0,255)
         stau = True
-    #cv2.putText(target,text,(10,100), cv2.FONT_HERSHEY_SIMPLEX, 2,color,2,cv2.LINE_AA)
+    cv2.putText(target,text,(10,100), cv2.FONT_HERSHEY_SIMPLEX, 2,color,2,cv2.LINE_AA)
+
+    if show:
+        cv2.imshow(name, target)
 
     info = {}
     info["jam"] = stau
@@ -42,9 +45,9 @@ def parseImageWithMask(img, bgs, mask):
 
     return (info, target)
 
-def parseImage(img, bgs, bgs2, masks):
-    left = parseImageWithMask(img, bgs, masks[0])
-    right = parseImageWithMask(img, bgs2, masks[1])
+def parseImage(img, bgs, bgs2, masks, show, camera):
+    left = parseImageWithMask(img, bgs, masks[0], show, camera + " left")
+    right = parseImageWithMask(img, bgs2, masks[1], show, camera + " right")
 
     #cv2.imshow("hi1", left[1])
     #cv2.imshow("hi2", right[1])
@@ -62,12 +65,12 @@ class ImageProcessor:
 
         self.masks = image_utils.loadMasks(camera)
 
-    def processRaw(self, image):
+    def processRaw(self, image, show = False):
         data = numpy.fromstring(image, dtype=numpy.uint8)
         img = cv2.imdecode(data, 1)
-        return self.process(img)
+        return self.process(img, show)
 
-    def process(self, image):
-        return parseImage(image, self.bgs[0], self.bgs[1], self.masks)
+    def process(self, image, show = False):
+        return parseImage(image, self.bgs[0], self.bgs[1], self.masks, show, self.camera)
         #cv2.imshow("hi - " + self.camera, img)
         #cv2.waitKey(0)
