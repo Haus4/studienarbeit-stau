@@ -9,6 +9,7 @@ import return_thread
 
 import process_null
 import process_bgs
+import process_luminocity
 
 # --- CONFIGURE HERE-------
 
@@ -18,6 +19,7 @@ onlyVerified = True # Evaluate only verified images
 imageProcessors = [
     [process_null.ImageProcessor, "No-Jam-Null"],
     [process_bgs.ImageProcessor, "Background-Subtraction"],
+    [process_luminocity.ImageProcessor, "Luminocity"],
 ]
 
 # -------------------------
@@ -86,7 +88,10 @@ def buildImageList(cameras):
 
     return imageList
 
-def evaluateImage(processor, image):
+def evaluateImage(processor, image, procname):
+    #printMutex.acquire()
+    #print(procname)
+    #printMutex.release()
     result = processor.process(image["data"])
 
     leftResult = result[0]["jam"] == image["info"]["left"]["jam"]
@@ -105,7 +110,7 @@ def evaluateImage(processor, image):
 
 def analyzeGroup(camera, group, proc):
     processor = proc[0](camera)
-    result = [[evaluateImage(processor, image), image] for image in group]
+    result = [[evaluateImage(processor, image, proc[1]), image] for image in group]
     result = [res[0] for i, res in enumerate(result) if i >= skipImages and (not onlyVerified or ("verified" in res[1]["info"] and res[1]["info"]["verified"]))]
 
     return result
