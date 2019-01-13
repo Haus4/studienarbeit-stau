@@ -10,6 +10,7 @@ import return_thread
 import process_null
 import process_bgs
 import process_luminocity
+import process_haar
 
 # --- CONFIGURE HERE-------
 
@@ -20,6 +21,7 @@ imageProcessors = [
     [process_null.ImageProcessor, "No-Jam-Null"],
     [process_bgs.ImageProcessor, "Background-Subtraction"],
     [process_luminocity.ImageProcessor, "Luminocity"],
+    [process_haar.ImageProcessor, "Haar"],
 ]
 
 # -------------------------
