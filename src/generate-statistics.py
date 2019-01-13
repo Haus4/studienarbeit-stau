@@ -11,6 +11,7 @@ import process_null
 import process_bgs
 import process_luminocity
 import process_haar
+import process_canny
 
 # --- CONFIGURE HERE-------
 
@@ -22,6 +23,7 @@ imageProcessors = [
     [process_bgs.ImageProcessor, "Background-Subtraction"],
     [process_luminocity.ImageProcessor, "Luminocity"],
     [process_haar.ImageProcessor, "Haar"],
+    [process_canny.ImageProcessor, "Canny"],
 ]
 
 # -------------------------
