@@ -20,7 +20,6 @@ function saveToDb() {
       if ($conn->connect_errno) {
           echo "Errno: " . $conn->connect_errno . "\n";
       }
-	  clearOldFiles($conn);
       $dataTime = date("Y-m-d H:i:s", $lastModified);
       $image = $conn->real_escape_string($file);
       //Insert image content into database
@@ -30,6 +29,7 @@ function saveToDb() {
         }else{
         echo $conn->error;
         } 
+      clearOldFiles($conn);
       CloseCon($conn);
       
 }
@@ -50,8 +50,8 @@ function getLastModified($headers)
 function clearOldfiles($conn)
 {
     $count = countRows($conn);
-    if($count > 5) {
-        $rowCount = $count - 5;
+    if($count > 10) {
+        $rowCount = $count - 10;
         $query = "DELETE FROM images ORDER BY inserttimestamp ASC LIMIT " . $rowCount;
         $test = $conn->query($query);
     }

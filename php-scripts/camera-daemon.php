@@ -16,7 +16,7 @@ while(true)
 {
 	saveToDb();
     //avoid CPU exhaustion, adjust as necessary
-    usleep(60000000);//0.002 seconds
+    usleep(29000000);//29 seconds
 }
 
 flock($hLock, LOCK_UN);
