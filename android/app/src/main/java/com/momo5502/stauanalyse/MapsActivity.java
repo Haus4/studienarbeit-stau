@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,6 +20,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.video.BackgroundSubtractorMOG2;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +56,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("hi", "OpenCV loaded successfully");
+                    doShit();
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
+    void doShit() {
+        BackgroundSubtractorMOG2 mog = new BackgroundSubtractorMOG2(3, 4, 0.8);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("hi", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
+        } else {
+            Log.d("HI", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+    }
 
     /**
      * Manipulates the map once available.
