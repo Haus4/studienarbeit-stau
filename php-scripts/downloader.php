@@ -15,7 +15,6 @@ function saveToDb() {
       // Open the file using the HTTP headers set above
       $url = sprintf(Urls::CAMERA_TEMPLATE, "KA061", "KA061");
       $file = file_get_contents($url, false, $context);
-      file_put_contents('./test.jpeg', $file);
       $lastModified = strtotime(getLastModified($http_response_header));
       $conn = OpenCon();
       if ($conn->connect_errno) {
