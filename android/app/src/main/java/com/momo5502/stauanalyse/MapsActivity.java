@@ -6,17 +6,16 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -27,10 +26,6 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.bgsegm.BackgroundSubtractorCNT;
-import org.opencv.bgsegm.BackgroundSubtractorGMG;
-import org.opencv.bgsegm.BackgroundSubtractorGSOC;
-import org.opencv.bgsegm.BackgroundSubtractorLSBP;
 import org.opencv.bgsegm.BackgroundSubtractorMOG;
 import org.opencv.bgsegm.Bgsegm;
 import org.opencv.core.Core;
@@ -41,9 +36,6 @@ import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractor;
-import org.opencv.video.BackgroundSubtractorKNN;
-import org.opencv.video.BackgroundSubtractorMOG2;
-import org.opencv.video.Video;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,6 +66,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }*/
+
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("hi", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
+        } else {
+            Log.d("HI", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
     }
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -93,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    void displayImage(final Bitmap og, final Bitmap mog, final Bitmap mog2, final Bitmap knn, final Bitmap gsoc, final Bitmap cnt, final Bitmap gmg, final Bitmap lsbp) {
+    void displayImage(final Bitmap og, final Bitmap mog) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -102,24 +102,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 iv = (ImageView) findViewById(R.id.mog);
                 iv.setImageBitmap(mog);
-
-                iv = (ImageView) findViewById(R.id.mog2);
-                iv.setImageBitmap(mog2);
-
-                iv = (ImageView) findViewById(R.id.knn);
-                iv.setImageBitmap(knn);
-
-                iv = (ImageView) findViewById(R.id.gsoc);
-                iv.setImageBitmap(gsoc);
-
-                iv = (ImageView) findViewById(R.id.cnt);
-                iv.setImageBitmap(cnt);
-
-                iv = (ImageView) findViewById(R.id.gmg);
-                iv.setImageBitmap(gmg);
-
-                iv = (ImageView) findViewById(R.id.lsbp);
-                iv.setImageBitmap(lsbp);
             }
         });
     }
@@ -135,7 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Mat mask = new Mat();
         bgs.apply(mat, mask);
 
-        Imgproc.putText(mask, name, new Point(30, 80), Core.FONT_HERSHEY_SCRIPT_SIMPLEX, 2.2, new Scalar(200, 200, 0), 2);
+        Imgproc.putText(mask, name, new Point(30, 80), Core.FONT_HERSHEY_SIMPLEX, 2.2, new Scalar(200, 200, 0), 2);
 
         return getBitmapForMaterial(mask);
     }
@@ -145,12 +127,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void run() {
                 final BackgroundSubtractorMOG mog = Bgsegm.createBackgroundSubtractorMOG();
-                final BackgroundSubtractorMOG2 mog2 = Video.createBackgroundSubtractorMOG2();
-                final BackgroundSubtractorKNN knn = Video.createBackgroundSubtractorKNN();
-                final BackgroundSubtractorGSOC gsoc = Bgsegm.createBackgroundSubtractorGSOC();
-                final BackgroundSubtractorCNT cnt = Bgsegm.createBackgroundSubtractorCNT();
-                final BackgroundSubtractorGMG gmg = Bgsegm.createBackgroundSubtractorGMG();
-                final BackgroundSubtractorLSBP lsbp = Bgsegm.createBackgroundSubtractorLSBP();
 
                 CameraImageLoader imageLoader = new CameraImageLoader();
 
@@ -160,16 +136,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onFinished(byte[] result, Exception error) {
                             Mat mat = Imgcodecs.imdecode(new MatOfByte(result), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
 
-                            Bitmap og = getBitmapForMaterial(mat);
-                            Bitmap _mog = getBitmapForBGS(mog, "mog", mat);
-                            Bitmap _mog2 = getBitmapForBGS(mog2, "mog2", mat);
-                            Bitmap _knn = getBitmapForBGS(knn, "knn", mat);
-                            Bitmap _gsoc = getBitmapForBGS(gsoc, "gsoc", mat);
-                            Bitmap _cnt = getBitmapForBGS(cnt, "cnt", mat);
-                            Bitmap _gmg = getBitmapForBGS(gmg, "gmg", mat);
-                            Bitmap _lsbp = getBitmapForBGS(lsbp, "lsbp", mat);
+                            Mat ogImg = new Mat();
+                            Imgproc.cvtColor(mat, ogImg, Imgproc.COLOR_BGR2RGB, 3);
+                            Bitmap og = getBitmapForMaterial(ogImg);
 
-                            displayImage(og, _mog, _mog2, _knn, _gsoc, _cnt, _gmg, _lsbp);
+                            Bitmap _mog = getBitmapForBGS(mog, "mog", mat);
+
+                            displayImage(og, _mog);
                         }
                     });
 
@@ -186,14 +159,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (!OpenCVLoader.initDebug()) {
-            Log.d("hi", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
-        } else {
-            Log.d("HI", "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
     }
 
     /**

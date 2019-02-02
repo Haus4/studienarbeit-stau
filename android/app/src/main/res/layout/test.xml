@@ -26,41 +26,6 @@
                 android:layout_height="wrap_content"
                 tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-            <ImageView
-                android:id="@+id/mog2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-            <ImageView
-                android:id="@+id/knn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-            <ImageView
-                android:id="@+id/gsoc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-            <ImageView
-                android:id="@+id/cnt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-            <ImageView
-                android:id="@+id/gmg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-            <ImageView
-                android:id="@+id/lsbp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
         </LinearLayout>
     </ScrollView>
 
