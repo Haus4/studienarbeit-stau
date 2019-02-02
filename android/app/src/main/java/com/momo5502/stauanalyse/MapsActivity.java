@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -31,14 +32,23 @@ import org.opencv.bgsegm.Bgsegm;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractor;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
+
+import static org.opencv.imgproc.Imgproc.MORPH_CLOSE;
+import static org.opencv.imgproc.Imgproc.MORPH_OPEN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
@@ -52,6 +62,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final int LOCATION_LIMIT = 5;
     private List<Location> firstLocations;
     private List<Location> lastLocations;
+
+    private TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +79,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }*/
 
-        if (!OpenCVLoader.initDebug()) {
-            Log.d("hi", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
-        } else {
-            Log.d("HI", "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
+        final MapsActivity copy = this;
+
+        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                tts.setLanguage(Locale.GERMAN);
+
+                if (!OpenCVLoader.initDebug()) {
+                    Log.d("hi", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+                    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, copy, mLoaderCallback);
+                } else {
+                    Log.d("HI", "OpenCV library found inside package. Using it!");
+                    mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+                }
+            }
+        });
     }
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -113,36 +134,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return bm;
     }
 
-    Bitmap getBitmapForBGS(BackgroundSubtractor bgs, String name, Mat mat) {
+    Mat getMatForBGS(BackgroundSubtractor bgs, String name, Mat mat) {
         Mat mask = new Mat();
         bgs.apply(mat, mask);
 
-        Imgproc.putText(mask, name, new Point(30, 80), Core.FONT_HERSHEY_SIMPLEX, 2.2, new Scalar(200, 200, 0), 2);
+        //Imgproc.putText(mask, name, new Point(30, 80), Core.FONT_HERSHEY_SIMPLEX, 2.2, new Scalar(200, 200, 0), 2);
 
-        return getBitmapForMaterial(mask);
+        return mask;
     }
 
     void doShit() {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                while (tts == null) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 final BackgroundSubtractorMOG mog = Bgsegm.createBackgroundSubtractorMOG();
 
-                CameraImageLoader imageLoader = new CameraImageLoader();
+                MirkoDownloader mirkoDownloader = new MirkoDownloader();
+                mirkoDownloader.getLatest(new MirkoDownloader.Callback() {
+                    @Override
+                    public void onFinished(List<byte[]> images, Exception error) {
+                        //speak(images.size() + " Bilder empfangen");
+                        for (int i = 0; i < images.size(); ++i) {
+                            parseImage(mog, images.get(i), i + 1 == images.size());
+                        }
+                    }
+                });
+
+                /*CameraImageLoader imageLoader = new CameraImageLoader();
 
                 while (true) {
-                    imageLoader.get("KA061", new Downloader.DownloadCallback() {
+                    imageLoader.get("KA061", new Downloader.Callback() {
                         @Override
                         public void onFinished(byte[] result, Exception error) {
-                            Mat mat = Imgcodecs.imdecode(new MatOfByte(result), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
-
-                            Mat ogImg = new Mat();
-                            Imgproc.cvtColor(mat, ogImg, Imgproc.COLOR_BGR2RGB, 3);
-                            Bitmap og = getBitmapForMaterial(ogImg);
-
-                            Bitmap _mog = getBitmapForBGS(mog, "mog", mat);
-
-                            displayImage(og, _mog);
+                            parseImage(mog, result, true);
                         }
                     });
 
@@ -151,9 +183,126 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }
+                }*/
             }
         }).start();
+    }
+
+    private Mat cleanMask(Mat mask) {
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(2, 2));
+
+        Mat closed = new Mat();
+        Imgproc.morphologyEx(mask, closed, MORPH_CLOSE, kernel);
+
+        Mat opened = new Mat();
+        Imgproc.morphologyEx(closed, opened, MORPH_OPEN, kernel);
+
+        Mat dilated = new Mat();
+        Imgproc.dilate(opened, dilated, kernel, new Point(-1, -1), 2);
+
+        return dilated;
+    }
+
+    private void parseImage(BackgroundSubtractor mog, byte[] result, boolean display) {
+        Mat mat = Imgcodecs.imdecode(new MatOfByte(result), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+        Mat mogMask = getMatForBGS(mog, "mog", mat);
+        mogMask = cleanMask(mogMask);
+
+        Bitmap _mog = getBitmapForMaterial(mogMask);
+
+        if (display) {
+            analyzeCars(mogMask, mat);
+
+            Mat ogImg = new Mat();
+            Imgproc.cvtColor(mat, ogImg, Imgproc.COLOR_BGR2RGB, 3);
+            Bitmap og = getBitmapForMaterial(ogImg);
+            displayImage(og, _mog);
+        }
+    }
+
+    List<Rect> convertContours(List<MatOfPoint> contours) {
+        List<Rect> cars = new ArrayList<>();
+
+        for (MatOfPoint contour : contours) {
+            Rect rect = Imgproc.boundingRect(contour);
+            cars.add(rect);
+        }
+
+        return cars;
+    }
+
+    List<Rect> filterContours(List<Rect> contours) {
+        List<Rect> cars = new ArrayList<>();
+
+        for (Rect contour : contours) {
+            if (contour.width > 3 && contour.height > 3) {
+                cars.add(contour);
+            }
+        }
+
+        return cars;
+    }
+
+    private List<Rect> mergeContours(List<Rect> contours) {
+        List<Rect> result = new LinkedList<>();
+        result.addAll(contours);
+
+        boolean hadChange = false;
+        do {
+            hadChange = false;
+            for (int i = 0; i < result.size() && !hadChange; ++i) {
+                for (int j = 0; j < result.size() && !hadChange; ++j) {
+
+                    if (i == j) continue;
+
+                    Rect first = result.get(i);
+                    Rect second = result.get(j);
+
+                    if (RectangleIntersector.hasIntersection(first, second)) {
+                        int x = Math.min(first.x, second.x);
+                        int y = Math.min(first.y, second.y);
+
+                        int x_max = Math.max(first.x + first.width, second.x + second.width);
+                        int y_max = Math.max(first.y + first.height, second.y + second.height);
+
+                        Rect newRect = new Rect(x, y, x_max - x, y_max - y);
+
+                        result.remove(first);
+                        result.remove(second);
+                        result.add(newRect);
+
+                        hadChange = true;
+                    }
+                }
+            }
+        } while (hadChange);
+
+        return result;
+    }
+
+    private void analyzeCars(Mat mask, Mat image) {
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+
+        Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_TC89_L1);
+
+        //speak(contours.size() + " Konturen erkannt.");
+
+        List<Rect> cars = convertContours(contours);
+        cars = filterContours(cars);
+        cars = mergeContours(cars);
+
+        speak(cars.size() + " Autos erkannt.");
+
+        for (Rect car : cars) {
+            Imgproc.rectangle(image, new Point(car.x, car.y), new Point(car.x + car.width, car.y + car.height), new Scalar(0, 200, 0));
+        }
+
+        if (cars.size() > 10) {
+            speak("Es ist Stau.");
+        } else {
+            speak("Es ist kein Stau.");
+        }
     }
 
     @Override
@@ -207,6 +356,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void getRelevantCameras() {
         //lastLocations.
+    }
+
+    private void speak(String text) {
+        tts.speak(text, TextToSpeech.QUEUE_ADD, null);
     }
 
     private void storeLocation(Location location) {

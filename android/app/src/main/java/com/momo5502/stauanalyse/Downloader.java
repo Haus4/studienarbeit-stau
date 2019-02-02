@@ -12,11 +12,11 @@ import java.util.Map;
 
 public class Downloader {
 
-    public interface DownloadCallback {
+    public interface Callback {
         void onFinished(byte[] result, Exception error);
     }
 
-    public void download(final DownloadCallback callback, final String url, final Map<String, String> headers) {
+    public void download(final Callback callback, final String url, final Map<String, String> headers) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -29,7 +29,7 @@ public class Downloader {
         }).start();
     }
 
-    private void performDownload(DownloadCallback callback, String urlString, Map<String, String> headers) throws IOException {
+    private void performDownload(Callback callback, String urlString, Map<String, String> headers) throws IOException {
         URL url = new URL(urlString);
         URLConnection connection = url.openConnection();
 

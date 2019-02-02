@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class CameraImageLoader {
     private Downloader downloader = new Downloader();
 
-    public void get(String id, Downloader.DownloadCallback callback) {
+    public void get(String id, Downloader.Callback callback) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Referer", "https://www.svz-bw.de");
 
