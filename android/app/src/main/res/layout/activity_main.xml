@@ -17,14 +17,12 @@
             <ImageView
                 android:id="@+id/og"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                android:layout_height="wrap_content" />
 
             <ImageView
                 android:id="@+id/mog"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </ScrollView>
