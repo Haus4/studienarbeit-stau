@@ -1,9 +1,8 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.util;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -12,24 +11,20 @@ import java.util.Map;
 
 public class Downloader {
 
-    public interface Callback {
-        void onFinished(byte[] result, Exception error);
-    }
-
-    public void download(final Callback callback, final String url, final Map<String, String> headers) {
+    public void download(final Callback<byte[]> callback, final String url, final Map<String, String> headers) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     performDownload(callback, url, headers);
                 } catch (Exception e) {
-                    callback.onFinished(null, e);
+                    callback.run(null, e);
                 }
             }
         }).start();
     }
 
-    private void performDownload(Callback callback, String urlString, Map<String, String> headers) throws IOException {
+    private void performDownload(Callback<byte[]> callback, String urlString, Map<String, String> headers) throws IOException {
         URL url = new URL(urlString);
         URLConnection connection = url.openConnection();
 
@@ -66,6 +61,6 @@ public class Downloader {
             result[i] = dataArray.get(i);
         }
 
-        callback.onFinished(result, null);
+        callback.run(result, null);
     }
 }

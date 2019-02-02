@@ -1,4 +1,4 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -22,6 +22,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.momo5502.stauanalyse.R;
+import com.momo5502.stauanalyse.backend.MirkoDownloader;
+import com.momo5502.stauanalyse.camera.Camera;
+import com.momo5502.stauanalyse.camera.CameraLoader;
+import com.momo5502.stauanalyse.speech.Speaker;
+import com.momo5502.stauanalyse.util.Callback;
+import com.momo5502.stauanalyse.util.RectangleIntersector;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -29,7 +36,6 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.bgsegm.BackgroundSubtractorMOG;
 import org.opencv.bgsegm.Bgsegm;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
@@ -45,7 +51,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Function;
 
 import static org.opencv.imgproc.Imgproc.MORPH_CLOSE;
 import static org.opencv.imgproc.Imgproc.MORPH_OPEN;
@@ -63,38 +68,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Location> firstLocations;
     private List<Location> lastLocations;
 
-    private TextToSpeech tts;
+    private Speaker speaker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.test);
-        /*setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        }*/
+        speaker = new Speaker(getApplicationContext());
 
-        final MapsActivity copy = this;
-
-        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                tts.setLanguage(Locale.GERMAN);
-
-                if (!OpenCVLoader.initDebug()) {
-                    Log.d("hi", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-                    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, copy, mLoaderCallback);
-                } else {
-                    Log.d("HI", "OpenCV library found inside package. Using it!");
-                    mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-                }
-            }
-        });
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("hi", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
+        } else {
+            Log.d("HI", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
     }
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -147,20 +136,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (tts == null) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
                 final BackgroundSubtractorMOG mog = Bgsegm.createBackgroundSubtractorMOG();
 
                 MirkoDownloader mirkoDownloader = new MirkoDownloader();
-                mirkoDownloader.getLatest(new MirkoDownloader.Callback() {
+                mirkoDownloader.getLatest(new Callback<List<byte[]>>() {
                     @Override
-                    public void onFinished(List<byte[]> images, Exception error) {
+                    public void run(List<byte[]> images, Exception error) {
                         //speak(images.size() + " Bilder empfangen");
                         for (int i = 0; i < images.size(); ++i) {
                             parseImage(mog, images.get(i), i + 1 == images.size());
@@ -292,16 +273,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         cars = filterContours(cars);
         cars = mergeContours(cars);
 
-        speak(cars.size() + " Autos erkannt.");
+        speaker. speak(cars.size() + " Autos erkannt.");
 
         for (Rect car : cars) {
             Imgproc.rectangle(image, new Point(car.x, car.y), new Point(car.x + car.width, car.y + car.height), new Scalar(0, 200, 0));
         }
 
         if (cars.size() > 10) {
-            speak("Es ist Stau.");
+            speaker.speak("Es ist Stau.");
         } else {
-            speak("Es ist kein Stau.");
+            speaker.speak("Es ist kein Stau.");
         }
     }
 
@@ -329,9 +310,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 10, 1, this);
         }
 
-        new CameraLoader().loadCameras(new CameraLoaderListener() {
+        new CameraLoader().loadCameras(new Callback<List<Camera>>() {
             @Override
-            public void onLoad(final List<Camera> cameras, Exception e) {
+            public void run(final List<Camera> cameras, Exception e) {
                 if (cameras != null) {
                     Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -356,10 +337,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void getRelevantCameras() {
         //lastLocations.
-    }
-
-    private void speak(String text) {
-        tts.speak(text, TextToSpeech.QUEUE_ADD, null);
     }
 
     private void storeLocation(Location location) {

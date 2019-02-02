@@ -1,30 +1,28 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.backend;
+
+import com.momo5502.stauanalyse.util.Callback;
+import com.momo5502.stauanalyse.util.Downloader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MirkoDownloader {
-    private static final String DL_URL = "http://172.16.72.180/fetcher.php";
-
-    public interface Callback {
-        void onFinished(List<byte[]> images, Exception error);
-    }
+    private static final String DL_URL = "http://192.168.0.215/fetcher.php";
 
     private Downloader downloader = new Downloader();
 
-    public void getLatest(final Callback callback) {
-        downloader.download(new Downloader.Callback() {
+    public void getLatest(final Callback<List<byte[]>> callback) {
+        downloader.download(new Callback<byte[]>() {
             @Override
-            public void onFinished(byte[] result, Exception error) {
+            public void run(byte[] result, Exception error) {
                 if (error != null || result == null) {
-                    callback.onFinished(null, error);
+                    callback.run(null, error);
                 } else {
                     List<byte[]> images = parseData(result);
-                    callback.onFinished(images, null);
+                    callback.run(images, null);
                 }
             }
         }, DL_URL, null);

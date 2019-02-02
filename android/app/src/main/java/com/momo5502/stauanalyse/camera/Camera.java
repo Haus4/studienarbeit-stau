@@ -1,4 +1,4 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.camera;
 
 import com.google.android.gms.maps.model.LatLng;
 

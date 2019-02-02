@@ -1,4 +1,4 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.util;
 
 import org.opencv.core.Rect;
 

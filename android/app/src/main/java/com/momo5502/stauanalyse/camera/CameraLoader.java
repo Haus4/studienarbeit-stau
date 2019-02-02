@@ -1,4 +1,6 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.camera;
+
+import com.momo5502.stauanalyse.util.Callback;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -12,7 +14,7 @@ public class CameraLoader {
     private final String CAMERA_LIST_1 = "https://www.svz-bw.de/kamera/kamera_A.txt";
     private final String CAMERA_LIST_2 = "https://www.svz-bw.de/kamera/kamera_B.txt";
 
-    public void loadCameras(final CameraLoaderListener listener) {
+    public void loadCameras(final Callback<List<Camera>> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -21,7 +23,7 @@ public class CameraLoader {
         }).start();
     }
 
-    private void fetch(CameraLoaderListener listener) {
+    private void fetch(Callback<List<Camera>> listener) {
         try {
             String cameraData1 = fetchCameraData(CAMERA_LIST_1);
             String cameraData2 = fetchCameraData(CAMERA_LIST_2);
@@ -33,9 +35,9 @@ public class CameraLoader {
             List<Camera> cameras = new ArrayList<>(cameras1);
             cameras.addAll(cameras2);
 
-            listener.onLoad(cameras, null);
+            listener.run(cameras, null);
         } catch (Exception e) {
-            listener.onLoad(null, e);
+            listener.run(null, e);
         }
     }
 

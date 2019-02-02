@@ -1,11 +1,14 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.camera;
+
+import com.momo5502.stauanalyse.util.Callback;
+import com.momo5502.stauanalyse.util.Downloader;
 
 import java.util.HashMap;
 
 public class CameraImageLoader {
     private Downloader downloader = new Downloader();
 
-    public void get(String id, Downloader.Callback callback) {
+    public void get(String id, Callback<byte[]> callback) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Referer", "https://www.svz-bw.de");
 
