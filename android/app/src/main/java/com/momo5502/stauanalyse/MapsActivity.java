@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.bgsegm.BackgroundSubtractorMOG;
+import org.opencv.bgsegm.Bgsegm;
 import org.opencv.video.BackgroundSubtractorMOG2;
 
 import java.util.LinkedList;
@@ -60,21 +62,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
+                case LoaderCallbackInterface.SUCCESS: {
                     Log.i("hi", "OpenCV loaded successfully");
                     doShit();
-                } break;
-                default:
-                {
+                }
+                break;
+                default: {
                     super.onManagerConnected(status);
-                } break;
+                }
+                break;
             }
         }
     };
 
     void doShit() {
-        BackgroundSubtractorMOG2 mog = new BackgroundSubtractorMOG2(3, 4, 0.8);
+        BackgroundSubtractorMOG mog = Bgsegm.createBackgroundSubtractorMOG();
+        //mog.apply();
+        System.out.println("hi");
     }
 
     @Override
@@ -139,13 +143,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void storeLocation(Location location) {
-        if(firstLocations == null) firstLocations = new LinkedList<>();
-        if(lastLocations == null) lastLocations = new LinkedList<>();
+        if (firstLocations == null) firstLocations = new LinkedList<>();
+        if (lastLocations == null) lastLocations = new LinkedList<>();
 
-        if(firstLocations.size() < LOCATION_LIMIT) firstLocations.add(location);
+        if (firstLocations.size() < LOCATION_LIMIT) firstLocations.add(location);
 
         lastLocations.add(location);
-        while(lastLocations.size() > LOCATION_LIMIT) {
+        while (lastLocations.size() > LOCATION_LIMIT) {
             lastLocations.remove(0);
         }
 
@@ -155,12 +159,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void mapMovementVector() {
         double latOld = 0, lonOld = 0, latNew = 0, lonNew = 0;
 
-        for(int i = 0; i < firstLocations.size(); ++i) {
+        for (int i = 0; i < firstLocations.size(); ++i) {
             latOld += firstLocations.get(i).getLatitude();
             lonOld += firstLocations.get(i).getLongitude();
         }
 
-        for(int i = 0; i < lastLocations.size(); ++i) {
+        for (int i = 0; i < lastLocations.size(); ++i) {
             latNew += lastLocations.get(i).getLatitude();
             lonNew += lastLocations.get(i).getLongitude();
         }
@@ -173,7 +177,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng locationOld = new LatLng(latOld, lonOld);
         LatLng locationNew = new LatLng(latNew, lonNew);
 
-        if(movement == null) movement = mMap.addPolyline(new PolylineOptions().add(locationOld, locationNew));
+        if (movement == null)
+            movement = mMap.addPolyline(new PolylineOptions().add(locationOld, locationNew));
 
         List<LatLng> locations = new LinkedList<>();
         locations.add(locationOld);
@@ -185,7 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-        if(self == null) {
+        if (self == null) {
             self = mMap.addMarker(new MarkerOptions().position(loc).title("You"));
         }
 
