@@ -2,6 +2,7 @@ package com.momo5502.stauanalyse;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,9 +26,24 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.bgsegm.BackgroundSubtractorCNT;
+import org.opencv.bgsegm.BackgroundSubtractorGMG;
+import org.opencv.bgsegm.BackgroundSubtractorGSOC;
+import org.opencv.bgsegm.BackgroundSubtractorLSBP;
 import org.opencv.bgsegm.BackgroundSubtractorMOG;
 import org.opencv.bgsegm.Bgsegm;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.video.BackgroundSubtractor;
+import org.opencv.video.BackgroundSubtractorKNN;
 import org.opencv.video.BackgroundSubtractorMOG2;
+import org.opencv.video.Video;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.test);
+        /*setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -55,7 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        }
+        }*/
     }
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -75,10 +93,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    void displayImage(final Bitmap og, final Bitmap mog, final Bitmap mog2, final Bitmap knn, final Bitmap gsoc, final Bitmap cnt, final Bitmap gmg, final Bitmap lsbp) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                ImageView iv = (ImageView) findViewById(R.id.og);
+                iv.setImageBitmap(og);
+
+                iv = (ImageView) findViewById(R.id.mog);
+                iv.setImageBitmap(mog);
+
+                iv = (ImageView) findViewById(R.id.mog2);
+                iv.setImageBitmap(mog2);
+
+                iv = (ImageView) findViewById(R.id.knn);
+                iv.setImageBitmap(knn);
+
+                iv = (ImageView) findViewById(R.id.gsoc);
+                iv.setImageBitmap(gsoc);
+
+                iv = (ImageView) findViewById(R.id.cnt);
+                iv.setImageBitmap(cnt);
+
+                iv = (ImageView) findViewById(R.id.gmg);
+                iv.setImageBitmap(gmg);
+
+                iv = (ImageView) findViewById(R.id.lsbp);
+                iv.setImageBitmap(lsbp);
+            }
+        });
+    }
+
+    Bitmap getBitmapForMaterial(Mat mat) {
+        Bitmap bm = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mat, bm);
+
+        return bm;
+    }
+
+    Bitmap getBitmapForBGS(BackgroundSubtractor bgs, String name, Mat mat) {
+        Mat mask = new Mat();
+        bgs.apply(mat, mask);
+
+        Imgproc.putText(mask, name, new Point(30, 80), Core.FONT_HERSHEY_SCRIPT_SIMPLEX, 2.2, new Scalar(200, 200, 0), 2);
+
+        return getBitmapForMaterial(mask);
+    }
+
     void doShit() {
-        BackgroundSubtractorMOG mog = Bgsegm.createBackgroundSubtractorMOG();
-        //mog.apply();
-        System.out.println("hi");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final BackgroundSubtractorMOG mog = Bgsegm.createBackgroundSubtractorMOG();
+                final BackgroundSubtractorMOG2 mog2 = Video.createBackgroundSubtractorMOG2();
+                final BackgroundSubtractorKNN knn = Video.createBackgroundSubtractorKNN();
+                final BackgroundSubtractorGSOC gsoc = Bgsegm.createBackgroundSubtractorGSOC();
+                final BackgroundSubtractorCNT cnt = Bgsegm.createBackgroundSubtractorCNT();
+                final BackgroundSubtractorGMG gmg = Bgsegm.createBackgroundSubtractorGMG();
+                final BackgroundSubtractorLSBP lsbp = Bgsegm.createBackgroundSubtractorLSBP();
+
+                CameraImageLoader imageLoader = new CameraImageLoader();
+
+                while (true) {
+                    imageLoader.get("KA061", new Downloader.DownloadCallback() {
+                        @Override
+                        public void onFinished(byte[] result, Exception error) {
+                            Mat mat = Imgcodecs.imdecode(new MatOfByte(result), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+
+                            Bitmap og = getBitmapForMaterial(mat);
+                            Bitmap _mog = getBitmapForBGS(mog, "mog", mat);
+                            Bitmap _mog2 = getBitmapForBGS(mog2, "mog2", mat);
+                            Bitmap _knn = getBitmapForBGS(knn, "knn", mat);
+                            Bitmap _gsoc = getBitmapForBGS(gsoc, "gsoc", mat);
+                            Bitmap _cnt = getBitmapForBGS(cnt, "cnt", mat);
+                            Bitmap _gmg = getBitmapForBGS(gmg, "gmg", mat);
+                            Bitmap _lsbp = getBitmapForBGS(lsbp, "lsbp", mat);
+
+                            displayImage(og, _mog, _mog2, _knn, _gsoc, _cnt, _gmg, _lsbp);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(1000 * 60);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
