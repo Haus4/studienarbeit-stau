@@ -66,13 +66,21 @@ public class ImageEvaluator {
         Mat mask = new Mat();
         Mat scene = parseImage(image);
 
-        backgroundSubtractor.apply(scene, mask);
+        Mat blurredScene = blur(scene);
+
+        backgroundSubtractor.apply(blurredScene, mask);
 
         return new EvaluatedImage(mask, scene);
     }
 
     private Mat parseImage(CameraImage image) {
         return Imgcodecs.imdecode(new MatOfByte(image.getData()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+    }
+
+    private Mat blur(Mat image) {
+        Mat dst = new Mat();
+        Imgproc.blur(image, dst, new Size(5, 5));
+        return dst;
     }
 
     private Mat applyMorphology(Mat mask) {
