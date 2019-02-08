@@ -11,6 +11,7 @@ import com.momo5502.stauanalyse.R;
 import com.momo5502.stauanalyse.backend.MultiImageLoader;
 import com.momo5502.stauanalyse.camera.Camera;
 import com.momo5502.stauanalyse.camera.CameraImage;
+import com.momo5502.stauanalyse.camera.CameraImageFetcher;
 import com.momo5502.stauanalyse.speech.Speaker;
 import com.momo5502.stauanalyse.vision.ContourParser;
 import com.momo5502.stauanalyse.vision.EvaluatedImage;
@@ -72,29 +73,46 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
-    void run() {
-        multiImageLoader.loadLatest((images, error) -> {
-            for (int i = 0; i < images.size(); ++i) {
-                CameraImage image = images.get(i);
+    private void handleImages(List<CameraImage> images, Exception error) {
+        if (images == null || images.isEmpty()) return;
 
-                if (i + 1 == images.size()) {
-                    EvaluatedImage evaluatedImage = imageEvaluator.evaluate(image);
+        for (int i = 0; i < images.size(); ++i) {
+            CameraImage image = images.get(i);
 
-                    int cars = evaluatedImage.getObjects().size();
-                    speaker.speak(cars + " Autos erkannt.");
+            if (i + 1 == images.size()) {
+                EvaluatedImage evaluatedImage = imageEvaluator.evaluate(image);
 
-                    if (cars > 10) {
-                        speaker.speak("Es ist Stau.");
-                    } else {
-                        speaker.speak("Es ist kein Stau.");
-                    }
+                int cars = evaluatedImage.getObjects().size();
+                speaker.speak(cars + " Autos erkannt.");
 
-                    setOriginalImage(evaluatedImage.getImage().getBitmap());
-                    setAnalyzedImage(evaluatedImage.getMask().getBitmap());
+                if (cars > 40) {
+                    speaker.speak("Es ist Stau.");
                 } else {
-                    imageEvaluator.train(image);
+                    speaker.speak("Es ist kein Stau.");
+                }
+
+                setOriginalImage(evaluatedImage.getImage().getBitmap());
+                setAnalyzedImage(evaluatedImage.getMask().getBitmap());
+            } else {
+                imageEvaluator.train(image);
+            }
+        }
+    }
+
+    private void run() {
+        new Thread(() -> {
+            CameraImageFetcher cameraImageFetcher = new CameraImageFetcher("KA061");
+            cameraImageFetcher.setCallback(((value, error) -> handleImages(value, error)));
+
+            while (true) {
+                cameraImageFetcher.work();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    break;
                 }
             }
-        });
+        }).start();
     }
 }

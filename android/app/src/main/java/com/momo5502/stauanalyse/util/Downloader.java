@@ -6,22 +6,35 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 
 public class Downloader {
 
+    private Thread thread;
+
     public void download(final Callback<byte[]> callback, final String url, final Map<String, String> headers) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    performDownload(callback, url, headers);
-                } catch (Exception e) {
-                    callback.run(null, e);
-                }
+        if (isWorking()) {
+            callback.run(null, new ConcurrentModificationException());
+            return;
+        }
+
+        thread = new Thread(() -> {
+            try {
+                performDownload(callback, url, headers);
+            } catch (Exception e) {
+                callback.run(null, e);
+            } finally {
+                thread = null;
             }
-        }).start();
+        });
+
+        thread.start();
+    }
+
+    public boolean isWorking() {
+        return thread != null;
     }
 
     private void performDownload(Callback<byte[]> callback, String urlString, Map<String, String> headers) throws IOException {
