@@ -14,7 +14,7 @@ if ($conn->connect_errno) {
 
 while(true)
 {
-	saveToDb();
+	saveAllCams();
     //avoid CPU exhaustion, adjust as necessary
     usleep(29000000);//29 seconds
 }
