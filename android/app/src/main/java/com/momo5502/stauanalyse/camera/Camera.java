@@ -1,19 +1,20 @@
 package com.momo5502.stauanalyse.camera;
 
-import com.google.android.gms.maps.model.LatLng;
+import android.location.Location;
 
 import org.osgeo.proj4j.CRSFactory;
 import org.osgeo.proj4j.CoordinateReferenceSystem;
 import org.osgeo.proj4j.CoordinateTransform;
 import org.osgeo.proj4j.CoordinateTransformFactory;
 import org.osgeo.proj4j.ProjCoordinate;
+import org.osmdroid.util.GeoPoint;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Camera {
-    private LatLng location;
+    private GeoPoint location;
 
     private String title;
     private String description;
@@ -44,7 +45,7 @@ public class Camera {
 
         coordinate = transformLocation(coordinate);
 
-        this.location = new LatLng(coordinate.y, coordinate.x);
+        this.location = new GeoPoint(coordinate.y, coordinate.x);
     }
 
     private ProjCoordinate transformLocation(ProjCoordinate coordinates) {
@@ -91,7 +92,7 @@ public class Camera {
         return data.get(name);
     }
 
-    public LatLng getLocation() {
+    public GeoPoint getLocation() {
         return location;
     }
 

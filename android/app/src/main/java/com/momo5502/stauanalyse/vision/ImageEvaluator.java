@@ -79,7 +79,7 @@ public class ImageEvaluator {
 
     private Mat blur(Mat image) {
         Mat dst = new Mat();
-        Imgproc.blur(image, dst, new Size(5, 5));
+        Imgproc.blur(image, dst, new Size(2, 2));
         return dst;
     }
 

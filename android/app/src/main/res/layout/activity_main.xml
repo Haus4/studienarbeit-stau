@@ -14,6 +14,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
+            <org.osmdroid.views.MapView
+                android:id="@+id/map"
+                android:layout_width="@android:dimen/thumbnail_width"
+                android:layout_height="@android:dimen/thumbnail_width" />
+
             <ImageView
                 android:id="@+id/og"
                 android:layout_width="match_parent"

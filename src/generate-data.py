@@ -10,10 +10,11 @@ from threading import Thread, Lock
 from time import sleep
 
 relevantCams = [
-    "KA091",
-    "KA061",
-    "KA041",
-    "KA151"
+    #"KA091",
+    #"KA061",
+    #"KA041",
+    #"KA151"
+	"K11"
 ]
 
 showPreview = False
