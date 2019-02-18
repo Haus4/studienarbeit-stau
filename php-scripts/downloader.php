@@ -16,20 +16,21 @@ function saveAllCams() {
 }
 
 function saveToDb($conn, $kameraId) {
-    $ref = sprintf("Referer: %s", Urls::REFERER);
-    $opts = array(
-        'http'=>array(
-          'method'=>"GET",
-          'header'=> $ref
-        )
-      );
-      
-      $context = stream_context_create($opts);
-      
       // Open the file using the HTTP headers set above
       $url = sprintf(Urls::CAMERA_TEMPLATE, $kameraId, $kameraId);
-      $file = file_get_contents($url, false, $context);
-      $lastModified = strtotime(getLastModified($http_response_header));
+      $ch = curl_init($url);
+      curl_setopt($ch, CURLOPT_HEADER, 1);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_REFERER, Urls::REFERER);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 1000);
+      curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
+      curl_setopt($ch, CURLOPT_FILETIME, 1);
+      //curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+      $response=curl_exec($ch);
+      $info = curl_getinfo($ch);
+      $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $file = substr($response, $header_size);
+      $lastModified = $info["filetime"];
       $dataTime = date("Y-m-d H:i:s", $lastModified);
       $image = $conn->real_escape_string($file);
       //Insert image content into database
@@ -39,20 +40,8 @@ function saveToDb($conn, $kameraId) {
         }else{
         echo $conn->error;
         } 
+      curl_close ($ch);
       clearOldFiles($conn, $kameraId);
-}
-
-function getLastModified($headers)
-{
-    $i = 0;
-    foreach( $headers as $header )
-    {
-        $t = explode(":",$header,2);
-        if(count($t) >= 2 && !strcasecmp($t[0],"Last-Modified") ) {
-            return trim( $t[1] );
-        }
-        $i++;
-    }
 }
 
 function clearOldfiles($conn, $kameraId)
