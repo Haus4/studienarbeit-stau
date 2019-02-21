@@ -1,9 +1,8 @@
-package com.momo5502.stauanalyse;
+package com.momo5502.stauanalyse.position;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;

@@ -1,13 +1,16 @@
 package com.momo5502.stauanalyse.camera;
 
 import com.momo5502.stauanalyse.util.Callback;
+import com.momo5502.stauanalyse.util.Downloader;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CameraLoader {
 
@@ -15,12 +18,7 @@ public class CameraLoader {
     private final String CAMERA_LIST_2 = "https://www.svz-bw.de/kamera/kamera_B.txt";
 
     public void loadCameras(final Callback<List<Camera>> listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                fetch(listener);
-            }
-        }).start();
+        new Thread(() -> fetch(listener)).start();
     }
 
     private void fetch(Callback<List<Camera>> listener) {
@@ -32,17 +30,19 @@ public class CameraLoader {
             List<Camera> cameras1 = parser.parse(cameraData1);
             List<Camera> cameras2 = parser.parse(cameraData2);
 
-            List<Camera> cameras = new ArrayList<>(cameras1);
+            Set<Camera> cameras = new HashSet<>(cameras1);
             cameras.addAll(cameras2);
 
-            listener.run(cameras, null);
+            listener.run(new ArrayList<>(cameras), null);
         } catch (Exception e) {
             listener.run(null, e);
         }
     }
 
+
+
     private String fetchCameraData(String urlString) throws Exception {
-        URL url = new URL(CAMERA_LIST_1);
+        URL url = new URL(urlString);
         URLConnection connection = url.openConnection();
         connection.connect();
 
@@ -64,10 +64,8 @@ public class CameraLoader {
             }
 
             input.close();
-        }
-        catch (Exception e)
-        {
-            if(input != null) input.close();
+        } catch (Exception e) {
+            if (input != null) input.close();
             throw e;
         }
 

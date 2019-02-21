@@ -10,13 +10,18 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.widget.ImageView;
 
-import com.momo5502.stauanalyse.GlobalPositioningManager;
+import com.momo5502.stauanalyse.camera.Camera;
+import com.momo5502.stauanalyse.camera.CameraFinder;
+import com.momo5502.stauanalyse.position.Direction;
+import com.momo5502.stauanalyse.position.DirectionCalculator;
+import com.momo5502.stauanalyse.position.GlobalPositioningManager;
 import com.momo5502.stauanalyse.R;
 import com.momo5502.stauanalyse.backend.MultiImageLoader;
-import com.momo5502.stauanalyse.camera.Camera;
 import com.momo5502.stauanalyse.camera.CameraImage;
 import com.momo5502.stauanalyse.camera.CameraImageFetcher;
 import com.momo5502.stauanalyse.camera.CameraLoader;
+import com.momo5502.stauanalyse.position.Position;
+import com.momo5502.stauanalyse.position.PositionHistory;
 import com.momo5502.stauanalyse.speech.Speaker;
 import com.momo5502.stauanalyse.vision.EvaluatedImage;
 import com.momo5502.stauanalyse.vision.ImageEvaluator;
@@ -31,8 +36,9 @@ import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MainActivity extends FragmentActivity {
@@ -41,6 +47,9 @@ public class MainActivity extends FragmentActivity {
     private ImageEvaluator imageEvaluator;
     private MultiImageLoader multiImageLoader;
     private GlobalPositioningManager globalPositioningManager;
+    private PositionHistory positionHistory;
+    private DirectionCalculator directionCalculator;
+    private CameraFinder cameraFinder;
     private MapView map;
 
     @Override
@@ -54,13 +63,15 @@ public class MainActivity extends FragmentActivity {
 
         OpenCVLoader.initDebug();
 
+        directionCalculator = new DirectionCalculator();
+        positionHistory = new PositionHistory(5);
         globalPositioningManager = new GlobalPositioningManager(this);
 
         multiImageLoader = new MultiImageLoader();
         speaker = new Speaker(getApplicationContext());
         imageEvaluator = new ImageEvaluator();
 
-        map = (MapView) findViewById(R.id.map);
+        map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
@@ -71,13 +82,16 @@ public class MainActivity extends FragmentActivity {
         mapController.setCenter(startPoint);
 
         globalPositioningManager.setLocationCallback((location, error) -> {
-            mapController.setCenter(new GeoPoint(location));
+            Position point = new Position(location);
+            positionHistory.track(point);
+            mapController.setCenter(point.getGeoPoint());
         });
 
         Activity context = this;
 
         new CameraLoader().loadCameras((cameras, e) -> {
-            List<OverlayItem> markers = cameras.stream().map(c -> new OverlayItem(c.getId(), c.getTitle(), c.getLocation())).collect(Collectors.toList());
+            cameraFinder = new CameraFinder(cameras);
+            List<OverlayItem> markers = cameras.stream().map(c -> new OverlayItem(c.getId(), c.getTitle(), c.getLocation().getGeoPoint())).collect(Collectors.toList());
 
             ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(markers,
                     new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
@@ -141,6 +155,33 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    void lul() {
+        Optional<Direction> direction = directionCalculator.getDirection(positionHistory);
+        if (direction.orElse(null) == Direction.Frankfurt) {
+            speaker.speak("Du gehst richtung Frankfurt.");
+        } else if (direction.orElse(null) == Direction.Basel) {
+            speaker.speak("Du gehst richtung Basel.");
+        } else {
+            speaker.speak("Richtung nicht feststellbar.");
+        }
+    }
+
+    void lul2() {
+        Position last = positionHistory.getLast();
+        if (cameraFinder != null && last != null) {
+            List<String> filter = new ArrayList<>();
+            filter.add("KA041");
+            filter.add("KA042");
+            filter.add("KA051");
+            filter.add("KA052");
+            filter.add("KA061");
+            filter.add("KA062");
+
+            List<Camera> closestCameras = cameraFinder.findClosestCameras(5, last, filter);
+            closestCameras.forEach(c -> System.out.println(c.toString()));
+        }
+    }
+
     private void run() {
         new Thread(() -> {
             CameraImageFetcher cameraImageFetcher = new CameraImageFetcher("K11");
@@ -148,9 +189,9 @@ public class MainActivity extends FragmentActivity {
 
             while (true) {
                 cameraImageFetcher.work();
-
+                lul2();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(1000 * 10);
                 } catch (Exception e) {
                     break;
                 }
