@@ -25,6 +25,7 @@ function saveToDb($conn, $kameraId) {
       curl_setopt($ch, CURLOPT_TIMEOUT, 1000);
       curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
       curl_setopt($ch, CURLOPT_FILETIME, 1);
+	  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       //curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
       $response=curl_exec($ch);
       $info = curl_getinfo($ch);
