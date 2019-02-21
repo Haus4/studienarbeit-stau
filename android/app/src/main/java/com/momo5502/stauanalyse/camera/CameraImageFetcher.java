@@ -1,5 +1,6 @@
 package com.momo5502.stauanalyse.camera;
 
+import com.momo5502.stauanalyse.backend.BackendConnector;
 import com.momo5502.stauanalyse.backend.MultiImageLoader;
 import com.momo5502.stauanalyse.speech.Speaker;
 import com.momo5502.stauanalyse.util.Callback;
@@ -11,17 +12,18 @@ import java.util.stream.Collectors;
 
 public class CameraImageFetcher {
 
-    Date lastPing;
-    String camera;
-    List<CameraImage> images = new ArrayList<>();
-    Callback<List<CameraImage>> callback;
-    MultiImageLoader multiImageLoader = new MultiImageLoader();
+    private Date lastPing;
+    private Camera camera;
+    private List<CameraImage> images = new ArrayList<>();
+    private Callback<CameraImages> callback;
+    private MultiImageLoader multiImageLoader;
 
-    public CameraImageFetcher(String camera) {
+    public CameraImageFetcher(BackendConnector backendConnector, Camera camera) {
+        multiImageLoader = new MultiImageLoader(backendConnector);
         this.camera = camera;
     }
 
-    public void setCallback(Callback<List<CameraImage>> callback) {
+    public void setCallback(Callback<CameraImages> callback) {
         this.callback = callback;
     }
 
@@ -31,9 +33,13 @@ public class CameraImageFetcher {
         }
     }
 
+    public Camera getCamera() {
+        return camera;
+    }
+
     public void getNext() {
         lastPing = new Date();
-        multiImageLoader.load((value, error) -> parseImages(value, error), camera, getLastImage());
+        multiImageLoader.load((value, error) -> parseImages(value, error), camera.getId(), getLastImage());
     }
 
     public void parseImages(List<CameraImage> newImages, Exception error) {
@@ -42,7 +48,7 @@ public class CameraImageFetcher {
         }
 
         if (this.callback != null) {
-            this.callback.run(newImages, error);
+            this.callback.run(new CameraImages(camera, newImages), error);
         }
     }
 

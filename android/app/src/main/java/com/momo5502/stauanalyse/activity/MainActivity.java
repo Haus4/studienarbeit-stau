@@ -1,6 +1,5 @@
 package com.momo5502.stauanalyse.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,18 +9,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.widget.ImageView;
 
-import com.momo5502.stauanalyse.camera.Camera;
-import com.momo5502.stauanalyse.camera.CameraFinder;
-import com.momo5502.stauanalyse.position.Direction;
-import com.momo5502.stauanalyse.position.DirectionCalculator;
-import com.momo5502.stauanalyse.position.GlobalPositioningManager;
 import com.momo5502.stauanalyse.R;
-import com.momo5502.stauanalyse.backend.MultiImageLoader;
+import com.momo5502.stauanalyse.backend.BackendConnector;
+import com.momo5502.stauanalyse.camera.Camera;
 import com.momo5502.stauanalyse.camera.CameraImage;
-import com.momo5502.stauanalyse.camera.CameraImageFetcher;
-import com.momo5502.stauanalyse.camera.CameraLoader;
+import com.momo5502.stauanalyse.camera.CameraImages;
+import com.momo5502.stauanalyse.execution.CameraImageExecuter;
+import com.momo5502.stauanalyse.execution.PositionExecuter;
 import com.momo5502.stauanalyse.position.Position;
-import com.momo5502.stauanalyse.position.PositionHistory;
 import com.momo5502.stauanalyse.speech.Speaker;
 import com.momo5502.stauanalyse.vision.EvaluatedImage;
 import com.momo5502.stauanalyse.vision.ImageEvaluator;
@@ -36,21 +31,21 @@ import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements PositionExecuter.EventListener, CameraImageExecuter.EventListener {
 
+    private MapView map;
     private Speaker speaker;
     private ImageEvaluator imageEvaluator;
-    private MultiImageLoader multiImageLoader;
-    private GlobalPositioningManager globalPositioningManager;
-    private PositionHistory positionHistory;
-    private DirectionCalculator directionCalculator;
-    private CameraFinder cameraFinder;
-    private MapView map;
+
+    private BackendConnector backendConnector;
+
+    private PositionExecuter positionExecuter;
+    private CameraImageExecuter cameraImageExecuter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +58,11 @@ public class MainActivity extends FragmentActivity {
 
         OpenCVLoader.initDebug();
 
-        directionCalculator = new DirectionCalculator();
-        positionHistory = new PositionHistory(5);
-        globalPositioningManager = new GlobalPositioningManager(this);
+        backendConnector = new BackendConnector("http://172.24.20.119");
 
-        multiImageLoader = new MultiImageLoader();
+        positionExecuter = new PositionExecuter(this, this);
+        cameraImageExecuter = new CameraImageExecuter(backendConnector, this);
+
         speaker = new Speaker(getApplicationContext());
         imageEvaluator = new ImageEvaluator();
 
@@ -80,36 +75,6 @@ public class MainActivity extends FragmentActivity {
         mapController.setZoom(9);
         GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
         mapController.setCenter(startPoint);
-
-        globalPositioningManager.setLocationCallback((location, error) -> {
-            Position point = new Position(location);
-            positionHistory.track(point);
-            mapController.setCenter(point.getGeoPoint());
-        });
-
-        Activity context = this;
-
-        new CameraLoader().loadCameras((cameras, e) -> {
-            cameraFinder = new CameraFinder(cameras);
-            List<OverlayItem> markers = cameras.stream().map(c -> new OverlayItem(c.getId(), c.getTitle(), c.getLocation().getGeoPoint())).collect(Collectors.toList());
-
-            ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(markers,
-                    new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                        @Override
-                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                            //do something
-                            return true;
-                        }
-
-                        @Override
-                        public boolean onItemLongPress(final int index, final OverlayItem item) {
-                            return false;
-                        }
-                    }, context);
-            mOverlay.setFocusItemsOnTap(true);
-
-            map.getOverlays().add(mOverlay);
-        });
 
         run();
     }
@@ -155,7 +120,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    void lul() {
+    /*void lul() {
         Optional<Direction> direction = directionCalculator.getDirection(positionHistory);
         if (direction.orElse(null) == Direction.Frankfurt) {
             speaker.speak("Du gehst richtung Frankfurt.");
@@ -180,18 +145,15 @@ public class MainActivity extends FragmentActivity {
             List<Camera> closestCameras = cameraFinder.findClosestCameras(5, last, filter);
             closestCameras.forEach(c -> System.out.println(c.toString()));
         }
-    }
+    }*/
 
     private void run() {
         new Thread(() -> {
-            CameraImageFetcher cameraImageFetcher = new CameraImageFetcher("K11");
-            cameraImageFetcher.setCallback(((value, error) -> handleImages(value, error)));
-
             while (true) {
-                cameraImageFetcher.work();
-                lul2();
+                cameraImageExecuter.runFrame();
+                positionExecuter.runFrame();
                 try {
-                    Thread.sleep(1000 * 10);
+                    Thread.sleep(1000);
                 } catch (Exception e) {
                     break;
                 }
@@ -209,5 +171,48 @@ public class MainActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
         map.onPause();
+    }
+
+    @Override
+    public void onCamerasLoaded(List<Camera> cameras) {
+        List<OverlayItem> markers = cameras.stream().map(c -> new OverlayItem(c.getId(), c.getTitle(), c.getLocation().getGeoPoint())).collect(Collectors.toList());
+
+        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(markers,
+                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                    @Override
+                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        //do something
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onItemLongPress(final int index, final OverlayItem item) {
+                        return false;
+                    }
+                }, this);
+        mOverlay.setFocusItemsOnTap(true);
+
+        map.getOverlays().add(mOverlay);
+    }
+
+    @Override
+    public void onPositionChanged(Position position) {
+        IMapController mapController = map.getController();
+        mapController.setCenter(position.getGeoPoint());
+    }
+
+    @Override
+    public void onRelevantCamerasChanged(List<Camera> cameras) {
+        // TODO: Fix that
+        Optional<Camera> first = cameras.stream().findFirst();
+        cameras = first.isPresent() ? Arrays.asList(first.get()) : cameras;
+
+        cameraImageExecuter.updateCameras(cameras);
+    }
+
+    @Override
+    public void onImagesReceived(CameraImages images) {
+        // TODO: Fix that
+        handleImages(images.getImages(), null);
     }
 }

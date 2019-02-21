@@ -11,29 +11,27 @@ import java.util.Date;
 import java.util.List;
 
 public class MultiImageLoader {
-    private static final String DL_URL = "http://172.24.20.119/fetcher.php";
 
     private Downloader downloader = new Downloader();
+    private BackendConnector backendConnector;
+
+    public MultiImageLoader(BackendConnector backendConnector) {
+        this.backendConnector = backendConnector;
+    }
 
     public void loadLatest(final Callback<List<CameraImage>> callback, String camera) {
         load(callback, camera, null);
     }
 
     public void load(final Callback<List<CameraImage>> callback, String camera, Date after) {
-        String url = buildUrl(camera, after);
-
-        downloader.download((result, error) -> {
+        backendConnector.fetch(downloader, (result, error) -> {
             if (error != null || result == null) {
                 callback.run(null, error);
             } else {
                 List<CameraImage> images = parseData(result);
                 callback.run(images, null);
             }
-        }, url, null);
-    }
-
-    private String buildUrl(String camera, Date after) {
-        return DL_URL + "?camera=" + camera + (after != null ? "&time=" + (after.getTime() / 1000) : "");
+        }, camera, after);
     }
 
     private List<CameraImage> parseData(byte[] stream) {

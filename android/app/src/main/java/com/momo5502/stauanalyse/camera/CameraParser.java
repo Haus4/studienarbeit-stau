@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CameraParser {
-    List<Camera> parse(String data) {
+    public List<Camera> parse(String data) {
         List<Camera> list = new ArrayList<>();
 
         String lines[] = data.split("[\\r\\n]+");

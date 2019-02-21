@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CameraFinder {
-    List<Camera> cameras;
+    private List<Camera> cameras;
 
     public CameraFinder(List<Camera> cameras) {
         this.cameras = cameras;
