@@ -39,7 +39,7 @@ public class GlobalPositioningManager {
         locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10 * 1000, 1, new LocationListener() {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 10, 1, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location _location) {
                     location = _location;
