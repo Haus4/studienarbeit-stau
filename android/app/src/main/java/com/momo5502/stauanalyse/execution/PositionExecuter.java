@@ -6,23 +6,27 @@ import android.location.Location;
 import com.momo5502.stauanalyse.camera.Camera;
 import com.momo5502.stauanalyse.camera.CameraFinder;
 import com.momo5502.stauanalyse.camera.CameraLoader;
+import com.momo5502.stauanalyse.position.Direction;
 import com.momo5502.stauanalyse.position.DirectionCalculator;
 import com.momo5502.stauanalyse.position.GlobalPositioningManager;
 import com.momo5502.stauanalyse.position.Position;
 import com.momo5502.stauanalyse.position.PositionHistory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PositionExecuter implements Executer {
 
     private EventListener eventListener;
+    private List<String> cameraFilter;
 
     public interface EventListener {
         void onCamerasLoaded(List<Camera> cameras);
 
         void onPositionChanged(Position position);
 
-        void onRelevantCamerasChanged(List<Camera> cameras);
+        void onRelevantCamerasChanged(List<Camera> cameras, Optional<Direction> direction);
     }
 
     private static final int POSITION_AVERAGE_COUNT = 5;
@@ -47,6 +51,11 @@ public class PositionExecuter implements Executer {
         globalPositioningManager.setLocationCallback((location, error) -> onPositionChanged(location, error));
     }
 
+    public void setCameraFilter(List<String> cameraFilter) {
+        this.cameraFilter = cameraFilter;
+        update();
+    }
+
     @Override
     public void runFrame() {
         //update();
@@ -66,8 +75,10 @@ public class PositionExecuter implements Executer {
     }
 
     private void update() {
-        // TODO: Implement filter
-        List<Camera> closestCameras = cameraFinder.findClosestCameras(RELEVANT_CAMERA_COUNT, positionHistory.getLast(), null);
-        eventListener.onRelevantCamerasChanged(closestCameras);
+        if(cameraFinder == null) return;
+
+        Optional<Direction> direction = directionCalculator.getDirection(positionHistory);
+        List<Camera> closestCameras = cameraFinder.findClosestCameras(RELEVANT_CAMERA_COUNT, positionHistory.getLast(), cameraFilter);
+        eventListener.onRelevantCamerasChanged(closestCameras, direction);
     }
 }

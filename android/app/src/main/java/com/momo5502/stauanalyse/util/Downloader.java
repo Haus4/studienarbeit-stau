@@ -33,6 +33,16 @@ public class Downloader {
         thread.start();
     }
 
+    public void await() {
+        if (isWorking() && thread.isAlive()) {
+            try {
+                thread.join();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     public boolean isWorking() {
         return thread != null;
     }

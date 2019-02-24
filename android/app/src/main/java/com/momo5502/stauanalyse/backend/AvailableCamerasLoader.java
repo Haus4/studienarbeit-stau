@@ -14,7 +14,7 @@ public class AvailableCamerasLoader {
         this.backendConnector = backendConnector;
     }
 
-    void load(final Callback<List<String>> callback) {
+    public void load(final Callback<List<String>> callback) {
         backendConnector.cameras(new Downloader(), (value, error) -> {
             if (error != null) {
                 callback.run(null, error);

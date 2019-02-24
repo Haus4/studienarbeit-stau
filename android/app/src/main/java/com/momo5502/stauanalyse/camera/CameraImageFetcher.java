@@ -48,7 +48,7 @@ public class CameraImageFetcher {
         }
 
         if (this.callback != null) {
-            this.callback.run(new CameraImages(camera, newImages), error);
+            this.callback.run(new CameraImages(camera, newImages, images), error);
         }
     }
 

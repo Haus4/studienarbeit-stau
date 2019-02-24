@@ -10,14 +10,18 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.ImageView;
 
 import com.momo5502.stauanalyse.R;
+import com.momo5502.stauanalyse.backend.AvailableCamerasLoader;
 import com.momo5502.stauanalyse.backend.BackendConnector;
 import com.momo5502.stauanalyse.camera.Camera;
 import com.momo5502.stauanalyse.camera.CameraImage;
 import com.momo5502.stauanalyse.camera.CameraImages;
 import com.momo5502.stauanalyse.execution.CameraImageExecuter;
+import com.momo5502.stauanalyse.execution.EvaluationExecutor;
 import com.momo5502.stauanalyse.execution.PositionExecuter;
+import com.momo5502.stauanalyse.position.Direction;
 import com.momo5502.stauanalyse.position.Position;
 import com.momo5502.stauanalyse.speech.Speaker;
+import com.momo5502.stauanalyse.util.Downloader;
 import com.momo5502.stauanalyse.vision.EvaluatedImage;
 import com.momo5502.stauanalyse.vision.ImageEvaluator;
 
@@ -36,16 +40,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MainActivity extends FragmentActivity implements PositionExecuter.EventListener, CameraImageExecuter.EventListener {
+public class MainActivity extends FragmentActivity implements PositionExecuter.EventListener, CameraImageExecuter.EventListener, EvaluationExecutor.EventListener {
 
     private MapView map;
     private Speaker speaker;
-    private ImageEvaluator imageEvaluator;
 
     private BackendConnector backendConnector;
 
     private PositionExecuter positionExecuter;
     private CameraImageExecuter cameraImageExecuter;
+    private EvaluationExecutor evaluationExecutor;
+    private AvailableCamerasLoader availableCamerasLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +64,13 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
         OpenCVLoader.initDebug();
 
         backendConnector = new BackendConnector("http://172.24.20.119");
+        availableCamerasLoader = new AvailableCamerasLoader(backendConnector);
 
         positionExecuter = new PositionExecuter(this, this);
         cameraImageExecuter = new CameraImageExecuter(backendConnector, this);
+        evaluationExecutor = new EvaluationExecutor(backendConnector, this);
 
         speaker = new Speaker(getApplicationContext());
-        imageEvaluator = new ImageEvaluator();
 
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
@@ -75,6 +81,13 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
         mapController.setZoom(9);
         GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
         mapController.setCenter(startPoint);
+
+        availableCamerasLoader.load((cameras, error) -> {
+            if(cameras != null) {
+                positionExecuter.setCameraFilter(cameras);
+            }
+            //run();
+        });
 
         run();
     }
@@ -94,64 +107,12 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
         });
     }
 
-    private void handleImages(List<CameraImage> images, Exception error) {
-        if (images == null || images.isEmpty()) return;
-
-        for (int i = 0; i < images.size(); ++i) {
-            CameraImage image = images.get(i);
-
-            if (i + 1 == images.size()) {
-                EvaluatedImage evaluatedImage = imageEvaluator.evaluate(image);
-
-                int cars = evaluatedImage.getObjects().size();
-                speaker.speak(cars + " Autos erkannt.");
-
-                if (cars > 40) {
-                    speaker.speak("Es ist Stau.");
-                } else {
-                    speaker.speak("Es ist kein Stau.");
-                }
-
-                setOriginalImage(evaluatedImage.getImage().getBitmap());
-                setAnalyzedImage(evaluatedImage.getMask().getBitmap());
-            } else {
-                imageEvaluator.train(image);
-            }
-        }
-    }
-
-    /*void lul() {
-        Optional<Direction> direction = directionCalculator.getDirection(positionHistory);
-        if (direction.orElse(null) == Direction.Frankfurt) {
-            speaker.speak("Du gehst richtung Frankfurt.");
-        } else if (direction.orElse(null) == Direction.Basel) {
-            speaker.speak("Du gehst richtung Basel.");
-        } else {
-            speaker.speak("Richtung nicht feststellbar.");
-        }
-    }
-
-    void lul2() {
-        Position last = positionHistory.getLast();
-        if (cameraFinder != null && last != null) {
-            List<String> filter = new ArrayList<>();
-            filter.add("KA041");
-            filter.add("KA042");
-            filter.add("KA051");
-            filter.add("KA052");
-            filter.add("KA061");
-            filter.add("KA062");
-
-            List<Camera> closestCameras = cameraFinder.findClosestCameras(5, last, filter);
-            closestCameras.forEach(c -> System.out.println(c.toString()));
-        }
-    }*/
-
     private void run() {
         new Thread(() -> {
             while (true) {
                 cameraImageExecuter.runFrame();
                 positionExecuter.runFrame();
+                evaluationExecutor.runFrame();
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {
@@ -202,17 +163,41 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
     }
 
     @Override
-    public void onRelevantCamerasChanged(List<Camera> cameras) {
-        // TODO: Fix that
-        Optional<Camera> first = cameras.stream().findFirst();
-        cameras = first.isPresent() ? Arrays.asList(first.get()) : cameras;
+    public void onRelevantCamerasChanged(List<Camera> cameras, Optional<Direction> direction) {
+        evaluationExecutor.updateDirection(direction);
+        evaluationExecutor.updateCameras(cameras);
 
         cameraImageExecuter.updateCameras(cameras);
     }
 
     @Override
     public void onImagesReceived(CameraImages images) {
-        // TODO: Fix that
-        handleImages(images.getImages(), null);
+        evaluationExecutor.updateImages(images);
+    }
+
+    @Override
+    public void onImageEvaluation(Camera camera, EvaluatedImage evaluatedImage) {
+        int cars = evaluatedImage.getObjects().size();
+        speaker.speak(cars + " Autos erkannt.");
+
+        if (cars > 40) {
+            speaker.speak("Es ist Stau.");
+        } else {
+            speaker.speak("Es ist kein Stau.");
+        }
+
+        setOriginalImage(evaluatedImage.getImage().getBitmap());
+        setAnalyzedImage(evaluatedImage.getMask().getBitmap());
+    }
+
+    @Override
+    public void onDirectionChanged(Direction direction) {
+        if (direction == Direction.Frankfurt) {
+            speaker.speak("Du gehst richtung Frankfurt.");
+        } else if (direction == Direction.Basel) {
+            speaker.speak("Du gehst richtung Basel.");
+        } else {
+            speaker.speak("Richtung nicht feststellbar.");
+        }
     }
 }

@@ -24,10 +24,14 @@ import static org.opencv.imgproc.Imgproc.MORPH_OPEN;
 public class ImageEvaluator {
     ContourParser contourParser;
     BackgroundSubtractor backgroundSubtractor;
+    ImageDecoder imageDecoder;
+    Material mask;
 
-    public ImageEvaluator() {
+    public ImageEvaluator(byte[] mask) {
+        imageDecoder = new ImageDecoder();
         contourParser = new ContourParser(4);
         backgroundSubtractor = Bgsegm.createBackgroundSubtractorMOG();
+        this.mask = new Material(imageDecoder.decode(mask));
     }
 
     public EvaluatedImage evaluate(CameraImage image) {
@@ -74,7 +78,7 @@ public class ImageEvaluator {
     }
 
     private Mat parseImage(CameraImage image) {
-        return Imgcodecs.imdecode(new MatOfByte(image.getData()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+        return imageDecoder.decode(image.getData());
     }
 
     private Mat blur(Mat image) {
