@@ -31,7 +31,10 @@ public class ImageEvaluator {
         imageDecoder = new ImageDecoder();
         contourParser = new ContourParser(4);
         backgroundSubtractor = Bgsegm.createBackgroundSubtractorMOG();
-        this.mask = new Material(imageDecoder.decode(mask));
+        this.mask = new Material(imageDecoder.decode(mask, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE));
+        if (this.mask.getMat().height() <= 0 || this.mask.getMat().width() <= 0) {
+            throw new RuntimeException("Invalid mask");
+        }
     }
 
     public EvaluatedImage evaluate(CameraImage image) {
@@ -67,14 +70,17 @@ public class ImageEvaluator {
     }
 
     public EvaluatedImage train(CameraImage image) {
-        Mat mask = new Mat();
+        Mat eval = new Mat();
         Mat scene = parseImage(image);
 
         Mat blurredScene = blur(scene);
 
-        backgroundSubtractor.apply(blurredScene, mask);
+        Mat maskedScene = new Mat();
+        blurredScene.copyTo(maskedScene, mask.getMat());
 
-        return new EvaluatedImage(mask, scene);
+        backgroundSubtractor.apply(maskedScene, eval);
+
+        return new EvaluatedImage(eval, scene);
     }
 
     private Mat parseImage(CameraImage image) {

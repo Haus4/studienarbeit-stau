@@ -63,7 +63,7 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
 
         OpenCVLoader.initDebug();
 
-        backendConnector = new BackendConnector("http://172.24.20.119");
+        backendConnector = new BackendConnector("http://172.16.72.180");
         availableCamerasLoader = new AvailableCamerasLoader(backendConnector);
 
         positionExecuter = new PositionExecuter(this, this);
@@ -86,10 +86,8 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
             if(cameras != null) {
                 positionExecuter.setCameraFilter(cameras);
             }
-            //run();
+            run();
         });
-
-        run();
     }
 
     public void setOriginalImage(final Bitmap bitmap) {

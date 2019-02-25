@@ -21,13 +21,17 @@ public class PositionHistory {
     }
 
     public Position getStart() {
-        if (points.isEmpty()) return null;
+        if (points.size() <= 1) return null;
 
         synchronized (points) {
             double lat = 0.0;
             double lon = 0.0;
 
-            int count = Math.min(countForAverageComputation, points.size());
+            int count = countForAverageComputation;
+            if (points.size() <= countForAverageComputation) {
+                count = points.size() / 2;
+            }
+
             if (count == 0) return null;
 
             for (int i = 0; i < count; ++i) {
@@ -45,15 +49,20 @@ public class PositionHistory {
     }
 
     public Position getEnd() {
-        if (points.isEmpty()) return null;
+        if (points.size() <= 1) return null;
 
         synchronized (points) {
             double lat = 0.0;
             double lon = 0.0;
 
-            int start = Math.max(0, points.size() - countForAverageComputation);
-            int count = points.size() - start;
-            if (count == 0) return null;
+            int count = countForAverageComputation;
+            if (points.size() <= countForAverageComputation) {
+                count = points.size() / 2;
+            }
+
+            if (count <= 0) return null;
+
+            int start = points.size() - count;
 
             for (int i = start; i < points.size(); ++i) {
                 Position point = points.get(i);

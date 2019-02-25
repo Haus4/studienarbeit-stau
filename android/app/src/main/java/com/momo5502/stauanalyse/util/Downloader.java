@@ -19,7 +19,6 @@ public class Downloader {
             callback.run(null, new ConcurrentModificationException());
             return;
         }
-
         thread = new Thread(() -> {
             try {
                 performDownload(callback, url, headers);

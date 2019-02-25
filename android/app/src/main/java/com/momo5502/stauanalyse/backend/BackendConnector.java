@@ -20,7 +20,7 @@ public class BackendConnector {
     }
 
     public void mask(Downloader downloader, final Callback<byte[]> callback, String camera, Direction direction) {
-        String url = "/masks.php?orientation=" + direction.getIndex() + "&id=" + camera;
+        String url = "/fetchmask.php?orientation=" + direction.getIndex() + "&camera=" + camera;
         perform(downloader, callback, url);
     }
 

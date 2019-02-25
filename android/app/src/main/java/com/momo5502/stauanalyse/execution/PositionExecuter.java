@@ -70,6 +70,8 @@ public class PositionExecuter implements Executer {
     }
 
     private void onCamerasLoaded(List<Camera> cameras, Exception error) {
+        if(error != null) throw new RuntimeException(error);
+
         cameraFinder = new CameraFinder(cameras);
         eventListener.onCamerasLoaded(cameras);
     }

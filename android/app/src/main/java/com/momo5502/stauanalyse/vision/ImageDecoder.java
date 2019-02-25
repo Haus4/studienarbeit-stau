@@ -7,6 +7,10 @@ import org.opencv.imgcodecs.Imgcodecs;
 public class ImageDecoder {
 
     Mat decode(byte[] data) {
-        return Imgcodecs.imdecode(new MatOfByte(data), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+        return decode(data, Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+    }
+
+    Mat decode(byte[] data, int codec) {
+        return Imgcodecs.imdecode(new MatOfByte(data), codec);
     }
 }
