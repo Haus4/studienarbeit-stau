@@ -1,7 +1,5 @@
 package com.momo5502.stauanalyse.camera;
 
-import android.location.Location;
-
 import com.momo5502.stauanalyse.position.Position;
 
 import org.osgeo.proj4j.CRSFactory;
@@ -124,7 +122,11 @@ public class Camera {
 
     @Override
     public boolean equals(Object obj) {
-        return id.equals(obj);
+        if (obj instanceof Camera) {
+            return id.equals(((Camera) obj).getId());
+        }
+
+        return false;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.momo5502.stauanalyse.camera;
 
 import com.momo5502.stauanalyse.util.Callback;
-import com.momo5502.stauanalyse.util.Downloader;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -38,7 +37,6 @@ public class CameraLoader {
             listener.run(null, e);
         }
     }
-
 
 
     private String fetchCameraData(String urlString) throws Exception {

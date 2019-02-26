@@ -1,14 +1,12 @@
 package com.momo5502.stauanalyse.vision;
 
-import org.opencv.core.Rect;
-
 import com.momo5502.stauanalyse.camera.CameraImage;
 
 import org.opencv.bgsegm.Bgsegm;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -49,12 +47,14 @@ public class ImageEvaluator {
 
     private Mat paintObjects(Mat image, List<Rect> objects) {
         Mat result = image.clone();
-        Scalar color = new Scalar(0, 200, 0);
+        Scalar color = new Scalar(0, 255, 0);
+
+        int border = 1;
 
         for (Rect object : objects) {
-            Point start = new Point(object.x, object.y);
-            Point end = new Point(object.x + object.width, object.y + object.height);
-            Imgproc.rectangle(result, start, end, color);
+            Point start = new Point(object.x - border, object.y - border);
+            Point end = new Point(object.x + object.width + border, object.y + object.height + border);
+            Imgproc.rectangle(result, start, end, color, 1 + border);
         }
 
         return result;

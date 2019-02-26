@@ -1,7 +1,5 @@
 package com.momo5502.stauanalyse.position;
 
-import org.osmdroid.util.GeoPoint;
-
 import java.util.Optional;
 
 public class DirectionCalculator {

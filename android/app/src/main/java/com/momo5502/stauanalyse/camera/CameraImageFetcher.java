@@ -2,7 +2,6 @@ package com.momo5502.stauanalyse.camera;
 
 import com.momo5502.stauanalyse.backend.BackendConnector;
 import com.momo5502.stauanalyse.backend.MultiImageLoader;
-import com.momo5502.stauanalyse.speech.Speaker;
 import com.momo5502.stauanalyse.util.Callback;
 
 import java.util.ArrayList;

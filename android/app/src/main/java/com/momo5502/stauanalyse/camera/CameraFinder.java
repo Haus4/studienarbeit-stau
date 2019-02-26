@@ -2,7 +2,6 @@ package com.momo5502.stauanalyse.camera;
 
 import com.momo5502.stauanalyse.position.Position;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

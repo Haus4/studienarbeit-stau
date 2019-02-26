@@ -24,7 +24,7 @@ public class Material {
             return bitmap;
         }
 
-        if(this.mat.channels() == 3) {
+        if (this.mat.channels() == 3) {
             Mat copy = new Mat();
             Imgproc.cvtColor(mat, copy, Imgproc.COLOR_BGR2RGB, 3);
             mat = copy;

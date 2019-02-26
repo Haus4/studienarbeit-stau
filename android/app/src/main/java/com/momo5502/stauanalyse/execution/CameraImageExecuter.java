@@ -33,7 +33,7 @@ public class CameraImageExecuter implements Executer {
                         .filter(f -> f.getCamera().getId().equals(camera.getId())) //
                         .findFirst();
 
-                if(!fetcher.isPresent()) {
+                if (!fetcher.isPresent()) {
                     fetcher = Optional.of(new CameraImageFetcher(backendConnector, camera));
                 }
 

@@ -12,7 +12,6 @@ import com.momo5502.stauanalyse.position.GlobalPositioningManager;
 import com.momo5502.stauanalyse.position.Position;
 import com.momo5502.stauanalyse.position.PositionHistory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,14 +69,14 @@ public class PositionExecuter implements Executer {
     }
 
     private void onCamerasLoaded(List<Camera> cameras, Exception error) {
-        if(error != null) throw new RuntimeException(error);
+        if (error != null) throw new RuntimeException(error);
 
         cameraFinder = new CameraFinder(cameras);
         eventListener.onCamerasLoaded(cameras);
     }
 
     private void update() {
-        if(cameraFinder == null) return;
+        if (cameraFinder == null) return;
 
         Optional<Direction> direction = directionCalculator.getDirection(positionHistory);
         List<Camera> closestCameras = cameraFinder.findClosestCameras(RELEVANT_CAMERA_COUNT, positionHistory.getLast(), cameraFilter);

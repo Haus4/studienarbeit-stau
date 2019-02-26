@@ -24,6 +24,7 @@ public class EvaluationExecutor implements Executer {
 
     public interface EventListener {
         void onImageEvaluation(Camera camera, EvaluatedImage evaluatedImage);
+
         void onDirectionChanged(Direction direction);
     }
 
@@ -50,7 +51,7 @@ public class EvaluationExecutor implements Executer {
         synchronized (this) {
             List<Camera> evaluatorsToRemove = imageEvaluators.keySet() //
                     .stream() //
-                    .filter(c -> cameras.contains(c)) //
+                    .filter(c -> !cameras.contains(c)) //
                     .collect(Collectors.toList());
 
             evaluatorsToRemove.forEach(e -> imageEvaluators.remove(e));
@@ -60,11 +61,15 @@ public class EvaluationExecutor implements Executer {
     public void updateImages(CameraImages images) {
         synchronized (this) {
             boolean containsEvaluator = imageEvaluators.containsKey(images.getCamera());
+            if (images.getImages(containsEvaluator).isEmpty()) {
+                return;
+            }
+
             if (!containsEvaluator) {
                 createEvaluator(images);
             }
 
-            if(!imageEvaluators.containsKey(images.getCamera())) {
+            if (!imageEvaluators.containsKey(images.getCamera())) {
                 System.out.println("No evaluator found after creation.");
                 return;
             }
@@ -79,7 +84,7 @@ public class EvaluationExecutor implements Executer {
         Downloader downloader = new Downloader();
 
         backendConnector.mask(downloader, (value, error) -> {
-            if(error != null) return;
+            if (error != null) return;
 
             ImageEvaluator imageEvaluator = new ImageEvaluator(value);
             imageEvaluators.put(images.getCamera(), imageEvaluator);

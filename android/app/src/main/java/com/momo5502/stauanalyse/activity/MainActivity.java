@@ -1,19 +1,17 @@
 package com.momo5502.stauanalyse.activity;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.momo5502.stauanalyse.R;
 import com.momo5502.stauanalyse.backend.AvailableCamerasLoader;
 import com.momo5502.stauanalyse.backend.BackendConnector;
 import com.momo5502.stauanalyse.camera.Camera;
-import com.momo5502.stauanalyse.camera.CameraImage;
 import com.momo5502.stauanalyse.camera.CameraImages;
 import com.momo5502.stauanalyse.execution.CameraImageExecuter;
 import com.momo5502.stauanalyse.execution.EvaluationExecutor;
@@ -21,9 +19,7 @@ import com.momo5502.stauanalyse.execution.PositionExecuter;
 import com.momo5502.stauanalyse.position.Direction;
 import com.momo5502.stauanalyse.position.Position;
 import com.momo5502.stauanalyse.speech.Speaker;
-import com.momo5502.stauanalyse.util.Downloader;
 import com.momo5502.stauanalyse.vision.EvaluatedImage;
-import com.momo5502.stauanalyse.vision.ImageEvaluator;
 
 import org.opencv.android.OpenCVLoader;
 import org.osmdroid.api.IMapController;
@@ -35,8 +31,9 @@ import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,6 +49,9 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
     private EvaluationExecutor evaluationExecutor;
     private AvailableCamerasLoader availableCamerasLoader;
 
+    private Map<Camera, CameraStatus> cameraStatusMap = new HashMap<>();
+    private LinearLayout statusView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +63,7 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
 
         OpenCVLoader.initDebug();
 
-        backendConnector = new BackendConnector("http://172.16.72.180");
+        backendConnector = new BackendConnector("https://momo5502.com/stau");
         availableCamerasLoader = new AvailableCamerasLoader(backendConnector);
 
         positionExecuter = new PositionExecuter(this, this);
@@ -73,6 +73,8 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
         speaker = new Speaker(getApplicationContext());
 
         map = findViewById(R.id.map);
+        statusView = findViewById(R.id.statusView);
+
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
@@ -83,25 +85,56 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
         mapController.setCenter(startPoint);
 
         availableCamerasLoader.load((cameras, error) -> {
-            if(cameras != null) {
+            if (cameras != null) {
                 positionExecuter.setCameraFilter(cameras);
             }
             run();
         });
     }
 
-    public void setOriginalImage(final Bitmap bitmap) {
-        setImage(bitmap, R.id.og);
-    }
-
-    public void setAnalyzedImage(final Bitmap bitmap) {
-        setImage(bitmap, R.id.mog);
-    }
-
-    private void setImage(final Bitmap bitmap, final int id) {
+    public void updateStatus(final Camera camera, final EvaluatedImage evaluatedImage) {
         new Handler(Looper.getMainLooper()).post(() -> {
-            ImageView iv = findViewById(id);
-            iv.setImageBitmap(bitmap);
+            synchronized (cameraStatusMap) {
+
+                CameraStatus cameraStatus;
+                if (cameraStatusMap.containsKey(camera)) {
+                    cameraStatus = cameraStatusMap.get(camera);
+                } else {
+                    cameraStatus = new CameraStatus(this, camera);
+                    cameraStatusMap.put(camera, cameraStatus);
+                    statusView.addView(cameraStatus);
+                }
+
+                cameraStatus.setScene(evaluatedImage.getImage().getBitmap());
+                cameraStatus.setMask(evaluatedImage.getMask().getBitmap());
+
+                int cars = evaluatedImage.getObjects().size();
+                speaker.speak(cars + " Autos erkannt auf " + camera.getId() + ".");
+
+                if (cars > 40) {
+                    speaker.speak("Es ist Stau.");
+                    cameraStatus.setDescription(cars + " Autos. Stau!.");
+                } else {
+                    speaker.speak("Es ist kein Stau.");
+                    cameraStatus.setDescription(cars + " Autos. Kein Stau.");
+                }
+            }
+        });
+    }
+
+    public void removeOldCameras(final List<Camera> cameras) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            synchronized (cameraStatusMap) {
+                List<Camera> camerasToRemove = cameraStatusMap.keySet() //
+                        .stream() //
+                        .filter(c -> !cameras.contains(c)) //
+                        .collect(Collectors.toList());
+
+                camerasToRemove.forEach(c -> {
+                    CameraStatus status = cameraStatusMap.remove(c);
+                    statusView.removeView(status);
+                });
+            }
         });
     }
 
@@ -162,6 +195,8 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
 
     @Override
     public void onRelevantCamerasChanged(List<Camera> cameras, Optional<Direction> direction) {
+        removeOldCameras(cameras);
+
         evaluationExecutor.updateDirection(direction);
         evaluationExecutor.updateCameras(cameras);
 
@@ -175,17 +210,7 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
 
     @Override
     public void onImageEvaluation(Camera camera, EvaluatedImage evaluatedImage) {
-        int cars = evaluatedImage.getObjects().size();
-        speaker.speak(cars + " Autos erkannt.");
-
-        if (cars > 40) {
-            speaker.speak("Es ist Stau.");
-        } else {
-            speaker.speak("Es ist kein Stau.");
-        }
-
-        setOriginalImage(evaluatedImage.getImage().getBitmap());
-        setAnalyzedImage(evaluatedImage.getMask().getBitmap());
+        updateStatus(camera, evaluatedImage);
     }
 
     @Override
