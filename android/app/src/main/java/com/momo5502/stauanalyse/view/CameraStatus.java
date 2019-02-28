@@ -1,4 +1,4 @@
-package com.momo5502.stauanalyse.activity;
+package com.momo5502.stauanalyse.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,21 +23,21 @@ public class CameraStatus extends LinearLayout {
         this.camera = camera;
 
         title = new TextView(context);
-        title.setTextSize(17);
+        title.setTextSize(20);
         title.setText("Camera: " + camera.getId());
         title.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        title.setPadding(5, 0, 0, 0);
+        title.setPadding(5, 10, 0, 0);
         addView(title);
 
         description = new TextView(context);
-        description.setTextSize(17);
+        description.setTextSize(20);
         description.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        description.setPadding(5, 5, 0, 0);
+        description.setPadding(5, 20, 0, 0);
         addView(description);
 
         scene = new ImageView(context);
         scene.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        scene.setPadding(0, 20, 0, 0);
+        scene.setPadding(0, 50, 0, 0);
         addView(scene);
 
         mask = new ImageView(context);
@@ -46,7 +46,7 @@ public class CameraStatus extends LinearLayout {
         addView(mask);
 
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        setPadding(0, 100, 0, 0);
+        setPadding(0, 0, 0, 0);
         setOrientation(VERTICAL);
     }
 

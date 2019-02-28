@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.LinearLayout;
+import android.widget.TableLayout;
 
 import com.momo5502.stauanalyse.R;
 import com.momo5502.stauanalyse.backend.AvailableCamerasLoader;
@@ -18,9 +18,11 @@ import com.momo5502.stauanalyse.camera.CameraImages;
 import com.momo5502.stauanalyse.execution.CameraImageExecuter;
 import com.momo5502.stauanalyse.execution.EvaluationExecutor;
 import com.momo5502.stauanalyse.execution.PositionExecuter;
+import com.momo5502.stauanalyse.fragment.FragmentAdapter;
 import com.momo5502.stauanalyse.position.Direction;
 import com.momo5502.stauanalyse.position.Position;
 import com.momo5502.stauanalyse.speech.Speaker;
+import com.momo5502.stauanalyse.view.CameraRow;
 import com.momo5502.stauanalyse.vision.EvaluatedImage;
 
 import org.opencv.android.OpenCVLoader;
@@ -51,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     private EvaluationExecutor evaluationExecutor;
     private AvailableCamerasLoader availableCamerasLoader;
 
-    private Map<Camera, CameraStatus> cameraStatusMap = new HashMap<>();
-    private LinearLayout statusView;
+    private Map<Camera, CameraRow> cameraStatusMap = new HashMap<>();
+    private TableLayout statusTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +76,14 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     private void delayUntilLoaded() {
         new Thread(() -> {
-            while (map == null || statusView == null) {
+            while (map == null || statusTable == null) {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    if (map != null && statusView != null) return;
+                    if (map != null && statusTable != null) return;
 
                     map = findViewById(R.id.map);
-                    statusView = findViewById(R.id.statusView);
+                    statusTable = findViewById(R.id.statusTable);
 
-                    if (map != null && statusView != null) {
+                    if (map != null && statusTable != null) {
                         setupApplication();
                     }
                 });
@@ -157,29 +159,28 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
         new Handler(Looper.getMainLooper()).post(() -> {
             synchronized (cameraStatusMap) {
 
-                CameraStatus cameraStatus;
+                CameraRow cameraRow;
                 if (cameraStatusMap.containsKey(camera)) {
-                    cameraStatus = cameraStatusMap.get(camera);
+                    cameraRow = cameraStatusMap.get(camera);
                 } else {
-                    cameraStatus = new CameraStatus(this, camera);
-                    cameraStatusMap.put(camera, cameraStatus);
-                    if (statusView != null) {
-                        statusView.addView(cameraStatus);
+
+                    cameraRow = new CameraRow(this, camera);
+                    cameraStatusMap.put(camera, cameraRow);
+                    if (statusTable != null) {
+                        statusTable.addView(cameraRow);
                     }
                 }
-
-                cameraStatus.setScene(evaluatedImage.getImage().getBitmap());
-                cameraStatus.setMask(evaluatedImage.getMask().getBitmap());
 
                 int cars = evaluatedImage.getObjects().size();
                 speaker.speak(cars + " Autos erkannt auf " + camera.getId() + ".");
 
                 if (cars > 40) {
+                    cameraRow.update(evaluatedImage, true);
+
                     speaker.speak("Es ist Stau.");
-                    cameraStatus.setDescription(cars + " Autos. Stau!.");
                 } else {
+                    cameraRow.update(evaluatedImage, false);
                     speaker.speak("Es ist kein Stau.");
-                    cameraStatus.setDescription(cars + " Autos. Kein Stau.");
                 }
             }
         });
@@ -194,9 +195,9 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
                         .collect(Collectors.toList());
 
                 camerasToRemove.forEach(c -> {
-                    CameraStatus status = cameraStatusMap.remove(c);
-                    if (statusView != null) {
-                        statusView.removeView(status);
+                    CameraRow status = cameraStatusMap.remove(c);
+                    if (statusTable != null) {
+                        statusTable.removeView(status);
                     }
                 });
             }

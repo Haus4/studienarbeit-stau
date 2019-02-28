@@ -1,4 +1,4 @@
-package com.momo5502.stauanalyse.activity;
+package com.momo5502.stauanalyse.fragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

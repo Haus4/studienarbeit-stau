@@ -1,16 +1,16 @@
 package com.momo5502.stauanalyse.speech;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.UtteranceProgressListener;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Queue;
-import java.util.Set;
 
 import static android.content.Context.AUDIO_SERVICE;
 
@@ -64,7 +64,14 @@ public class Speaker implements OnInitListener {
         textToSpeech.speak(text, TextToSpeech.QUEUE_ADD, null, messageId + "");
     }
 
+    private boolean hasBluetoothConnection() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        return (bluetoothAdapter != null && BluetoothProfile.STATE_CONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET));
+    }
+
     private void setBluetoothSco(boolean value) {
+        if (!hasBluetoothConnection()) return;
+
         AudioManager audioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
 
         if (value && !audioManager.isBluetoothScoOn()) {
