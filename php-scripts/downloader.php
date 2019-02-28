@@ -6,7 +6,7 @@ function saveAllCams() {
     if ($conn->connect_errno) {
         echo "Errno: " . $conn->connect_errno . "\n";
     }
-    if ($result = $conn->query("SELECT id FROM cameras")) {
+    if ($result = $conn->query("SELECT id FROM cameras WHERE refcount > 0")) {
         while($row = $result->fetch_assoc()) {
             $kameraId = $row["id"];
             saveToDb($conn, $kameraId);
