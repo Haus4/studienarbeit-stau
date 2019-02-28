@@ -1,0 +1,18 @@
+Dokumentation Setup Stauapp-Server:
+
+.Ablauf:
+* Initialer Test mit Skript das über eine Minute läuft (test-daemon.php)
+** Skripte sollten *unbegrenzt* lang laufen können! (ohne user-abort und time limit)
+* Ermitteln des mysql default charsets für die db (get-charset.php)
+** Muss *UTF-8* sein!
+* Setup der Datenbank über Php-Skript (setup-db.php)
+* Kopieren der restlichen Skripte:
+** *constants.php*: URLs der Straßenverkehrszentrale - API.
+** *db-connection.php*: Tool mit Datenbank credentials.
+** *downloader.php*: Download Routine für den Server (Holt Bilder für Kameras).
+** *camera-daemon.php*:  Daemon der die Download-Routine alle 29s startet.
+** *kameras.php*: Gibt Liste aller für den Nutzer verwendbaren Kameras zurück. (Kameras mit Maske)
+** *fetcher.php*: Gibt alle Bilder einer Kamera + Timestamps zurück (binär).
+*** Aufruf: fetcher.php?camera=<Kamera ID (z.B. KA041)> (optional: &time=<zeit beschrenkung in unix timestamp>)
+** *fetchmask.php*: Gibt die Maske für eine Kamera zurück
+*** Aufruf: fetchmask?camera=<Kamera ID>&orientation=<1 oder 0>
