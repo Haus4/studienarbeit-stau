@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
             mapController.setCenter(startPoint);
         }
 
-        backendConnector = new BackendConnector("https://momo5502.com/stau");
+        backendConnector = new BackendConnector("https://stau.bomhardt.de");
         availableCamerasLoader = new AvailableCamerasLoader(backendConnector);
 
         positionExecuter = new PositionExecuter(this, this);
@@ -124,9 +124,6 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     }
 
     private void setupTabs() {
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Map"));
         tabLayout.addTab(tabLayout.newTab().setText("Details"));
