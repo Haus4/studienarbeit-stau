@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.LinearLayout;
 
 import com.momo5502.stauanalyse.R;
@@ -37,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MainActivity extends FragmentActivity implements PositionExecuter.EventListener, CameraImageExecuter.EventListener, EvaluationExecutor.EventListener {
+public class MainActivity extends AppCompatActivity implements PositionExecuter.EventListener, CameraImageExecuter.EventListener, EvaluationExecutor.EventListener {
 
     private MapView map;
     private Speaker speaker;
@@ -63,6 +65,49 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
 
         OpenCVLoader.initDebug();
 
+        setupTabs();
+
+        speaker = new Speaker(getApplicationContext());
+
+        delayUntilLoaded();
+    }
+
+    private void delayUntilLoaded() {
+        new Thread(() -> {
+            while (map == null || statusView == null) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (map != null && statusView != null) return;
+
+                    map = findViewById(R.id.map);
+                    statusView = findViewById(R.id.statusView);
+
+                    if (map != null && statusView != null) {
+                        setupApplication();
+                    }
+                });
+
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void setupApplication() {
+        if (map != null) {
+            map.setTileSource(TileSourceFactory.MAPNIK);
+            map.setBuiltInZoomControls(true);
+            map.setMultiTouchControls(true);
+
+            IMapController mapController = map.getController();
+            mapController.setZoom(9);
+            GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
+            mapController.setCenter(startPoint);
+        }
+
         backendConnector = new BackendConnector("https://momo5502.com/stau");
         availableCamerasLoader = new AvailableCamerasLoader(backendConnector);
 
@@ -70,25 +115,44 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
         cameraImageExecuter = new CameraImageExecuter(backendConnector, this);
         evaluationExecutor = new EvaluationExecutor(backendConnector, this);
 
-        speaker = new Speaker(getApplicationContext());
-
-        map = findViewById(R.id.map);
-        statusView = findViewById(R.id.statusView);
-
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(true);
-        map.setMultiTouchControls(true);
-
-        IMapController mapController = map.getController();
-        mapController.setZoom(9);
-        GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
-        mapController.setCenter(startPoint);
-
         availableCamerasLoader.load((cameras, error) -> {
             if (cameras != null) {
                 positionExecuter.setCameraFilter(cameras);
             }
             run();
+        });
+    }
+
+    private void setupTabs() {
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Map"));
+        tabLayout.addTab(tabLayout.newTab().setText("Details"));
+        tabLayout.addTab(tabLayout.newTab().setText("Settings"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        final ViewPager viewPager = findViewById(R.id.pager);
+        final FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(adapter.getCount());
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
         });
     }
 
@@ -102,7 +166,9 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
                 } else {
                     cameraStatus = new CameraStatus(this, camera);
                     cameraStatusMap.put(camera, cameraStatus);
-                    statusView.addView(cameraStatus);
+                    if (statusView != null) {
+                        statusView.addView(cameraStatus);
+                    }
                 }
 
                 cameraStatus.setScene(evaluatedImage.getImage().getBitmap());
@@ -132,7 +198,9 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
 
                 camerasToRemove.forEach(c -> {
                     CameraStatus status = cameraStatusMap.remove(c);
-                    statusView.removeView(status);
+                    if (statusView != null) {
+                        statusView.removeView(status);
+                    }
                 });
             }
         });
@@ -156,13 +224,17 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
     @Override
     protected void onResume() {
         super.onResume();
-        map.onResume();
+        if (map != null) {
+            map.onResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        map.onPause();
+        if (map != null) {
+            map.onPause();
+        }
     }
 
     @Override
@@ -184,13 +256,17 @@ public class MainActivity extends FragmentActivity implements PositionExecuter.E
                 }, this);
         mOverlay.setFocusItemsOnTap(true);
 
-        map.getOverlays().add(mOverlay);
+        if (map != null) {
+            map.getOverlays().add(mOverlay);
+        }
     }
 
     @Override
     public void onPositionChanged(Position position) {
-        IMapController mapController = map.getController();
-        mapController.setCenter(position.getGeoPoint());
+        if (map != null) {
+            IMapController mapController = map.getController();
+            mapController.setCenter(position.getGeoPoint());
+        }
     }
 
     @Override

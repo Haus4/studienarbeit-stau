@@ -2,6 +2,8 @@ package com.momo5502.stauanalyse.execution;
 
 import android.app.Activity;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.momo5502.stauanalyse.camera.Camera;
 import com.momo5502.stauanalyse.camera.CameraFinder;
@@ -62,6 +64,10 @@ public class PositionExecuter implements Executer {
 
     private void onPositionChanged(Location location, Exception error) {
         Position position = new Position(location);
+        onPositionChanged(position);
+    }
+
+    private void onPositionChanged(Position position) {
         positionHistory.track(position);
         eventListener.onPositionChanged(position);
 
