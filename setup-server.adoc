@@ -11,8 +11,16 @@ Dokumentation Setup Stauapp-Server:
 ** *db-connection.php*: Tool mit Datenbank credentials.
 ** *downloader.php*: Download Routine für den Server (Holt Bilder für Kameras).
 ** *camera-daemon.php*:  Daemon der die Download-Routine alle 29s startet.
-** *kameras.php*: Gibt Liste aller für den Nutzer verwendbaren Kameras zurück. (Kameras mit Maske)
+** *refcounter.php*: In-/Dekrementiert Zähler von Client-Refenzen auf Kameras (Hinweis: Bilder werden nur für Kameras mit Referenzzähler > 0 runtergeladen)
+*** Aufruf inkrement: refcounter.php?register=<Kommaseparierte Kamera IDs (z.b. KA041,KA051 oder singular KA041)>
+*** Aufruf dekrement: refcounter.php?deregister=<Kommaseparierte Kamera IDs (z.b. KA041,KA051 oder singular KA041)>
+** *kameras.php*: Gibt Liste aller für den Nutzer verwendbaren Kameras zurück.
+*** Aufruf: kameras.php?(optional: abid=<Autobahn Id (z.B. A5)> & show=<all|unmasked|deactive>)
+*** wenn show nicht gesetzt ist werden nur aktive Kameras angezeigt (Refenzzähler > 0 und Maske vorhanden)
+*** show=all: Alle Kameras in der "cameras"-Tabelle
+*** show=unmasked: Alle Kameras die noch keine Maske haben
+*** show=deactive: Alles Kameras die eine Maske haben mit Refenzzähler = 0
 ** *fetcher.php*: Gibt alle Bilder einer Kamera + Timestamps zurück (binär).
 *** Aufruf: fetcher.php?camera=<Kamera ID (z.B. KA041)> (optional: &time=<zeit beschrenkung in unix timestamp>)
 ** *fetchmask.php*: Gibt die Maske für eine Kamera zurück
-*** Aufruf: fetchmask?camera=<Kamera ID>&orientation=<1 oder 0>
+*** Aufruf: fetchmask.php?camera=<Kamera ID>&orientation=<1 oder 0>
