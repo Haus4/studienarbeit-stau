@@ -18,6 +18,14 @@ $callback = function() use($hLock) {
 		fclose($hLock);
 		unlink(__FILE__.".lock");
 	}
+	$log=fopen(__FILE__."-error.log", "a+");
+	if(!flock($log, LOCK_EX))
+		sleep(1);
+	$e = error_get_last();
+	fputs($log, "[".date(DATE_RFC822)."] unexpected daemon shutdown: ".$e['message']."\r\n"
+	."in ".$e['file']." on line ".$e['line']);
+	flock($log, LOCK_UN);
+	fclose($log);
 };
 register_shutdown_function($callback);
 
