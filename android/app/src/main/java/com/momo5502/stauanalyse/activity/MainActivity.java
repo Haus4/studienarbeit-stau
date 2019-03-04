@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     private MapView map;
     private Speaker speaker;
 
+    private PowerManager.WakeLock wakeLock;
+
     private BackendConnector backendConnector;
 
     private PositionExecuter positionExecuter;
@@ -59,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "StauWakeLock:");
+        wakeLock.acquire();
 
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -296,6 +303,15 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
             speaker.speak("Du gehst richtung Basel.");
         } else {
             speaker.speak("Richtung nicht feststellbar.");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
         }
     }
 }
