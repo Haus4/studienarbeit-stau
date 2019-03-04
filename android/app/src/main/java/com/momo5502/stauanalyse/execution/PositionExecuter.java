@@ -2,8 +2,6 @@ package com.momo5502.stauanalyse.execution;
 
 import android.app.Activity;
 import android.location.Location;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.momo5502.stauanalyse.camera.Camera;
 import com.momo5502.stauanalyse.camera.CameraFinder;
