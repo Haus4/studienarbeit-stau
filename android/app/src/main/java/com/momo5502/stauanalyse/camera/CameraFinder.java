@@ -1,8 +1,10 @@
 package com.momo5502.stauanalyse.camera;
 
+import com.momo5502.stauanalyse.position.Direction;
 import com.momo5502.stauanalyse.position.Position;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CameraFinder {
@@ -12,10 +14,18 @@ public class CameraFinder {
         this.cameras = cameras;
     }
 
-    public List<Camera> findClosestCameras(int count, Position position, List<String> filter) {
+    public List<Camera> findClosestCameras(int count, Position position, List<String> filter, Optional<Direction> direction) {
         List<Camera> result = cameras.stream().filter(c -> filter == null || filter.contains(c.getId())).collect(Collectors.toList());
 
         sortCamerasByDistance(position, result);
+
+        if (direction.isPresent()) {
+            double distance = position.distanceSquared(direction.get().getOrigin());
+
+            result = result.stream() //
+                    .filter(c -> c.getLocation().distanceSquared(direction.get().getOrigin()) <= distance) //
+                    .collect(Collectors.toList());
+        }
 
         return result.stream().limit(count).collect(Collectors.toList());
     }

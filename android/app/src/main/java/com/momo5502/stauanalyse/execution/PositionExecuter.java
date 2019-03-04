@@ -85,7 +85,7 @@ public class PositionExecuter implements Executer {
         if (cameraFinder == null) return;
 
         Optional<Direction> direction = directionCalculator.getDirection(positionHistory);
-        List<Camera> closestCameras = cameraFinder.findClosestCameras(RELEVANT_CAMERA_COUNT, positionHistory.getLast(), cameraFilter);
+        List<Camera> closestCameras = cameraFinder.findClosestCameras(RELEVANT_CAMERA_COUNT, positionHistory.getLast(), cameraFilter, direction);
         eventListener.onRelevantCamerasChanged(closestCameras, direction);
     }
 }
