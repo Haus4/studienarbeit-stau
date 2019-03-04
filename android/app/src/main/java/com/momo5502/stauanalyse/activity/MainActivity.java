@@ -171,16 +171,17 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
                     }
                 }
 
+                // TODO: Configure this for each camera
+                int limit = 40;
+
+                int halfLimit = (limit / 2);
                 int cars = evaluatedImage.getObjects().size();
-                speaker.speak(cars + " Autos erkannt auf " + camera.getId() + ".");
-
-                if (cars > 40) {
+                if (cars > halfLimit) {
+                    int percent = Math.min((100 * (cars - halfLimit)) / (limit - halfLimit), 100);
                     cameraRow.update(evaluatedImage, true);
-
-                    speaker.speak("Es ist Stau.");
+                    speaker.speak(cars + " Autos erkannt auf " + camera.getTitle() + ". Es ist zu " + percent + "% Stau.");
                 } else {
                     cameraRow.update(evaluatedImage, false);
-                    speaker.speak("Es ist kein Stau.");
                 }
             }
         });
