@@ -35,27 +35,18 @@ public class StoredBluetoothDevice {
     public boolean equals(Object obj) {
         if (obj instanceof StoredBluetoothDevice) {
             StoredBluetoothDevice device = (StoredBluetoothDevice) obj;
-            return device.getName().equals(getName()) && device.getAddress().equals(getAddress());
-
-        }/* else if(obj instanceof BluetoothDevice) {
-            this.equals(new StoredBluetoothDevice((BluetoothDevice)obj));
-        }*/
+            return (device.getAddress() == null && getAddress() == null) || device.getAddress().equals(getAddress());
+        }
 
         return false;
     }
 
     @Override
     public int hashCode() {
-        int code = 0;
-
-        if (name != null) {
-            code += name.hashCode();
-        }
-
         if (address != null) {
-            code += address.hashCode();
+            return address.hashCode();
         }
 
-        return code;
+        return 0;
     }
 }
