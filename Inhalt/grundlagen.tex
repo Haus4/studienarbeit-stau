@@ -56,9 +56,9 @@ Wendet man diesen Filter auf ein Bild mit der diskreten Faltung an, erhält man 
 
 \subsection{Laplace-Filter}
 Ein Laplace-Filter ist ein Faltungskern zur Kantendetektion innerhalb eines Bildes.
-Unter einer Kante wird hierbei eine rasche Veränderung der Helligkeitswerte innerhalb eines Bildes entlang einer Richtung.
+Unter einer Kante versteht man hierbei eine rasche Veränderung der Helligkeitswerte entlang einer Richtung.
 
-Um Kanten zu finden wird ein Operator auf das Bild angewendet, welcher die zweite Ableitung bildet. Schwankungen der Intensitätswerte werden dadurch als Nulldurchgänge sichtbar.
+Um Kanten zu finden wird ein Operator auf das Bild angewendet, welcher die zweite Ableitung bildet (Laplace-Operator). Abrupte Schwankungen der Intensitätswerte werden dadurch als Nulldurchgänge sichtbar.
 
 Über die Faltung des Operators der Vorwärtsdiffenz {\em (1 -1)} mit sich selbst, lässt sich ein 1-dimensionaler Faltungskern der zweiten Ableitung bilden: {\em (1 -2 1)}.
 Dieser Kern lässt sich transponieren, um ein Bild nicht nur in x-, sondern auch in y-Richtung abzuleiten.
@@ -70,7 +70,7 @@ $$ \left( \begin{array}{rrr}
 0 & 1 & 0 \\
 \end{array}\right) $$
 
-Wendet man den Filter auf ein Bild an, erhält man dieses Ergebnis:
+Wendet man diesen Filter auf ein Bild an, erhält man folgendes Ergebnis:
 
 \begin{figure}[ht]
    \centering
@@ -84,9 +84,9 @@ Aufgrund eines hohen Rauschanteils in natürlichen Bildern liefert dieser Filter
 
 \subsection{Sobel-Operator}
 Um auf natürlichen Bildern Kanten zuverlässig zu erkennen, kombiniert der Sobel-Operator die Ideen des Gauß- und Laplace-Filters.
-Hierbei wird das Bild in x-Richtung mittels des Laplace-Operators abgeleitet, in y-Richtung jedoch über einen Gauß-Filter geglättet,
+Hierbei wird das Bild in eine Richtung über die zentrale Differenz {\em (1 0 -1)} abgeleitet, andere Richtung jedoch über einen Gauß-Filter {\em (1 2 1)} geglättet,
 um Rauschanteile zu reduzieren.
-Der Operator hierfür sieht so aus:
+Kombiniert man beide Filter miteinander, erhält man den Sobel-Operator
 
 $$ \left( \begin{array}{rrr}
 -1 & 0 & 1 \\
@@ -94,8 +94,9 @@ $$ \left( \begin{array}{rrr}
 -1 & 0 & 1 \\
 \end{array}\right) $$
 
-Dadurch werden Kanten jedoch nur in x-Richtung erkannt.
-Um Kanten in y-Richtung zu erkennen, kann die Faltungsmatrix transponiert werden.
+Dadurch werden Kanten jedoch nur in eine Richtung erkannt.
+Um Kanten in die jeweils andere Richtung zu erkennen, kann die Faltungsmatrix transponiert werden und ebenfalls auf
+das Ausgangsbild angewendet werden.
 
 Die beiden erhaltenen Ergebnisse können nun vereint werden, um alle Kanten innerhalb eines Bildes zu erhalten:
 
