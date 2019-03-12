@@ -113,9 +113,81 @@ Die beiden erhaltenen Ergebnisse können nun vereint werden, um alle Kanten inne
 \section{Haar-Features} % Mi
 
 \section{Morphologische Operatoren} % Mo
+Morphologische Operatoren werden in der Bildverarbeitung eingesetzt, um die Form von Strukturen innerhalb eines Bildes zu verändern.
+Solche Operatoren können sowohl auf Binär-, als auch auf Grauwertbildern angewendet werden, wobei hier lediglich auf die Anwendung bei Binärbildern
+eingegangen wird.
+
+Zunächst gibt es einfache Basisoperationen wie Erosion und Dilatation, welche die Basis für weitere, komplexere morphologische Operatoren wie beispielsweise Opening und Closing bilden.
+
 \subsection{Erosion}
+Bei der Erosion werden Strukturen, wie der Name vermuten lässt, erodiert bzw. abgetragen.
+Hierfür wird zunächst eine Maske definiert. Üblicherweise ein Raster von 3x3 Pixeln, wobei der Kern der Maske auch der Mittelpunkt des Rasters ist.
+
+Für jeden gesetzten Pixel (mit Wert 1) innerhalb des Binärbilds wird nun die Maske aufgelegt. Sind dabei nicht alle anderen Pixel innerhalb der Maske ebenfalls gesetzt, so wird das Pixel im resultierenden Bild auf den Wert 0 gesetzt.
+Haben jedoch alle Nachbarn eines Pixels innerhalb der Maske ebenfalls den Wert 1, so verändert sich das Pixel nicht.
+
+Formal wird die Erosion folgendermaßen notiert: $ I \ominus M $. Wobei das Bild {\em I} mit der Maske {\em M} erodiert wird.
+
+Der daraus resultierende Effekt ist, wie in Abbildung~\ref{fig:Erosion} ersichtlich, dass Ränder von Strukturen innerhalb des Bildes abgetragen werden und diese somit verdünnt werden. Es können aber auch Löcher innerhalb der Strukturen vergrößert werden.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=11cm]{Bilder/MorphologicalErosion} \\
+ \caption{Anwendung der Erosion auf ein Bild}
+ \source{https://de.wikipedia.org/wiki/Datei:MorphologicalErosion.png}{12.3.2019}
+ \label{fig:Erosion}
+\end{figure}
+
 \subsection{Dilatation}
-\subsection{Closing}
+Die Dilatation bildet das Gegenstück zur Erosion. Statt die jeweiligen Strukturen abzutragen, werden diese wachsen gelassen.
+Dabei kann die selbe Maske wie beider Erosion verwendet werden. Diese muss ebenfalls für jeden Pixel auf das Binärbild aufgelegt werden. Ist der Kern der Maske, also das Pixel auf welches die Maske gelegt wurde gesetzt, so werden im resultierenden Bild alle Pixel innerhalb der Maske ebenfalls gesetzt. Hat der Kern jedoch den
+Wert 0, so verändert sich für dieses Pixel nichts.
+
+Die formale Notation ist $ I \oplus M $, wobei hier Bild {\em I} mit Maske {\em M} dilatiert wird.
+
+Wie in Abbildung~\ref{fig:Dilation} erkennbar, wachsen die Strukturen innerhalb des Bildes. Dabei können vorher getrennte Strukturen zusammenwachsen oder Löcher innerhalb einer Struktur geschlossen werden.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=11cm]{Bilder/MorphologicalDilation} \\
+ \caption{Anwendung der Dilatation auf ein Bild}
+ \source{https://de.wikipedia.org/wiki/Datei:MorphologicalDilation.png}{12.3.2019}
+ \label{fig:Dilation}
+\end{figure}
+
 \subsection{Opening}
+Im Gegensatz zu den vorhergehenden Operationen ist das Opening keine Basisoperation mehr, sondern setzt sich aus den Basisoperationen zusammen.
+Dabei wird ein Bild {\em I} zunächst mit einer Maske {\em M} erodiert und anschließend dilatiert:
+
+$$ I \circ M = ( I \ominus M ) \oplus M $$
+
+Die Struktur von hinreichend großen Elementen wird durch diese Operation nicht verändert. Es werden lediglich kleinere Artefakte, welche zumeist durch Störungen oder Rauschen innerhalb des Ursprungsbildes entstanden sind, entfernt, da diese durch die Erosion entfernt werden, aber durch die anschließende Dilatation nicht mehr erzeugt werden können. Es können auch Strukturen, die über eine Verbindungsstelle, welche schmäler als die Maske ist, voneinander getrennt werden, sodass aus einer Struktur zwei getrennte entstehen.
+Ein Beispiel lässt sich in Abbildung~\ref{fig:Opening} sehen.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=11cm]{Bilder/MorphologicalOpening} \\
+ \caption{Anwendung von Opening auf ein Bild}
+ \source{https://de.wikipedia.org/wiki/Datei:MorphologicalOpening.png}{12.3.2019}
+ \label{fig:Opening}
+\end{figure}
+
+\subsection{Closing}
+Closing bildet das Gegenstück zu Opening.
+Ein Bild {\em I} wird mit einer Maske {\em M} dilatiert und anschließend erodiert:
+
+$$ I \bullet M = ( I \oplus M ) \ominus M $$
+
+Genutzt werden kann dieser Operator, um beispielsweise, wie der Name erschließen lässt, Löcher in Strukturen zu schließen, oder Verbindungen zwischen vorher getrennten Strukturen aufzubauen.
+Durch die Dilatation werden Lücken geschlossen, bzw. nahe beieinander liegende Strukturen verbunden. Die Größe der Elemente wird durch die anschließende Erosion wieder zurückgesetzt. Entstandene Verbindungen und geschlossene Lücken bleiben dadurch jedoch erhalten.
+Ein Beispiel ist in Abbildung~\ref{fig:Closing} zu sehen.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=11cm]{Bilder/MorphologicalClosing} \\
+ \caption{Anwendung von Closing auf ein Bild}
+ \source{https://de.wikipedia.org/wiki/Datei:MorphologicalClosing.png}{12.3.2019}
+ \label{fig:Closing}
+\end{figure}
 
 \section{OpenCV} % Mi
