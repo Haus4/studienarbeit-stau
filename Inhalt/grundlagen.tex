@@ -3,14 +3,29 @@
 Dieses Kapitel beschreibt Grundlagen, die für das weitere Verständnis der Arbeit benötigt werden.
 
 \section{Straßenverkehrszentrale Baden-Württemberg} % Mi
-Aktuelle Verkehrsinformationen auf den Autobahnen und Bundesstraßen in Baden-Württemberg und der näheren Umgebung lassen sich über die Domain der Straßenverkehrszentrum Baden-Württemberg abrufen. Die Straßenverkehrszentrale nimmt sich dabei unter Anderem zum Ziel, Stau auf den Straßen zu reduzieren und Autofahrer über aktuelle Verkehrsbehinderungen zu informieren \cite{svzbw}.
+Aktuelle Verkehrsinformationen auf den Autobahnen und Bundesstraßen in Baden-Württemberg und der näheren Umgebung lassen sich über das Straßenverkehrszentrale Baden-Württemberg abrufen. Die Straßenverkehrszentrale nimmt sich dabei unter Anderem zum Ziel, Stau auf den Straßen zu reduzieren und Autofahrer über aktuelle Verkehrsbehinderungen zu informieren.
+Durch verschiedene Verkehrskameras und Sensoren wird der Verkehr auf Straßen analysiert. Über flexible Tempolimits und einer Freigabe von Seitenstreifen wird die Last der Straßen reduziert und der Verkehrsfluss verbessert~\cite{svzbw}.
 
 \section{Histogramm} % Mi
+Ein Histogramm visualisiert die Häufigkeitsverteilung von Grauwertklassen innerhalb eines Grauwertbildes.
+Hierzu wird der Grauwert jedes Bildpunktes ausgewertet und gezählt wie oft welcher Grauwert innerhalb des Bildes vorkommt (Abbildung~\ref{fig:Histogramm}).
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=11cm]{Bilder/histogram} \\
+ \caption{Histogram über die Helligkeitswerte eines Bildes}
+ \source{http://opensource.graphics/tag/histogram/}{13.3.2019}
+ \label{fig:Histogramm}
+\end{figure}
+
+Anhand des Histogramms lässt sich beispielsweise der Kontrast eines Bildes ersehen. 
+Dieser beschreibt die Spannweite zwischen dem dunkelsten und dem hellsten Punktes in einem Bild, bzw. der Klassen in einem Histogramm.
+Dadurch lässt sich auch der Kontrast erhöhen, indem eine Spreizung des Histograms durchgeführt wird, indem
+der Wertebereich der belegten Grauwertklassen auf den Gesamten Farbbereich abgebildet wird.
 
 \section{Faltungskerne} % Mo
 Faltungskerne beschreiben Filter in der Bildverarbeitung, die über die diskrete Faltung im 2-dimensionalen
 Raum auf ein Bild angewendet werden.
-
 
 Grundsätzlich ist die 1-dimensionale Faltung im kontinuierlichen Raum definiert durch die Integration zweier Funktionen {\em g} und {\em f} an einem Punkt {\em t}, wobei die Funktion {\em g} gespiegelt wird, also auf {\em f} gefaltet wird:
 
