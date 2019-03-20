@@ -1,5 +1,23 @@
 \chapter{Implementierung}
+Im folgenden Kapitel wird die praktische Implementierung der in der Arbeit erarbeiteten Methode beschrieben. Die Implementierung umfasst dabei die Schnittstelle zum Nutzer, sowie die Erhebung und Verarbeitung von relevanten Daten.
 \section{Backend}
+Für die Implementierung der Arbeit wurde ein Backend konzipiert, welches Informationen und Bilder von Verkehrskameras für Clients vorenthält. Das Ziel ist es dabei Daten einem für den Client verständlichen Format aufzubereiten und anschließend möglich effizient zu persistieren. Somit wird ermöglicht, dass der Client auch auf ältere Datensätze der Straßenverkehrszentrale zugreifen kann. Weiterhin ermöglicht das Backend auch das Senden von mehreren Datensätzen innerhalb einer Anfrage. 
+\subsection{Infrastruktur}
+Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die zu verwendenden Technologien beachtet. So soll die resultierende Anwendung auf dem Apache Server eines geteilten Webhosts laufen. Der Apache Server des Webhosts erlaubt das Ausführen von PHP-Skripten, welche für Anfragen und Verarbeitung von Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden können. Für die Persistenz von Daten besitzt der Webhost alternativ zum Dateisystem auch eine MySQL-Datenbank.
+--Bild Infraturktur?--
+
+Auf Abbildung X ist zu sehen, dass die Verbindung zum Client über das HTTP-Protokoll verläuft. Der Vorteil ist hierbei, dass das Protokoll bereits von dem Apache Server unterstützt wird und eine Verschlüsselung über TLS eingesetzt werden kann.
+\subsection{Datenerhebung}
+Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Informationen über die jeweiligen Kameras werden über den SVZ-Server in verschieden Formaten bereitgestellt. So sind die Metadaten der Kameras als Textdatei abgespeichert, während die Bilder direkt im JPEG-Format abgerufen werden können. Unter Metadaten der Verkehrskameras sind bei folgende Informationen zu verstehen: 
+\begin{itemize}
+\item{Eine eindeutige alphanumerische Kamera-Kennung}
+\item{Die entsprechende Autobahnkennung}
+\item{Name der nächsten Ausfahrt2 mit Autobahn Kennung}
+\item{Position der Kamera}
+\end{itemize}
+Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras alle 30 Sekunden erneuert werden. Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt.
+\subsection{Datenverarbeitung}
+\subsection{Datenpersistenz}
 
 \section{Client}
 \subsection{OpenCV}
