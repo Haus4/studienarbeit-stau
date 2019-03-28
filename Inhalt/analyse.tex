@@ -1,4 +1,7 @@
 \chapter{Analyse}
+In diesem Kapitel wird die Problemlage im Bezug zum derzeitigen Stand der Technik analysiert.
+Etablierte Verfahren werden mithilfe eines geeigneten Testdatensatzes anschließend evaluiert.
+Das geeignetste Verfahren wird für den weiteren Verlauf der Arbeit bestimmt.
 * Vorarbeit -> Ausarbeiten des bestmöglichen Algorithmus\newline
 
 * Verkehrskameras laden\newline
@@ -8,14 +11,28 @@
 * Datensätze generieren, um Vergleichskriterien zu erstellen\newline
 
 \section{Stand der Technik}
+Bildverarbeitung ist ein Thema, dass schon sehr lange im Bereich der Informationstechnik und Informatik erforscht wird.
+Besonders durch derzeitige Entwicklungen in der künstlichen Intelligenz und der Objekterkennung bekommt das Thema in der heutigen Zeit eine hohe Bedeutung für die technische Entwicklung. Im folgenden Kapitel werden einige der zum derzeitigen Zeitpunkt etablierten Verfahren der Bildverarbeitung im Kontext der Aufgabenstellung evaluiert und bewertet.
 
-\subsection{Neuronales Netz}
+\subsection{Statische Verfahren}
+\subsubsection{Statische Pixel Anaylse}
+\cite{bin2001vehicle}
+\subsubsection{Kantenerkennung}
+\cite{crouzil2016automatic}
+\cite{gupte2000algorithms}
+\subsection{Dynamische Verfahren}
+\subsubsection{Neuronale Netze}
+Neuronale Netze sind ein Beispiel für Verfahren aus dem maschinellen Lernen. 
+Die Arbeit \cite{hkkDhbw} geht im Detail darauf ein wie das Problem der Stauerkennung auf Bildern mithilfe dieses Verfahrens gelöst werden kann. 
+Jedoch fällt bei Laufzeit eines komplexen neuronalen Netzes auf, dass das Laden und Benutzen der interne Zustandsmaschine einen relativ hohen Hauptspeicher-Bedarf mit sich bringt.
+Der Vorteil der sich jedoch hierdurch bietet ist, dass Bilder nicht statisch analysiert werden, sondern das Netz dynamisch auf Bilde und Verhältnisse (Perspektive und Situation) trainiert wird.
+Dieses Verfahren wurde für die folgende Implementierung nicht gewählt, da diese Arbeit einen besonderen Fokus auf die Ressourcensparsamkeit des Verfahrens setzt.
 * Gewählter Ansatz des letzten Jahrgangs\newline
 * Vermutlich bester Ansatz, da keine statische Analyse der Bilder durchgeführt wird\newline
 	sondern dynamisch auf konkrete Bilder und Verhältnisse (Perspektive und Situation) trainiert wird
 * Nicht durchgeführt, da feststand, dass der Ansatz zu Ressourcenintensiv ist und Ziel der Arbeit war Ressourcen zu sparen\newline
 
-\subsection{Andere Paper}
+\subsubsection{Background Subtraction}
 
 \section{Bestimmung des Testdatensatzes}
 \subsection{Verkehrskameras laden}
