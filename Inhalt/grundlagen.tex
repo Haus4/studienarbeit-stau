@@ -125,7 +125,28 @@ Die beiden erhaltenen Ergebnisse können nun vereint werden, um alle Kanten inne
 \end{figure}
 
 \section{Canny-Edge-Detection} % Mi
+% Vlt. raus?
+
 \section{Otsu} % Mi
+Das Verfahren von Otsu dient zur Bildsegmentierung.
+Durch die Findung eines geeigneten Schwellwertes sollen Grauwerte eines Bildes über das Histogramm in zwei Klassen eingeteilt werden.
+Die beiden Klassen werden so gewählt, dass die Varianz der Grauwerte innerhalb der Klassen möglichst gering ist, jedoch zwischen den Klassen möglichst groß.
+
+Der Grauwert, der beide Klassen voneinander Trennt ist gleichzeitig der Schwellwert zur Segmentierung des Bildes. Ist der Grauwert eines Pixels unter dem Schwellwert, gehört er zur 1. Klasse, ansonsten zur 2. Klasse.
+Abhängig davon wie das Bild geartet ist, lässt sich eine Klasse als Hintergrund interpretieren und die jeweils andere Beschreibt den Vordergrund, bzw. das gewünschte Objekt.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=4cm]{Bilder/otsu-1}
+     \includegraphics[width=4cm]{Bilder/otsu-2} \\
+ \caption{Segmentierung eines Bildes mit dem Otsu Verfahren}
+ \source{https://de.wikipedia.org/wiki/Schwellenwertverfahren\#Verfahren_von_Otsu}{29.3.2019}
+ \label{fig:Otsu}
+\end{figure}
+
+Dadurch, dass ein globaler Schwellwert für das gesamte Bild verwendet wird, haben globale Helligkeitseinflüsse, wie Licht und Schatten starke Auswirkungen auf das Ergebnis des Verfahrens, wie in Abbildung~\ref{fig:Otsu} zu erkennen ist. Um solche Störfaktoren zu umgehen, kann statt eines globalen Schwellwertes auch ein lokaler Schwellwert für jeden Pixel individuell anhand seiner Nachbarschaft bestimmt werden. Dadurch kann es unter Umständen zu genaueren Ergebnissen kommen.
+Für weitere Literatur, siehe~\cite{Otsu}.
+
 \section{Haar-Features} % Mi
 
 \section{Morphologische Operatoren} % Mo
@@ -207,3 +228,7 @@ Ein Beispiel ist in Abbildung~\ref{fig:Closing} zu sehen.
 \end{figure}
 
 \section{OpenCV} % Mi
+OpenCV ist eine Programmierbibliothek, welche eine Reihe von Bildverarbeitungsalgorithmen zur Verfügung stellt.
+Es gibt Implementierungen in C, C++, Java und einigen weiteren Programmiersprachen. Unter anderem gibt es auch eine Bibliothek für Android Geräte.
+
+Es existieren diverse Hilfsmittel zur Segmentierung und Klassifikation von Bildern. Darüber Hinaus werden auch morphologische Operatoren bereitgestellt. Durch die Kombination verschiedener Algorithmen und Hilfsmittel hat man so als Programmierer die Möglichkeit sich eine Bildverarbeitungspipeline aufzubauen, um seine Bilder zu verarbeiten. Für mehr Informationen, siehe~\cite{opencv}.
