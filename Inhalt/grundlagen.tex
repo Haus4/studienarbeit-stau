@@ -147,7 +147,26 @@ Abhängig davon wie das Bild geartet ist, lässt sich eine Klasse als Hintergrun
 Dadurch, dass ein globaler Schwellwert für das gesamte Bild verwendet wird, haben globale Helligkeitseinflüsse, wie Licht und Schatten starke Auswirkungen auf das Ergebnis des Verfahrens, wie in Abbildung~\ref{fig:Otsu} zu erkennen ist. Um solche Störfaktoren zu umgehen, kann statt eines globalen Schwellwertes auch ein lokaler Schwellwert für jeden Pixel individuell anhand seiner Nachbarschaft bestimmt werden. Dadurch kann es unter Umständen zu genaueren Ergebnissen kommen.
 Für weitere Literatur, siehe~\cite{Otsu}.
 
-\section{Haar-Features} % Mi
+\section{Haar Kaskaden} % Mi
+Mittels Haar Kaskaden lassen sich relativ schnell Objekte innerhalb eines Bildes identifizieren.
+
+Die Grundlage hierfür bilden {\em Haar Features}~\ref{fig:Haar}.
+Das sind Features, die einen Pixelverlauf als Kante, Linie oder Rechteck einstufen.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=11cm]{Bilder/Haar} \\
+ \caption{Haar Features}
+ \source{https://commons.wikimedia.org/wiki/File:VJ_featureTypes.svg}{30.3.2019}
+ \label{fig:Haar}
+\end{figure}
+
+Diese können ebenfalls als Faltungsmatrix dargestellt werden.
+Eine bestimmte Menge und Kombination dieser Features beschreibt anschließend das gesuchte Objekt.
+Diese Features müssen jedoch im Bild zunächst erkannt werden, was selbst bei einer geringen Auflösung sehr aufwändig werden kann.
+
+Da diese Features auch nur einen geringen Teil des Bild ausmachen, wird die Erkennung dieser in eine Kaskade unterteilt. Das bedeutet das Bild wird zunächst grob nach den Features durchsucht, und anschließend in den Bereichen die Suche verfeinert, in denen die gewünschten Features vorkommen könnten, sodass eine Kaskade von Suchen durchlaufen wird, bis die Features entweder gefunden oder nicht gefunden wurden und das Bild entsprechend eingestuft werden kann.
+Für weitere Informationen, siehe~\cite{haar}.
 
 \section{Morphologische Operatoren} % Mo
 Morphologische Operatoren werden in der Bildverarbeitung eingesetzt, um die Form von Strukturen innerhalb eines Bildes zu verändern.
