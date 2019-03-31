@@ -36,11 +36,41 @@ Dieses Verfahren wurde für die folgende Implementierung nicht gewählt, da dies
 
 \section{Bestimmung des Testdatensatzes}
 \subsection{Verkehrskameras laden}
-* SVZ-BW stellt Kamerabilder für verschiedene Kameras zur Verfügung\newline
-* Liste von Verkehrskameras laden und verarbeiten\newline % http://www.svz-bw.de/kamera/kamera_A.txt
-* Koordinaten in EPSG:25832 gegeben\newline % http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/
-* Übliche Projektion EPSG:4326\newline % http://spatialreference.org/ref/epsg/wgs-84/
-* Umrechnen der Koordinaten in Zielprojektion zur Auswertung der Kamerapositionen\newline
+Bevor die Kamerabilder geladen werden können, ist es zunächst relevant zu wissen welche Kameras es überhaupt gibt und wo diese liegen.
+Hierfür stellt die Verkehrszentrale eine Liste aller Kameras unter dieser Webadresse bereit: \url{http://www.svz-bw.de/kamera/kamera_A.txt} (Stand: 31.3.2019).
+
+Diese liegen in einer durch Leerzeichen separierten Tabellenstruktur vor.
+
+\begin{center}
+\small\addtolength{\tabcolsep}{-5pt}
+    \begin{tabular}{ | l | l | l | l | l | l | l | l |}
+    \hline
+		lon & lat & title & description & linkextern & icon & iconSize & iconOffset \\ \hline
+    572330.13 &
+		5361095.33 &
+		B10... &
+		/.../kameradetail.php?id=EXT006 &
+		... &
+		... &
+		16,16 &
+		-8,-8 \\
+    \hline
+    \end{tabular}
+\end{center}
+
+Die Werte {\em lat} und {\em lon} beschreiben die Position der Kamera durch Längen und Breitengrad.
+Der Eintrag {\em title} enthält einen ausfühlicheren Titel der Kamera. Mit {\em description} hat man die Möglichkeit eine detailiertere Beschreibung der Kamera zu erhalten, welche jedoch mit HTML Tags angereichert ist. {\em Linkextern} ist die Webadresse, über welche auf die Kamera zugegriffen werden kann. {\em Icon}, {\em iconSize} und {\em iconOffset} sind Informationen, die das Straßenverkehrszentrum selbst benötigt, um das Kameraicon auf einer Landkarte anzuzeigen.
+
+Relevant sind also zunächst die Koordinaten, der Titel und der Link, da nur über diesen die ID der Kamera aufgelöst werden kann.
+Das erste Problem hierbei ist, dass die Koordinaten der Kamera nicht der üblichen Projektion der Weltkugel entsprechen. Gebräuchlich ist die Projektion {\em WGS 84}~\cite{wgs84}, welche auch von Navigationssystemen oder herkömlichen Kartendiensten genutzt wird und den Globus von -180° westlich bis 180° nördlich, bzw. -90° südlich bis 90° nördlich einteilt.
+
+Das Straßenverkehrszentrum nutzt jedoch das Referenzsystem {\em ETRS89 / UTM zone 32N}~\cite{etrs89}, welches für Europa ausgelegt ist.
+Um Position der Kameras mit gängigen Kartendiensten nutzen zu können müssen die Koordinaten in die übliche Projektionsform überführt werden.
+
+Außerdem muss die ID der Kamera aus dem Link extrahiert werden, da es keinen Eintrag in der Tabelle gibt, der lediglich die ID enthält.
+Da die Link immer dem selben Format folgt ({\em /<pfad>/kameradetail.php?id=<id>}), kann einfach nach dem Vorkommen der Teilzeichenkette {\em ?id=} gesucht werden, und alles davor abgeschnitten werden.
+
+Somit lassen sich alle relevanten Informationen, welche für die Weiterverarbeitung der Kameras benötigt werden, abrufen.
 
 \subsection{Verkehrsbilder laden}
 * Über verarbeitete Kameraliste zugriff auf Verkehrskameras\newline
