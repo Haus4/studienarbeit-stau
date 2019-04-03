@@ -24,6 +24,22 @@ Der Client wird als eine Android Anwendung realisiert, die durch Kommunikation m
 Durch das Verlagern der Berechnungen auf das mobile Endgerät bleibt die Last des Backends gering und die Rechenleistung des Smartphones wird soweit ausgeschöpft, dass Berechnungen effizient, aber sparsam durchgeführt werden können.
 
 \subsection{OpenCV}
+Der Kern der Verarbeitung wird durch Algorithmen der OpenCV Bibliothek~\ref{sec:OpenCV} umgesetzt.
+Da OpenCV primär als native Bibliothek zur Verfügung steht, bzw. die für Android nutzbare Java-Schnittstelle auf die native (in C++ geschriebene) Implementierung
+zurückgreift, muss OpenCV für die jeweiligen Prozessoren der Android Geräte kompiliert werden, auf denen die Anwendung genutzt werden soll.
+
+Eigentlich bietet OpenCV selbst bereits vorkompilierte Versionen der Bibliothek für alle gängigen CPUs und Android Geräte an, jedoch sind diese nicht vollständig.
+OpenCV besteht nämlich eigentlich aus zwei teilen: der Kernbibliothek, also OpenCV selbst, aber zusätzlich noch einem Erweiterungsmodul namens {\em OpenCV-Contrib}.
+
+Diese Erweiterung bietet zusätzlich zu den Standartalgorithmen des Kerns Erweiterungen und diverse andere Algorithmen an, welche Randprobleme abdecken und bei der regulären Nutzung der Bibliothek nicht benötigt werden.
+
+Da für die Umsetzung der Anwendung ein spezieller Background-Subtraction Algorithmus benötigt wird, welcher nur in dem Erweiterungsmodul zur Verfügung steht, wird dieses hierfür benötigt.
+
+Die vorkompilierte Version von OpenCV beinhaltet jedoch nicht die Erweiterungen, sodass diese nicht nutzbar ist.
+
+Um die Bibliothek jedoch nicht selbst für jede Architektur kompilieren zu müssen, gibt es die Möglichkeit die Bibliothek von dritten zu beziehen.
+Entwickler unter dem Namen {\em QuickBird Studios} stellen auf der Plattform {\em GitHub} (\url{https://github.com/quickbirdstudios/opencv-android} eine aktuelle Version von OpenCV mit allen Erweiterungen zur Verfüngung, welche ganz einfach in die App eingebunden und genutzt werden kann.
+
 \subsection{Kameras Laden}
 \subsection{Geolokalisierung}
 \subsection{Richtungsfestellung}
