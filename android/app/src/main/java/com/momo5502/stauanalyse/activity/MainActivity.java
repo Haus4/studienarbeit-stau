@@ -297,13 +297,13 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     @Override
     public void onDirectionChanged(Direction direction) {
-        if (direction == Direction.Frankfurt) {
+        /*if (direction == Direction.Frankfurt) {
             speaker.speak("Du gehst richtung Frankfurt.");
         } else if (direction == Direction.Basel) {
             speaker.speak("Du gehst richtung Basel.");
         } else {
             speaker.speak("Richtung nicht feststellbar.");
-        }
+        }*/
     }
 
     @Override
