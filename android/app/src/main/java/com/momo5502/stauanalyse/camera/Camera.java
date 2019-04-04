@@ -24,7 +24,7 @@ public class Camera {
     private int iconOffset[];
 
     public Camera(Map<String, String> data) {
-        this.title = parseField(data, "title");
+        parseTitle(data);
         this.description = parseField(data, "description");
         this.link = parseField(data, "linkextern");
 
@@ -84,6 +84,21 @@ public class Camera {
             this.iconOffset[0] = Integer.parseInt(offsets[0]);
             this.iconOffset[1] = Integer.parseInt(offsets[1]);
         }
+    }
+
+    private void parseTitle(Map<String, String> data) {
+        String title = parseField(data, "title");
+        title = title.replace("&uuml;", "ü");
+        title = title.replace("&ouml;", "ö");
+        title = title.replace("&Ouml;", "Ö");
+        title = title.replace("&auml;", "ä");
+
+        if(title.contains(" - ")) {
+            int index = title.lastIndexOf(" - ");
+            title = title.substring(0, index);
+        }
+
+        this.title = title;
     }
 
     private String parseField(Map<String, String> data, String name) {
