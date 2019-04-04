@@ -15,12 +15,24 @@ Bildverarbeitung ist ein Thema, dass schon sehr lange im Bereich der Information
 Besonders durch derzeitige Entwicklungen in der künstlichen Intelligenz und der Objekterkennung bekommt das Thema in der heutigen Zeit eine hohe Bedeutung für die technische Entwicklung. Im folgenden Kapitel werden einige der zum derzeitigen Zeitpunkt etablierten Verfahren der Bildverarbeitung im Kontext der Aufgabenstellung evaluiert und bewertet.
 
 \subsection{Statische Verfahren}
-\subsubsection{Statische Pixel Anaylse}
-\cite{bin2001vehicle}
+Verfahren, welche ohne einen speziellen Kontext direkt auf die Pixelwerte eines Bildes angewendet werden können, werden im folgenden als "`statische Verfahren"' beschrieben.
+\subsubsection{Statische Pixel Analyse}
+Ein trivialer Ansatz um Veränderungen zwischen zwei oder mehreren Bildern zu erkennen ist Pixelwerte direkt miteinander zu vergleichen.
+So ist es für den Fall der Erkennung von Autos auf dem Bild möglich Pixelwerte eines Straßenstreckenabschnittes mit dem eines Autos zu vergleichen.
+Bin O.K. Rahmat und bin Jumari beschreiben in \cite{bin2001vehicle} ein solches Verfahren und wenden dies auf Bilder von Verkehrskameras an. 
+Die Besonderheit ist hierbei, dass nicht alle Pixelwerte verglichen werden, sondern nur ein relevanter Teilabschnitt ausgesucht wird. Dieser Teilbereich wird von den Autoren auch als "`Detektor"' beschrieben.
+Die Länge eines Staus kann ebenfalls über einen Detektor ausgewertet werden.
+Hierbei werden Farbwechsel im Bild ausgewertet, um die einzelnen Objekte voneinander zu trennen.
+Das Verfahren hat eine sehr geringe Komplexität und ist daher einfach zu implementieren, jedoch wird auch schon in der Arbeit die Unzuverlässigkeit des Verfahrens beschrieben. 
+So kann zum Beispiel der Lichtkegel eines Scheinwerfers bei Nacht das Ergebnis verfälschen.
 \subsubsection{Kantenerkennung}
-\cite{crouzil2016automatic}
-\cite{gupte2000algorithms}
+Kantenerkennung bezeichnet eine Klasse von Verfahren, bei welchen Kanten im Bild über abrupte Intensitätswert-Übergänge gefunden werden. 
+Dabei werden in der Regel Faltungskerne (siehe \cite{Faltungskerne}) verwendet, um die Ableitung der Intensitäts-Funktion in einem Schwarz-Weiß-Bild zu ermitteln.
+Die Kanten können dann für die Objekterkennung verwendet werden. Um überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \cite{MorphologischeOperatoren}).
+Gupte und Papanikolopoulos stellen ein solches Verfahren in \cite{gupte2000algorithms} vor. Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. Das Ergebnis wird anschließend mithilfe von drei Dialations-Operationen verbessert.
+Dieses Verfahren ist ebenfalls wenig komplex und lässt sich einfach implementieren. Jedoch besitzt es auch ebenfalls einige Nachteile, wie zum Beispiel, dass sich Schattenwurf auf das Ergebnis auswirkt und ein gewisser Kamerawinkel erforderlich ist.
 \subsection{Dynamische Verfahren}
+Als "`dynamische Verfahren"' werden im folgenden Verfahren beschrieben, die nur innerhalb eines bestimmten Kontextes auf ein Bild angewendet werden sein. So kann es sein, dass das Verfahren bestimmte Trainingsdaten oder Vergleichswerte von anderen Bildern benötigt.
 \subsubsection{Neuronale Netze}
 Neuronale Netze sind ein Beispiel für Verfahren aus dem maschinellen Lernen. 
 Die Arbeit \cite{hkkDhbw} geht im Detail darauf ein wie das Problem der Stauerkennung auf Bildern mithilfe dieses Verfahrens gelöst werden kann. 
