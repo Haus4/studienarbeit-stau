@@ -27,8 +27,8 @@ Das Verfahren hat eine sehr geringe Komplexität und ist daher einfach zu implem
 So kann zum Beispiel der Lichtkegel eines Scheinwerfers bei Nacht das Ergebnis verfälschen.
 \subsubsection{Kantenerkennung}
 Kantenerkennung bezeichnet eine Klasse von Verfahren, bei welchen Kanten im Bild über abrupte Intensitätswert-Übergänge gefunden werden. 
-Dabei werden in der Regel Faltungskerne (siehe \cite{Faltungskerne}) verwendet, um die Ableitung der Intensitäts-Funktion in einem Schwarz-Weiß-Bild zu ermitteln.
-Die Kanten können dann für die Objekterkennung verwendet werden. Um überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \cite{MorphologischeOperatoren}).
+Dabei werden in der Regel Faltungskerne (siehe \ref{sec:Faltungskerne}) verwendet, um die Ableitung der Intensitäts-Funktion in einem Schwarz-Weiß-Bild zu ermitteln.
+Die Kanten können dann für die Objekterkennung verwendet werden. Um überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \ref{sec:MorphologischeOperatoren}).
 Gupte und Papanikolopoulos stellen ein solches Verfahren in \cite{gupte2000algorithms} vor. Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. Das Ergebnis wird anschließend mithilfe von drei Dialations-Operationen verbessert.
 Dieses Verfahren ist ebenfalls wenig komplex und lässt sich einfach implementieren. Jedoch besitzt es auch ebenfalls einige Nachteile, wie zum Beispiel, dass sich Schattenwurf auf das Ergebnis auswirkt und ein gewisser Kamerawinkel erforderlich ist.
 \subsection{Dynamische Verfahren}
