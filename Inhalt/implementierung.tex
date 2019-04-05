@@ -38,11 +38,27 @@ Da für die Umsetzung der Anwendung ein spezieller Background-Subtraction Algori
 Die vorkompilierte Version von OpenCV beinhaltet jedoch nicht die Erweiterungen, sodass diese nicht nutzbar ist.
 
 Um die Bibliothek jedoch nicht selbst für jede Architektur kompilieren zu müssen, gibt es die Möglichkeit die Bibliothek von dritten zu beziehen.
-Entwickler unter dem Namen {\em QuickBird Studios} stellen auf der Plattform {\em GitHub} (\url{https://github.com/quickbirdstudios/opencv-android} eine aktuelle Version von OpenCV mit allen Erweiterungen zur Verfüngung, welche ganz einfach in die App eingebunden und genutzt werden kann.
+Entwickler unter dem Namen {\em QuickBird Studios} stellen auf der Plattform {\em GitHub} (\url{https://github.com/quickbirdstudios/opencv-android} eine aktuelle Version von OpenCV mit allen Erweiterungen zur Verfügung, welche ganz einfach in die App eingebunden und genutzt werden kann.
 
-\subsection{Kameras Laden}
 \subsection{Geolokalisierung}
+Um gezielt Kameras abzufragen und auszuwerten, ist es sinnvoll nur diese auszuwerten, die in unmittelbarer Nähe des Nutzers sind und ebenfalls Relevanz für die Fahrt haben. Hierfür muss demnach die Position des Nutzers ermittelt und ausgewertet werden.
+
+Heutige Smartphones besitzen in der Regel ein GPS-Modul, mit welchem sich die Position bestimmen lässt.
+Bevor man jedoch die Möglichkeit hat, mit dem Modul kommunizieren zu können, muss eine Anwendung die erforderlichen Berechtigungen einfordern.
+Dafür muss zunächst in der Manifestdatei der Android-Anwendung die Berechtigung {\em android.permission.ACCESS\_FINE\_LOCATION} hinzugefügt werden.
+Bei neueren Android-Versionen reicht dies allein jedoch nicht mehr aus. Zusätzlich dazu muss der Nutzer explizit bestätigen, dass die Anwendung Zugriff auf den Standort erhält.
+
+Durch Übergabe des Wertes {\em Manifest.permission.ACCESS\_FINE\_LOCATION} an die Funktion {\em requestPermission} der {\em Activity}-Klasse, die den Einstiegspunkt der Android-Anwendung bietet, wird dem Nutzer ein Dialog angezeigt, durch welchen er Zugriff erteilen oder verweigern kann.
+
+
+Sind alle Berechtigungen erteilt, so kann die App den Standort abfragen.
+Hierfür ist in der App die Klasse {\em GlobalPositionManager} verantwortlich. Diese Kapselt die Interaktion mit dem GPS-Modul und kann über an einen übergeben Callback Standortänderungen regelmäßig nach außen hin kommunizieren.
+Hierzu wird zunächst beim {\em LocationManager}, dem System Dienst für die Standortverwaltung des Gerätes, die Lokalisierung angefragt, was dafür sorgt, dass alle 10 Sekunden der aktuelle Standort and den {\em GlobalPositionManager} übergeben wird. Dieser kann anschließend an den Callback übergeben werden und für die weitere Verarbeitung genutzt werden.
+
 \subsection{Richtungsfestellung}
+\subsection{Kameras laden}
+\subsection{Bilder laden}
+\subsection{Bilder verarbeiten}
 \subsection{Text-To-Speech}
 \subsection{Bluetooth}
 * SCO Headset ausgabe
