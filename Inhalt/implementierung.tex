@@ -67,7 +67,20 @@ Auf anderen Autobahnen kann daher nicht ohne Weiteres erkannt werden, auf welche
 
 Die A5 erstreckt sich von Niederaula, nördlich von Frankfurt am Main bis nach Weil am Rhein, kurz vor vor der Schweizer Grenze. Grob gesehen kann man sagen sie erstreckt sich von Frankfurt nach Basel.
 
-Um nun die Fahrtrichtung zu erkennen, können die Standorte über die Zeit kumuliert werden, um abzuschätzen, ob der Nutzer sich Frankfurt oder Basel nähert.
+Um nun die Fahrtrichtung zu erkennen, können die Standorte über die Zeit protokolliert und kumuliert werden, um daraus einen Richtungsvektor zu bilden.
+Dieser kann genutzt werden, um abzuschätzen, ob der sich Nutzer Frankfurt oder Basel nähert.
+
+Dazu werden die vom {\em GlobalPositionManager} erfassten Positionen durch die Klasse {\em PositionHistory} protokolliert.
+Über die bereitgestellten Methoden {\em getStart} und {\em getEnd} werden die Positionen so aufsummiert, dass Startpunkt und Endpunkt ausgelesen werden können.
+
+Anschließend ermittelt die Klasse {\em DirectionCalculator} die euklidische Norm zwischen sowohl Frankfurt, als auch Basel und den Start- und Endpunkten.
+Diese Vernachlässigt zwar die Krümmung der Erdoberfläche und jegliche Höhenunterschiede, ist aber für solch kurze Distanzen völlig ausreichend.
+
+Ist der Startpunkt nun weiter entfernt von Frankfurt als der Endpunkt, so bewegt sich der Nutzer nach Frankfurt, ansonsten in Richtung Basel.
+
+Anfangs ist das Feststellen der Richtung noch recht ungenau. Je mehr Positionen jedoch über die Zeit protokolliert werden, desto genauer wird die Ermittlung der Fahrtrichtung.
+
+Obwohl diese Form der Richtungsfeststellung nur auf der A5 funktioniert, ist die Berechnung sehr effizient und akkurat, da nur wenige einfache Rechenschritte benötigt werden, um somit der Ressourcensparsamkeit gerecht zu werden.
 
 \subsection{Kameras laden}
 \subsection{Bilder laden}
