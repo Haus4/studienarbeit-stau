@@ -56,6 +56,19 @@ Hierfür ist in der App die Klasse {\em GlobalPositionManager} verantwortlich. D
 Hierzu wird zunächst beim {\em LocationManager}, dem System Dienst für die Standortverwaltung des Gerätes, die Lokalisierung angefragt, was dafür sorgt, dass alle 10 Sekunden der aktuelle Standort and den {\em GlobalPositionManager} übergeben wird. Dieser kann anschließend an den Callback übergeben werden und für die weitere Verarbeitung genutzt werden.
 
 \subsection{Richtungsfestellung}
+Hat man nun die Position zur Hand, so ist als nächstes relevant zu wissen, wohin gefahren wird, um die zu analysierende Straßenseite zu erkennen.
+Hierfür gibt es diverse Ansätze, um das Problem zu lösen.
+
+Beispielsweise stellt Google einen Dienst zur Verfügung, über den bei Übergabe von verschiedenen Positionen die befahrene Straße und Richtung erkannt werden kann. Dieser ist jedoch kostenpflichtig und deshalb nicht geeignet.
+
+Um auch hier den Fokus auf Ressourcensparsamkeit nicht zu verlieren, wurde ein sehr einfacher, jedoch nicht generischer Ansatz gewählt.
+Da die Anwendung primär für eine Nutzung auf der A5 gedacht ist, ist das Ziel zunächst nur die Fahrtrichtung auf der A5 zu erkennen.
+Auf anderen Autobahnen kann daher nicht ohne Weiteres erkannt werden, auf welcher Straßenseite gefahren wird.
+
+Die A5 erstreckt sich von Niederaula, nördlich von Frankfurt am Main bis nach Weil am Rhein, kurz vor vor der Schweizer Grenze. Grob gesehen kann man sagen sie erstreckt sich von Frankfurt nach Basel.
+
+Um nun die Fahrtrichtung zu erkennen, können die Standorte über die Zeit kumuliert werden, um abzuschätzen, ob der Nutzer sich Frankfurt oder Basel nähert.
+
 \subsection{Kameras laden}
 \subsection{Bilder laden}
 \subsection{Bilder verarbeiten}
