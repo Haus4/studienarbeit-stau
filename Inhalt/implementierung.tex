@@ -40,6 +40,29 @@ Die vorkompilierte Version von OpenCV beinhaltet jedoch nicht die Erweiterungen,
 Um die Bibliothek jedoch nicht selbst für jede Architektur kompilieren zu müssen, gibt es die Möglichkeit die Bibliothek von dritten zu beziehen.
 Entwickler unter dem Namen {\em QuickBird Studios} stellen auf der Plattform {\em GitHub} (\url{https://github.com/quickbirdstudios/opencv-android} eine aktuelle Version von OpenCV mit allen Erweiterungen zur Verfügung, welche ganz einfach in die App eingebunden und genutzt werden kann.
 
+\subsection{Backend Kommunikation}
+Da das Backend in PHP geschrieben ist, verläuft die Kommunikation über das HTTP-Protokoll an den entsprechenden Webserver.
+Android stellt bei der Kommunikation über HTTP jedoch Ansprüche. Die Kommunikation muss auf dem Gerät asynchron geschehen. Das bedeutet, dass im Haupt-Thread,
+also dem Programmfaden, welcher für das Darstellen der Oberfläche dient, keinerlei Netzwerkkommunikation geschehen darf, da dies unter Umständen dazu führen könnte, dass die Oberfläche einfriert, da, solange auf das Ende der Kommunikation gewartet wird, die Oberfläche nicht neu dargestellt werden kann.
+
+Um sicherzustellen, dass Kommunikation asynchron verläuft, wird in der Klasse {\em Downloader} jegliche HTTP-Kommunikation gekapselt.
+Hierzu wird innerhalb der Klasse ein neuer Thread gestartet, welcher für die Kommunikation zuständig ist. Vor dem Starten des Threads kann ein Callback-Objekt übergeben werden, welches nach Abschluss der Kommunikation die erhaltenen Daten übergeben bekommt und aufgerufen wird.
+
+Ebenfalls stellt der {\em Downloader} sicher, dass pro Instanz der Klasse nur eine Anfrage zur gleichen Zeit abgehandelt werden darf. Dieses Verhalten wird für das spätere Laden der Bilder relevant.
+Werden dennoch mehrere Verbindungen gleichzeitig benötigt, können einfach mehrere Instanzen der Klasse erstellt werden.
+
+Um letztendlich mit dem Backend kommunizieren zu können ist der {\em BackendConnector} verantwortlich.
+Über den Konstruktor kann die URL des Backends übergeben werden.
+Mit Hilfe der {\em Downloader}-Klasse stellt dieser die Endpunkte des Backends als Methoden zur Verfügung:
+
+\begin{itemize}
+\item{{\em cameras}: liefert eine Liste aller Unterstützten Kameras zurück}
+\item{{\em fetch}: liefert entweder alle gespeicherten Bilder einer Kamera, oder alle Bilder jünger als ein gewünschter Zeitpunkt}
+\item{{\em mask}: liefert die Maske für eine Kamera in eine gewünschte Fahrtrichtung}
+\end{itemize}
+
+Die Ergebnisse aller Anfragen liegen jedoch im Rohformat als Byte-Array vor. Um die Ergebnisse also nutzen zu können, ist also eine weitere Verarbeitung der Daten in einem späteren Schritt nötig.
+
 \subsection{Geolokalisierung}
 Um gezielt Kameras abzufragen und auszuwerten, ist es sinnvoll nur diese auszuwerten, die in unmittelbarer Nähe des Nutzers sind und ebenfalls Relevanz für die Fahrt haben. Hierfür muss demnach die Position des Nutzers ermittelt und ausgewertet werden.
 
@@ -82,7 +105,10 @@ Anfangs ist das Feststellen der Richtung noch recht ungenau. Je mehr Positionen 
 
 Obwohl diese Form der Richtungsfeststellung nur auf der A5 funktioniert, ist die Berechnung sehr effizient und akkurat, da nur wenige einfache Rechenschritte benötigt werden, um somit der Ressourcensparsamkeit gerecht zu werden.
 
-\subsection{Kameras laden}
+\subsection{Verkehrskameras laden}
+Bevor die Informationen zu den Verkehrskameras von der Straßenverkehrszentrale geladen werden können, muss zunächst geprüft werden, welche Kameras das Backend unterstützt.
+
+
 \subsection{Bilder laden}
 \subsection{Bilder verarbeiten}
 \subsection{Text-To-Speech}
