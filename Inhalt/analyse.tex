@@ -17,25 +17,44 @@ Besonders durch derzeitige Entwicklungen in der künstlichen Intelligenz und der
 \subsection{Statische Verfahren}
 Verfahren, welche ohne einen speziellen Kontext direkt auf die Pixelwerte eines Bildes angewendet werden können, werden im folgenden als "`statische Verfahren"' beschrieben. In den meisten Fällen sind diese Verfahren besonders ressourceneffizient, da sie mit weniger Speicher- und Zeitkomplexität auskommen.
 \subsubsection{Statische Pixel Analyse}
-Ein trivialer Ansatz um Veränderungen zwischen zwei oder mehreren Bildern zu erkennen ist Pixelwerte direkt miteinander zu vergleichen.
-So ist es möglich Pixelwerte eines Bildes zu analysieren und somit beispielsweise bestimmte Helligkeits- oder Farbveränderungen festzustellen.
-Die beschriebenen Helligkeits- oder Farbwechsel können im Bezug zur Erkennung von Objekten auf einem Bild verwendet werden in dem man die jeweiligen Pixelwerte mit denen des Hintergrundes im Bild vergleicht.
+Ein trivialer Ansatz um Veränderungen zwischen zwei oder mehreren Bildern zu erkennen kann durch einen Vergleich der Pixelwerte ermöglicht werden.
+So ist es auch möglich Pixelwerte eines einzigen Bildes zu analysieren und somit beispielsweise bestimmte Helligkeits- oder Farbveränderungen  im Bild festzustellen.
+Die beschriebenen Helligkeits- oder Farbwechsel können im Bezug zur Objekterkennung auf einem Bild verwendet werden, indem man die jeweiligen Pixelwerte mit denen des Hintergrundes im Bild vergleicht.
 Für den Fall der Verkehrskameras würde der besagte Hintergrund die Pixelwerte der Straße in dem gewählten Bereich beschreiben.
-Bin O.K. Rahmat und bin Jumari beschreiben in \cite{bin2001vehicle} ein solches Verfahren und wenden dies auf Bilder von Verkehrskameras an. 
+Sobald eine Reihe von Pixeln durch einen starken Farb- oder Intensitätswertwechsel unterbrochen wird, kann man in diesem Fall von einem beweglichen Objekt auf der Straße ausgehen.
+Bin O.K. Rahmat und bin Jumari beschreiben in ihrer Arbeit \cite{bin2001vehicle} ein solches Verfahren und wenden dies auf Bilder von Verkehrskameras an. 
 Die Besonderheit ist hierbei, dass nicht alle Pixelwerte des Bildes verglichen werden, sondern nur ein relevanter Teilabschnitt zu Vergleichszwecken ausgesucht wird. 
-Dieser Teilbereich wird von den Autoren auch als "`Detektor"' beschrieben.
+Dieser Teilbereich wird von den Autoren auch als "`Detektor"' beschrieben und befindet sich komplett auf der ausgewählten Fahrbahn.
 Die Länge eines stockenden Verkehrsflusses kann ebenfalls über diese Methode ermittelt werden. 
-In der Arbeit der beiden Autoren wird hierfür ein länglicher Detektor verwendet der sich über den kompletten im Bild ersichtlichen Streckenabschnitt zieht.
-Weiterhin werden Farbwechsel im Bild ausgewertet, um die einzelnen Objekte voneinander zu trennen.
+Hierfür wird in der Arbeit der beiden Autoren ein länglicher Detektor verwendet der sich über den kompletten im Bild ersichtlichen Streckenabschnitt zieht.
+Weiterhin werden die Farbwechsel innerhalb der Detektoren ausgewertet, um die einzelnen Objekte voneinander zu trennen.
 Das Verfahren hat eine sehr geringe Komplexität und ist daher einfach zu implementieren, jedoch werden auch schon in der Arbeit Situationen beschrieben in denen das Verfahren keine zuverlässigen Ergebnisse liefert. 
 So kann zum Beispiel der Lichtkegel eines Scheinwerfers bei Nacht das Ergebnis verfälschen.
 \subsubsection{Kantenerkennung}
 Kantenerkennung bezeichnet eine Klasse von Verfahren, bei welchen Kanten im Bild über abrupte Intensitätswert-Übergänge gefunden werden. 
-Dabei werden in der Regel Faltungskerne (siehe \ref{sec:Faltungskerne}) verwendet, um die Ableitung der Intensitätswert-Funktion in einem Schwarz-Weiß-Bild zu ermitteln.
-Die Kanten können dann für die Objekterkennung verwendet werden. Um leicht überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \ref{sec:MorphologischeOperatoren}).
-Gupte und Papanikolopoulos stellen ein solches Verfahren in \cite{gupte2000algorithms} vor. Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. Das Ergebnis wird anschließend mithilfe von der Anwendung von mehreren Dilatation-Operationen verbessert, da nicht geschlossene und im Objekt liegende Kanten zur einer großen Kante verbunden werden.
+Dabei werden in der Regel Faltungskerne (siehe \ref{sec:Faltungskerne}) verwendet, um die Ableitung der Intensitätswert-Funktion in einem Grauwert-Bild zu ermitteln (Abbildung~\ref{fig:gupte1}).
+Das bedeutet man muss für die Anwendung des Verfahrens das Bild in den Grauwert-Bereich übertragen.
+Die Kanten können dann anschließend für die Objekterkennung verwendet werden. Um leicht überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \ref{sec:MorphologischeOperatoren}).
+Gupte und Papanikolopoulos stellen ein solches Verfahren in \cite{gupte2000algorithms} vor. Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. Das Ergebnis wird anschließend mithilfe von der Anwendung von mehreren Dilatation-Operationen verbessert, da nicht geschlossene und im Objekt liegende Kanten zur einer großen Kante verbunden werden (Abbildung~\ref{fig:gupte2}).
 Dieses Verfahren ist ebenfalls wenig komplex und lässt sich einfach implementieren. 
 Jedoch besitzt es auch einige Nachteile, wie zum Beispiel, dass sich Schattenwurf negativ auf das Ergebnis auswirkt und eine Perspektive im Bild vorausgesetzt wird.
+
+\begin{figure}[ht]
+  \centering
+	\begin{minipage}[b]{0.4\textwidth}
+     \includegraphics[width=\textwidth]{Bilder/gupte1} \\
+   \caption{Kantenerkennung}
+   \label{fig:gupte1}
+  \end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.4\textwidth}
+     \includegraphics[width=\textwidth]{Bilder/gupte2} \\
+		\caption{Ergebnis des Verfahrens}
+		\label{fig:gupte2}
+	\end{minipage}
+\end{figure}
+\newpage
+
 \subsection{Dynamische Verfahren}
 Als "`dynamische Verfahren"' werden im folgenden Verfahren beschrieben, die nur innerhalb eines bestimmten Kontextes auf ein Bild angewendet werden sein. So kann es sein, dass das Verfahren bestimmte Trainingsdaten oder Vergleichswerte von anderen Bildern benötigt. Dies erhöht in den meisten Fällen die Genauigkeit des Verfahrens, aber die Ressourceneffizienz wird drastisch verringert.
 \subsubsection{Neuronale Netze}
