@@ -1,7 +1,7 @@
 \chapter{Implementierung}
-Im folgenden Kapitel wird die praktische Implementierung der in der Arbeit erarbeiteten Methode beschrieben. Die Implementierung umfasst dabei die Schnittstelle zum Nutzer, sowie die Erhebung und Verarbeitung von relevanten Daten.
+Im folgenden Kapitel wird die praktische Implementierung der in der Arbeit erarbeiteten Methode beschrieben. Die Implementierung umfasst dabei die Schnittstelle zum Nutzer, sowie die Erhebung, Verarbeitung und Persistenz von relevanten Daten.
 \section{Backend}
-Für die Implementierung der Arbeit wurde ein Backend konzipiert, welches Informationen und Bilder von Verkehrskameras für Clients vorenthält. Das Ziel ist es dabei Daten einem für den Client verständlichen Format aufzubereiten und anschließend möglich effizient zu persistieren. Somit wird ermöglicht, dass der Client auch auf ältere Datensätze der Straßenverkehrszentrale zugreifen kann. Weiterhin ermöglicht das Backend auch das Senden von mehreren Datensätzen innerhalb einer Anfrage. 
+Für die Implementierung der Arbeit wurde ein Backend konzipiert, welches Informationen und Bilder von Verkehrskameras für Clients vorenthält. Das Ziel ist es dabei Daten der Straßenverkehrszentrale regelmäßig anzufragen und für den Client zu persistieren. Somit wird ermöglicht, dass der Client auch auf ältere Datensätze der Straßenverkehrszentrale zugreifen kann. Weiterhin ermöglicht soll das Backend die Daten in einem möglichst kompakten Format an den Client senden können, damit auch über schwache zelluläre Netzwerkverbindungen von Clients die Daten relativ zügig empfangen können. 
 \subsection{Infrastruktur}
 Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die zu verwendenden Technologien beachtet. So soll die resultierende Anwendung auf dem Apache Server eines geteilten Webhosts laufen. Der Apache Server des Webhosts erlaubt das Ausführen von PHP-Skripten, welche für Anfragen und Verarbeitung von Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden können. Für die Persistenz von Daten besitzt der Webhost alternativ zum Dateisystem auch eine MySQL-Datenbank.
 \begin{figure}[ht]
@@ -13,19 +13,42 @@ Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die z
 
 Auf Abbildung~\ref{fig:serverarch} ist zu sehen, dass die Verbindung zum Client über das HTTP-Protokoll verläuft. Der Vorteil ist hierbei, dass das Protokoll bereits von dem Apache Server unterstützt wird und eine Verschlüsselung über TLS eingesetzt werden kann.
 \subsection{Datenerhebung}
-Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Informationen über die jeweiligen Kameras werden über den SVZ-Server in verschieden Formaten bereitgestellt. So sind die Metadaten der Kameras als Textdatei abgespeichert, während die Bilder direkt im JPEG-Format abgerufen werden können. Unter Metadaten der Verkehrskameras sind bei folgende Informationen zu verstehen: 
+\label{sec:datenerhebung}
+Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Diese können mithilfe der cURL-API in PHP angestoßen werden. Bei "`cURL"' handelt es sich dabei um eine Programm-Bibliothek, mithilfe welcher sich Daten über verschiedene Protokolle übertragen lassen. \newline
+Informationen über die jeweiligen Kameras werden über den SVZ-Server in verschieden Formaten bereitgestellt. So sind die Metadaten der Kameras als Textdatei abgespeichert, während die Bilder direkt im JPEG-Format abgerufen werden können. Unter Metadaten der Verkehrskameras sind bei folgende Informationen zu verstehen: 
 \begin{itemize}
-\item{Eine eindeutige alphanumerische Kamera-Kennung}
+\item{Eine eindeutige alphanumerische Kamerakennung}
 \item{Die entsprechende Autobahnkennung}
-\item{Name der nächsten Ausfahrt2 mit Autobahn Kennung}
+\item{Name der nächsten Ausfahrt mit Autobahnkennung}
 \item{Position der Kamera}
 \end{itemize}
-Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras alle 30 Sekunden erneuert werden. Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt.
-
-\subsection{Datenverarbeitung}
-
+Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras alle 30 Sekunden erneuert werden. Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
+Ein Datensatz der nicht über HTTP-Aufrufe erhoben werden kann sind Masken für Bilder einer Verkehrskameras.
+Dabei handelt es sich um Bilder im PNG-Format, welche zur Vorverarbeitung von Bildern verwendet wird. Diese müssen manuell erstellt und in die Datenbank eingepflegt werden, da im Rahmen der Arbeit kein vollständig korrekter Algorithmus zur Automatisierung dieser Aufgabe gefunden wurde.
 
 \subsection{Datenpersistenz}
+Für die Persistenz von Daten wurde während der Implementierung auf das Dateisystem verzichtet und nur die MySQL-Datenbank verwendet, da diese die Vorteile einer relationalen Datenbank, sowie sichere Transaktionen bietet.
+Bei den Datensätzen die zu persistieren sind handelt es sich dabei um:
+\begin{itemize}
+\item{Die Metadaten einer Verkehrskamera (siehe \ref{sec:datenerhebung})}
+\item{Die Bilder einer Kamera im JPEG-Format}
+\item{Die Masken für eine Kamera im PNG-Format}
+\end{itemize}
+Jeder dieser Datensätze besitzt in der Datenbank eine eigene Tabelle mit einem jeweils eigenen Datenbank-Schema. 
+Wichtig bei der Erstellung der jeweiligen Schemata war dabei geeignete Datentypen für die Bilder zu finden, damit diese korrekt und vollständig eingepflegt werden können.
+Das Schema für die Kamera-Metadaten ist wie folgt aufgebaut (Primärschlüssel ist fett gedruckt) :
+ \begin{tabular}{|l|c|c|c|l|l|l|} 
+ \hline \multicolumn{1}{|c|}{\textbf{Spalte}} & \multicolumn{1}{|c|}{\textbf{Typ}} & \multicolumn{1}{|c|}{\textbf{Null}} & \multicolumn{1}{|c|}{\textbf{Standard}} & \multicolumn{1}{|c|}{\textbf{Verweise}} & \multicolumn{1}{|c|}{\textbf{Bedeutung}} \\ \hline \hline
+\textbf{\textit{id}} & char(6) & Nein &  &  & Kammerakennung \\ \hline 
+\textbf{\textit{abid}} & char(10) & Nein &  &  & Autobahnkennung \\ \hline 
+description & varchar(100) & Ja & NULL &  & Beschreibung \\ \hline 
+latitude & double(12,2) & Ja & NULL &  & Geographischer Breitengrad\\ \hline 
+longitude & double(12,2) & Ja & NULL &  & Geographischer Längengrad\\ \hline 
+refcount & int(11) & Ja & 0 &  & Referenzzähler\\ \hline 
+ \end{tabular}
+
+\subsection{Datenserialisierung}
+
 
 
 \section{Client}
