@@ -32,7 +32,7 @@ Grundsätzlich ist die 1-dimensionale Faltung im kontinuierlichen Raum definiert
 
 $$ (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)g(t - \tau) d\tau $$
 
-Für die Bildverarbeitung ist jedoch die Faltung im kontinuierlichen 2-dimensionalen Raum relevant.
+Für die Bildverarbeitung ist jedoch die Faltung im diskreten 2-dimensionalen Raum relevant.
 Hierfür wird statt dem Integral, die Doppelsumme über alle Werte {\em n} gebildet (in {\em x}- und {\em y}-Richtung) und der Filter {\em k} mit dem Bild {\em I} an einem Punkt {\em (x, y)} gefaltet:
 
 $$ I\mbox{*}(x, y) = \sum_{i=1}^{n}\sum_{j=1}^{n} I(x - i, y - j)k(i, j) $$

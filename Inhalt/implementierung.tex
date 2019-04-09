@@ -151,6 +151,23 @@ Schließlich wird beim aktualisieren der Position des Nutzers, bzw. auch der Fah
 Es wird also nach jeder Positionsänderung geprüft, welche Kameras relevant sind. Diese werden dann Markiert, sodass die spätere Bildanalyse weiß, welche Kameras analysiert werden sollen.
 
 \subsection{Bilder laden}
+Das Laden der Bilder gliedert sich in 3 Hierarchiestufen.
+Auf der untersten Ebene kann über die {\em fetch}-Methode des {\em BackendConnectors} ein Binärstream an Bilddaten vom Backend für eine Kamera geladen werden.
+Da das Backend innerhalb dieses Streams alle Bilder liefert, die es zwischen gepuffert hat, müssen diese zunächst voneinander getrennt werden.
+
+Eine Hierarchieebene darüber regelt der {\em MultiImageLoader} die Verarbeitung.
+Nach Erhalt der Rohdaten des Backends wird der Binärstrom aufgespalten.
+Jedes Teilbild innerhalb des Stroms hat einen Kopf welcher aus 4 Bytes für die Länge des Bildes und 8 Bytes für den Aufnahmezeitpunkt des Bildes besteht.
+Nach den Kopfdaten folgt das eigentliche Bild. Der gesamte Strom besteht nun einer Folge von Kopf und Bild. Wobei zu beachten gilt, dass die Bytereihenfolge des Kopfes {\em Little-Endian} ist, und nicht {\em Big-Endian} wie auf den meisten Android Geräten verwendet.
+
+Es wird also die Länge des Bildes gelesen und konvertiert, danach der Zeitpunkt gelesen und konvertiert und anschließend das Bild über die vorher eingelesene Länge extrahiert. Dieser Vorgang wiederholt sich solange, bis Idealerweise keine Bytes mehr im Strom sind, oder im Fehlerfall die aus dem Kopf entnommene Länge des Bildes länger ist als übrige Bytes im Strom vorhanden sind.
+
+Das Backend liefert standardmäßig jedoch alle Bilder für eine Kamera die es zwischengespeichert hat. Um also nicht bei jeder Anfrage alle Bilder alten Bilder erneut empfangen und verarbeiten zu müssen, wird in der obersten Hierarchiestufe vom {\em CameraImageFetcher} das Strukturierte laden der Bilder koordiniert.
+
+Für jede der relevanten Kameras existiert eine Instanz, die von außerhalb alle 29 aufgefordert wird neue Bilder abzurufen. Das sorgt, dafür, dass mindestens 2 mal innerhalb der Aktualisierungsperiode des Straßenverkehrszentrums auf neue Bilder geprüft wird, um möglichst schnell auf Stau reagieren zu können und die Latenz des Ladens und Verarbeitens der Bilder zu kompensieren.
+
+Die vom {\em MultiImageLoader} empfangenen Bilder werden also zwischengespeichert. Bei einem neuen Abfrageintervall kann über das Durchreichen des Zeitstempels des letzten empfangenen Bildes an den {\em BackendConnector} das Backend dazu instruiert werden, lediglich die Bilder zu senden, die jünger als der besagte Zeitstempel sind.
+
 \subsection{Bilder verarbeiten}
 \subsection{Benutzeroberfläche}
 \subsection{Text-To-Speech}
