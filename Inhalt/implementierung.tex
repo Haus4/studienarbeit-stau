@@ -36,16 +36,13 @@ Bei den Datensätzen die zu persistieren sind handelt es sich dabei um:
 \end{itemize}
 Jeder dieser Datensätze besitzt in der Datenbank eine eigene Tabelle mit einem jeweils eigenen Datenbank-Schema. 
 Wichtig bei der Erstellung der jeweiligen Schemata war dabei geeignete Datentypen für die Bilder zu finden, damit diese korrekt und vollständig eingepflegt werden können.
-Das Schema für die Kamera-Metadaten ist wie folgt aufgebaut (Primärschlüssel ist fett gedruckt) :
- \begin{tabular}{|l|c|c|c|l|l|l|} 
- \hline \multicolumn{1}{|c|}{\textbf{Spalte}} & \multicolumn{1}{|c|}{\textbf{Typ}} & \multicolumn{1}{|c|}{\textbf{Null}} & \multicolumn{1}{|c|}{\textbf{Standard}} & \multicolumn{1}{|c|}{\textbf{Verweise}} & \multicolumn{1}{|c|}{\textbf{Bedeutung}} \\ \hline \hline
-\textbf{\textit{id}} & char(6) & Nein &  &  & Kammerakennung \\ \hline 
-\textbf{\textit{abid}} & char(10) & Nein &  &  & Autobahnkennung \\ \hline 
-description & varchar(100) & Ja & NULL &  & Beschreibung \\ \hline 
-latitude & double(12,2) & Ja & NULL &  & Geographischer Breitengrad\\ \hline 
-longitude & double(12,2) & Ja & NULL &  & Geographischer Längengrad\\ \hline 
-refcount & int(11) & Ja & 0 &  & Referenzzähler\\ \hline 
- \end{tabular}
+Das Schema für die Datenbank ist auf Abbildung~\ref{fig:dbschema} zu sehen (Primärschlüssel ist fett gedruckt). "`ABID"' bezeichnet dabei die jeweilige Kennung für die Straße. Ein Beispiel hierfür wäre die Autobahnkennung A5.
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=15cm]{Bilder/db-schema} \\
+ \caption{Datenbank Schema}
+ \label{fig:dbschema}
+\end{figure}
 
 \subsection{Datenserialisierung}
 
