@@ -22,7 +22,7 @@ Informationen über die jeweiligen Kameras werden über den SVZ-Server in versch
 \item{Name der nächsten Ausfahrt mit Autobahnkennung}
 \item{Position der Kamera}
 \end{itemize}
-Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras alle 30 Sekunden erneuert werden. Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
+Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras von der SVZ alle 30 Sekunden erneuert werden. Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
 Ein Datensatz der nicht über HTTP-Aufrufe erhoben werden kann sind Masken für Bilder einer Verkehrskameras.
 Dabei handelt es sich um Bilder im PNG-Format, welche zur Vorverarbeitung von Bildern verwendet wird. Diese müssen manuell erstellt und in die Datenbank eingepflegt werden, da im Rahmen der Arbeit kein vollständig korrekter Algorithmus zur Automatisierung dieser Aufgabe gefunden wurde.
 
@@ -44,9 +44,31 @@ Das Schema für die Datenbank ist auf Abbildung~\ref{fig:dbschema} zu sehen (Pri
  \label{fig:dbschema}
 \end{figure}
 
-\subsection{Datenserialisierung}
+Damit PHP-Skripte auf die MySQL-Datenbank zugreifen können gibt es zwei unterschiedliche APIs: Die "`PDO"'-API und die MySQLi-API. 
+PDO steht dabei für PHP Data-Objects und bietet eine Unterstützung von mehreren Datenbank-Treibern. 
+MySQLi, auch MySQL Improved Extension, begrenzt sich auf die Unterstützung MySQL, bietet aber auch eine erweiterte Unterstützung neuer Funktionen von MySQL.
+Da sich die Implementierung in dieser Arbeit auf eine MySQL-Unterstützung beschränkt wurde die letztere Programmier-Schnittstelle verwendet.
 
+Damit die Datenbank mit Bildern, welche alle 30 Sekunden gespeichert werden, vollläuft gibt es einen Lösch-Mechanismus der alte Datensätze automatisch aufräumt. 
+Dieser ist in PHP implementiert und überprüft nach dem Einfügen eines Datensatzes, ob mehr als 10 Datensätze vorhanden sind.
+Falls dies der Fall ist werden alle Datensätze, welche älter als der zehnt älteste Datensatz sind, gelöscht.
 
+\subsection{Datenbereitstellung}
+Daten lassen sich vom Client, wie auf Abbildung~\ref{fig:serverarch} zu sehen, über HTTP-Anfragen an PHP-Skripten abrufen. Es gibt hierbei unterschiedliche Skripte, die für jeweils unterschiedliche Datensätze und Darstellungsarten verantwortlich sind:
+\begin{itemize}
+\item{kameras.php: Zuständig für das Abrufen aller erreichbaren Kameras mit deren Kennung}
+\item{fetchmask.php: Zuständig für die Abfrage einer Maske für eine Verkehrskamera}
+\item{fetcher.php: Zuständig für Abfragen von Bildern einer Verkehrskamera}
+\end{itemize}
+Das Skript "`kameras.php"' gibt bei einer Anfrage eine leerzeichen-separierte Liste aller Kennungen von Kameras zurück, welche eine Maske besitzen und einen Referenzzähler größer eins. 
+Der Referenzzähler ist dabei eine Hilfsvariable für das Backend, welche Kameras von Clients benötigt werden und daher die Bilder von ihnen heruntergeladen werden sollten.
+Ein Client kann für eine oder mehrere Kameras den Referenzzähler inkrementieren, indem er das "`refcounter.php"' Skript mit den jeweiligen PHP-Skripten aufruft.
+Das Skript "`fetchmask.php"' wird mit zwei Query-Paramteren aufgerufen: der Kamerakennung und der Ausrichtung, wobei letzteres ein Binärwert ist. 
+Es liefert, wie der Name bereits verrät, das PNG-Bild einer Maske für eine Kamera.
+Das letzte Skript "`fetcher.php"' wird mit nur einem Query-Parameter für die Kamerakennung aufgerufen. 
+Dieses Skript liefert einen Binärstrom aller gespeicherten Bilder einer Verkehrskamera, sowie den jeweiligen Zeitpunkt (in Unix-Zeit), wann dieses Bild auf dem SVZ-Server gespeichert wurde. 
+Damit diese Daten korrekt vom Client gelesen werden können werden die Daten in folgender Reihenfolge gesendet: Die Länge in Bytes des Zeitpunktes und des Bildes zusammen, der Zeitpunkt und Unix-Zeit und abschließend die Bytes des zusendenden JPEG-Bildes.
+\newpage
 
 \section{Client}
 Der Client wird als eine Android Anwendung realisiert, die durch Kommunikation mit dem Backend und der Straßenverkehrszentrale das Problem der Stauerkennung so effizient und ressourcensparend wie möglich löst.
