@@ -20,6 +20,8 @@ import com.momo5502.stauanalyse.execution.CameraImageExecuter;
 import com.momo5502.stauanalyse.execution.EvaluationExecutor;
 import com.momo5502.stauanalyse.execution.PositionExecuter;
 import com.momo5502.stauanalyse.fragment.FragmentAdapter;
+import com.momo5502.stauanalyse.jam.JamAnnouncer;
+import com.momo5502.stauanalyse.jam.JamStatus;
 import com.momo5502.stauanalyse.position.Direction;
 import com.momo5502.stauanalyse.position.Position;
 import com.momo5502.stauanalyse.speech.Speaker;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     private MapView map;
     private Speaker speaker;
+    private JamAnnouncer jamAnnouncer;
 
     private PowerManager.WakeLock wakeLock;
 
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
         setupTabs();
 
         speaker = new Speaker(getApplicationContext());
+        jamAnnouncer = new JamAnnouncer(speaker);
 
         delayUntilLoaded();
     }
@@ -181,12 +185,11 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
                 // TODO: Configure this for each camera
                 int limit = 40;
 
-                int halfLimit = (limit / 2);
-                int cars = evaluatedImage.getObjects().size();
-                if (cars > halfLimit) {
-                    int percent = Math.min((100 * (cars - halfLimit)) / (limit - halfLimit), 100);
+                JamStatus jamStatus = new JamStatus(camera, limit, evaluatedImage.getObjects().size());
+                jamAnnouncer.addStatus(jamStatus);
+
+                if (jamStatus.isJammed()) {
                     cameraRow.update(evaluatedImage, true);
-                    speaker.speak(cars + " Autos erkannt auf " + camera.getTitle() + ". Es ist zu " + percent + "% Stau.");
                 } else {
                     cameraRow.update(evaluatedImage, false);
                 }
@@ -195,6 +198,8 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     }
 
     public void removeOldCameras(final List<Camera> cameras) {
+        jamAnnouncer.updateCameras(cameras);
+
         new Handler(Looper.getMainLooper()).post(() -> {
             synchronized (cameraStatusMap) {
                 List<Camera> camerasToRemove = cameraStatusMap.keySet() //
@@ -310,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     protected void onDestroy() {
         super.onDestroy();
 
-        if(wakeLock != null && wakeLock.isHeld()) {
+        if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
     }
