@@ -4,9 +4,9 @@ Im folgenden Kapitel wird die praktische Implementierung der in der Arbeit erarb
 Für die Implementierung der Arbeit wurde ein Backend konzipiert, welches Informationen und Bilder von Verkehrskameras für Clients vorenthält. Das Ziel ist es dabei Daten der Straßenverkehrszentrale regelmäßig anzufragen und für den Client zu persistieren. Somit wird ermöglicht, dass der Client auch auf ältere Datensätze der Straßenverkehrszentrale zugreifen kann. Weiterhin ermöglicht soll das Backend die Daten in einem möglichst kompakten Format an den Client senden können, damit auch über schwache zelluläre Netzwerkverbindungen von Clients die Daten relativ zügig empfangen können. 
 \subsection{Infrastruktur}
 Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die zu verwendenden Technologien beachtet. So soll die resultierende Anwendung auf dem Apache Server eines geteilten Webhosts laufen. Der Apache Server des Webhosts erlaubt das Ausführen von PHP-Skripten, welche für Anfragen und Verarbeitung von Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden können. Für die Persistenz von Daten besitzt der Webhost alternativ zum Dateisystem auch eine MySQL-Datenbank.
-\begin{figure}[ht]
+\begin{figure}[hp]
    \centering
-     \includegraphics[width=11cm]{Bilder/server-arch} \\
+     \includegraphics[width=13cm]{Bilder/server-arch} \\
  \caption{Server Architektur}
  \label{fig:serverarch}
 \end{figure}
@@ -14,7 +14,8 @@ Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die z
 Auf Abbildung~\ref{fig:serverarch} ist zu sehen, dass die Verbindung zum Client über das HTTP-Protokoll verläuft. Der Vorteil ist hierbei, dass das Protokoll bereits von dem Apache Server unterstützt wird und eine Verschlüsselung über TLS eingesetzt werden kann.
 \subsection{Datenerhebung}
 \label{sec:datenerhebung}
-Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Diese können mithilfe der cURL-API in PHP angestoßen werden. Bei "`cURL"' handelt es sich dabei um eine Programm-Bibliothek, mithilfe welcher sich Daten über verschiedene Protokolle übertragen lassen. \newline
+Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Diese können mithilfe der cURL-API in PHP angestoßen werden. Bei "`cURL"' handelt es sich dabei um eine Programm-Bibliothek, mithilfe welcher sich Daten über verschiedene Protokolle übertragen lassen.
+
 Informationen über die jeweiligen Kameras werden über den SVZ-Server in verschieden Formaten bereitgestellt. So sind die Metadaten der Kameras als Textdatei abgespeichert, während die Bilder direkt im JPEG-Format abgerufen werden können. Unter Metadaten der Verkehrskameras sind bei folgende Informationen zu verstehen: 
 \begin{itemize}
 \item{Eine eindeutige alphanumerische Kamerakennung}
@@ -22,7 +23,8 @@ Informationen über die jeweiligen Kameras werden über den SVZ-Server in versch
 \item{Name der nächsten Ausfahrt mit Autobahnkennung}
 \item{Position der Kamera}
 \end{itemize}
-Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras von der SVZ alle 30 Sekunden erneuert werden. Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
+Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras von der SVZ alle 30 Sekunden erneuert werden. 
+Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
 Ein Datensatz der nicht über HTTP-Aufrufe erhoben werden kann sind Masken für Bilder einer Verkehrskameras.
 Dabei handelt es sich um Bilder im PNG-Format, welche zur Vorverarbeitung von Bildern verwendet wird. Diese müssen manuell erstellt und in die Datenbank eingepflegt werden, da im Rahmen der Arbeit kein vollständig korrekter Algorithmus zur Automatisierung dieser Aufgabe gefunden wurde.
 
@@ -63,8 +65,10 @@ Daten lassen sich vom Client, wie auf Abbildung~\ref{fig:serverarch} zu sehen, �
 Das Skript "`kameras.php"' gibt bei einer Anfrage eine leerzeichen-separierte Liste aller Kennungen von Kameras zurück, welche eine Maske besitzen und einen Referenzzähler größer eins. 
 Der Referenzzähler ist dabei eine Hilfsvariable für das Backend, welche Kameras von Clients benötigt werden und daher die Bilder von ihnen heruntergeladen werden sollten.
 Ein Client kann für eine oder mehrere Kameras den Referenzzähler inkrementieren, indem er das "`refcounter.php"' Skript mit den jeweiligen PHP-Skripten aufruft.
+
 Das Skript "`fetchmask.php"' wird mit zwei Query-Paramteren aufgerufen: der Kamerakennung und der Ausrichtung, wobei letzteres ein Binärwert ist. 
 Es liefert, wie der Name bereits verrät, das PNG-Bild einer Maske für eine Kamera.
+
 Das letzte Skript "`fetcher.php"' wird mit nur einem Query-Parameter für die Kamerakennung aufgerufen. 
 Dieses Skript liefert einen Binärstrom aller gespeicherten Bilder einer Verkehrskamera, sowie den jeweiligen Zeitpunkt (in Unix-Zeit), wann dieses Bild auf dem SVZ-Server gespeichert wurde. 
 Damit diese Daten korrekt vom Client gelesen werden können werden die Daten in folgender Reihenfolge gesendet: Die Länge in Bytes des Zeitpunktes und des Bildes zusammen, der Zeitpunkt und Unix-Zeit und abschließend die Bytes des zusendenden JPEG-Bildes.
