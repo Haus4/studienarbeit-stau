@@ -195,6 +195,68 @@ Für jede der relevanten Kameras existiert eine Instanz, die von außerhalb alle
 Die vom {\em MultiImageLoader} empfangenen Bilder werden also zwischengespeichert. Bei einem neuen Abfrageintervall kann über das Durchreichen des Zeitstempels des letzten empfangenen Bildes an den {\em BackendConnector} das Backend dazu instruiert werden, lediglich die Bilder zu senden, die jünger als der besagte Zeitstempel sind.
 
 \subsection{Bilder verarbeiten}
+Die Verarbeitung der Bilder wird von der Klasse {\em EvaluationExecutor} verwaltet.
+Diese hört sowohl auf Änderungen der relevanten Kameras, als auch auf Änderungen der Fahrtrichtung.
+
+Für jede Kamera wird zunächst eine passende Maske für die entsprechende Fahrrichtung vom Backend geladen.
+Hierfür kann über den {\em BackendConnector} mit der {\em mask} die entsprechende Maske angefordert werden.
+
+Diese dient bei der Verarbeitung dazu, die irrelevanten Teile des Bildes, wie beispielsweise Fahrbahnränder oder die Gegenfahrbahn zu verdecken, um das Ergebnis zu optimieren.
+
+Ebenfalls wird der {\em EvaluationExecutor} benachrichtigt, sobald neue Bilder vom Backend empfangen wurden.
+Um diese nun zu Verarbeiten, gibt es für jede Kamera eine Instanz der {\em ImageEvaluator}-Klasse, welche für die eigentliche Verarbeitung der empfangenen Bilder zuständig ist.
+
+Die eigentliche Verarbeitung der Bilder gliedert sich in 5 Teilschritte.
+
+\paragraph*{Vorverarbeitung}
+Bei der Vorverarbeitung wird ein empfangenes Bild so aufbereitet, dass die nachfolgende Verarbeitung bessere Ergebnisse liefert.
+
+Hierfür wird das Bild zunächst gemittelt, um mögliche Rauschanteile zu reduzieren.
+Mit der von OpenCV bereitgestellten Methode {\em Imgproc.blur} lässt sich ein Bild weichzeichnen.
+
+Anschließend wird auf das weichgezeichnete Bild die geladene Maske aufgetragen.
+
+Wichtig ist, dass die Maske nach der Mittlung aufgetragen wird und nicht vorher, da sonst die Maske negative Auswirkungen auf die Qualität des gemittelten Bildes haben kann.
+
+\paragraph*{Verarbeitung}
+Bei der Verarbeitung gilt es die Autos vom Hintergrund zu trennen. Dazu wird der von OpenCV bereitgestellte Background-Subtractor namens {\em MOG} verwendet.
+Dieser liefert auf ein übergebenes Bild ein Binärbild zurück, bei welchem schwarze Pixel den Hintergrund symbolisieren und weiße Pixel die Objekte im Vordergrund, welche idealerweise alles Autos sein sollten.
+
+Damit dieser Algorithmus jedoch verlässliche Ergebnisse liefert, muss dieser zunächst trainiert werden. 
+Aus diesem Grund liefert das Backend nicht nur das aktuellste Bild, sondern eine Sequenz von zeitlich eng beieinander liegenden Bildern, mit welchen der Background-Subtractor trainiert werden kann. 
+
+\paragraph*{Nachbearbeitung}
+Dieser Schritt und alle Nachfolgenden, sind lediglich für die Bilder relevant, die auch ausgewertet werden sollen, und nicht nur zum Trainieren des Background-Subtractors dienen.
+
+Bei der Nachbearbeitung wird versucht jegliche Artefakte oder Ungenauigkeiten, die bei der Verarbeitung des Bildes entstanden sind, zu entfernen.
+Beispielsweise werden Autos nicht immer als geschlossene Konturen dargestellt oder es entstehen Verbindungen zwischen Autos und größeren Transportern, die parallel zueinander fahren, wodurch diese als eine einzige Kontur erkannt werden könnten. Darüber hinaus kann es vorkommen, dass vereinzelt weiße Pixel auftauchen, welche vermutlich durch Rauschen, Schatten, oder andere Bedingungen fälschlicherweise als Objekte eingestuft wurden.
+
+Um diese Artefakte zu entfernen, kann eine Kombination von morphologischen Operatoren angewendet werden.
+
+Zunächst wird versucht über {\em Closing} die Konturen der Autos zu schließen, bzw. getrennte Teile eines Autos zu vereinen.
+Anschließend sollen über {\em Opening} kleine weiße Pixel und alleinstehende Artefakte entfernt werden.
+
+Zuletzt wird mit einer {\em Dilatation} versucht die Konturen der Autos zu verkleinern, um mögliche Verbindungen oder Fehlinterpretationen von Verbindungen zu Transportern zu verhindern.
+
+\paragraph*{Analyse}
+Bei der Analyse wird versucht Konturen zu erkennen, und diese zu vereinen.
+Über die Methode {\em Imgproc.findContours} von OpenCV, lassen sich Konturzüge aus einem Binärbild auslesen.
+Zur effizienteren Verarbeitung, wird der Polygonkonturzug jedoch auf einfache Rechtecke reduziert, indem der Minimale und Maximale Punkt der Kontur in sowohl X-, als auch Y-Richtung zur Bildung des Rechtecks gewählt wird, wodurch eine Hülle um den Zug gebildet wird.
+
+Da es trotz Nachbearbeitung vorkommen kann, dass Konturen innerhalb von Konturen erkannt werden, oder einige sich überlappen, wird versucht Konturen zu vereinen.
+
+Dabei werden Konturen innerhalb einer anderen Kontur vollständig entfernt. Überlappen sich zwei Konturen, so werden diese zu einer großen Kontur vereint.
+
+Dieser Prozess wird solange iterativ durchgeführt, bis sich keine Kontur mehr verändert.
+
+\paragraph*{Klassifikation}
+Bei der Klassifikation wird nun versucht anhand der Konturen eine Aussage über die Verkehrssituation zu treffen.
+Hierbei wird jede erkannte Kontur als Auto betrachtet.
+Um nun einzuschätzen, ob Stau ist oder nicht, wird der Anzahl der Konturen mit einem vordefinierten Limit für die jeweilige Kamera verglichen. Hierbei wird jedoch nicht wie bei einem Thresholding-Verfahren ab überschreiten der Grenze Stau erkannt, sondern versucht ab einer Anzahl an Konturen größer als die Hälfte des Limits eine prozentuale Aussage über die Stauwahrscheinlichkeit zu treffen.
+
+Liegt das Limit einer Kamera bei beispielsweise 40 Autos und es wurden 30 Autos erkannt, so ist die Hälfte des Limits (20) überschritten. Es wird also versucht eine Aussage über die Wahrscheinlichkeit zu treffen. Da 30 Autos genau in der Mitte zwischen der Hälfte und dem gesamten Limit liegen, wird eine Stauwahrscheinlichkeit von 50\% angenommen.
+
+
 \subsection{Benutzeroberfläche}
 \subsection{Text-To-Speech}
 \subsection{Bluetooth}
