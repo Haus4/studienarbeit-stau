@@ -1,21 +1,19 @@
 \chapter{Analyse}
 In diesem Kapitel wird die Problemlage im Bezug zum derzeitigen Stand der Technik analysiert.
-Etablierte Verfahren werden mithilfe eines geeigneten Testdatensatzes anschließend evaluiert.
+Etablierte Verfahren, welche für eine Lösung geeignet wären, werden mithilfe von Bespielen aus der Literatur vorgestellt.
+Anschließend werden die Verfahren mit einem geeigneten Testdatensatz evaluiert.
+Hierbei werden auch die jeweilige Ressourcenlast und Effizienz gemessen.
 Das geeignetste Verfahren wird für den weiteren Verlauf der Arbeit bestimmt.
-* Vorarbeit -> Ausarbeiten des bestmöglichen Algorithmus\newline
-
-* Verkehrskameras laden\newline
-* Verkehrsbilder laden über Verkehrskameras\newline
-* Auswahl verschiedener Ansätze\newline
-* Vergleich der Ansätze in Bezug auf Ressourcenlast und Effizienz bzw. Effektivität\newline
-* Datensätze generieren, um Vergleichskriterien zu erstellen\newline
 
 \section{Stand der Technik}
 Bildverarbeitung ist ein Thema, dass schon sehr lange im Bereich der Informationstechnik und Informatik erforscht wird.
 Besonders durch derzeitige Entwicklungen in der künstlichen Intelligenz und der Objekterkennung bekommt das Thema in der heutigen Zeit eine hohe Bedeutung für die technische Entwicklung. Im folgenden Kapitel werden einige der zum derzeitigen Zeitpunkt etablierten Verfahren der Bildverarbeitung im Kontext der Aufgabenstellung evaluiert und bewertet.
 
 \subsection{Statische Verfahren}
-Verfahren, welche ohne einen speziellen Kontext direkt auf die Pixelwerte eines Bildes angewendet werden können, werden im folgenden als "`statische Verfahren"' beschrieben. In den meisten Fällen sind diese Verfahren besonders ressourceneffizient, da sie mit weniger Speicher- und Zeitkomplexität auskommen.
+Verfahren, welche ohne einen speziellen Kontext direkt auf die Pixelwerte eines Bildes angewendet werden können, werden im folgenden als "`statische Verfahren"' beschrieben. 
+
+Diese Verfahren benötigen keine Vorverarbeitung oder Trainingsdaten um verwendet zu werden.
+In den meisten Fällen sind diese Verfahren besonders ressourceneffizient, da sie mit weniger Speicher- und Zeitkomplexität auskommen.
 \subsubsection{Pixelorientierte Bildanalyse}
 \textbf{Beschreibung}\newline
 Ein trivialer Ansatz um Veränderungen zwischen zwei oder mehreren Bildern zu erkennen kann durch einen Vergleich der Pixelwerte ermöglicht werden.
@@ -50,12 +48,15 @@ So kann zum Beispiel der Lichtkegel eines Scheinwerfers bei Nacht das Ergebnis v
 \subsubsection{Kantenerkennung}
 \textbf{Beschreibung}\newline
 Kantenerkennung bezeichnet eine Klasse von Verfahren, bei welchen Kanten im Bild über abrupte Intensitätswert-Übergänge gefunden werden. 
-Dabei werden in der Regel Faltungskerne (siehe \ref{sec:Faltungskerne}) verwendet, um die Ableitung der Intensitätswert-Funktion in einem Grauwert-Bild zu ermitteln (Abbildung~\ref{fig:gupte1}).
-Das bedeutet man muss für die Anwendung des Verfahrens das Bild in den Grauwert-Bereich übertragen.
-Die Kanten können dann anschließend für die Objekterkennung verwendet werden. Um leicht überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \ref{sec:MorphologischeOperatoren}).
+Dabei werden in der Regel Faltungskerne (siehe \ref{sec:Faltungskerne}) verwendet, um die Ableitung der Intensitätswert-Funktion in einem Grauwert-Bild zu ermitteln.
+
+Das bedeutet für die Anwendung des Verfahrens muss das Bild in den Grauwert-Bereich übertragen werden.
+Die entstandenen Kanten (Abbildung~\ref{fig:gupte1}) können dann anschließend für die Objekterkennung verwendet werden. 
+Um leicht überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \ref{sec:MorphologischeOperatoren}).
+Diese werden auch verwendet um kleine irrelevante Kanten aus dem Bild zu entfernen.
 \newline\newline
 \textbf{Literatur}\newline
-Gupte und Papanikolopoulos stellen ein solches Verfahren in \cite{gupte2000algorithms} vor. Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. Das Ergebnis wird anschließend mithilfe von der Anwendung von mehreren Dilatation-Operationen verbessert, da nicht geschlossene und im Objekt liegende Kanten zur einer großen Kante verbunden werden (Abbildung~\ref{fig:gupte2}).
+Gupte und Papanikolopoulos stellen eine exemplarische Implementierung  des Verfahrens in ihrer Arbeit~\cite{gupte2000algorithms} vor. Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. Das Ergebnis wird anschließend mithilfe von der Anwendung von mehreren Dilatation-Operationen verbessert, da nicht geschlossene und im Objekt liegende Kanten zur einer großen Kante verbunden werden (Abbildung~\ref{fig:gupte2}).
 \newline\newline
 \textbf{Fazit}\newline
 Dieses Verfahren ist ebenfalls wenig komplex und lässt sich einfach implementieren. 
@@ -83,19 +84,21 @@ Jedoch besitzt es auch einige Nachteile, wie zum Beispiel, dass sich Schattenwur
 Als "`dynamische Verfahren"' werden im folgenden Verfahren beschrieben, die nur innerhalb eines bestimmten Kontextes auf ein Bild angewendet werden sein. So kann es sein, dass das Verfahren bestimmte Trainingsdaten oder Vergleichswerte von anderen Bildern benötigt. Dies erhöht in den meisten Fällen die Genauigkeit des Verfahrens, aber die Ressourceneffizienz wird drastisch verringert.
 \subsubsection{Neuronale Netze}
 \textbf{Beschreibung}\newline
-Neuronale Netze sind ein Beispiel für Verfahren aus dem maschinellen Lernen. 
+Neuronale Netze sind ein Beispiel für Verfahren aus dem maschinellen Lernen.
+Hierbei wird versucht die Arbeitsweise des menschlichen Gehirns nachzuempfinden.
+Neuronale Netze besitzen daher auch eine Art Speicher der antrainiertes Wissen abbildet.
+Ein neuronales Netz kann somit für eine bestimmte Aufgabe trainiert werden, welche dann relativ zuverlässig von dem Netz gelöst werden kann.
+Ziel von dem Training ist hierbei durch Anwendung des Netzes die Fehlerquote zu minimieren.
+Sobald ein neuronales Netz fertig trainiert wurde kann der Zustand des Netzes serialisiert und abgespeichert werden, damit es in der Zukunft weiterverwendet werden kann.
 \newline\newline
 \textbf{Literatur}\newline
-Die Arbeit \cite{hkkDhbw} geht im Detail darauf ein wie das Problem der Stauerkennung auf Bildern mithilfe eines konvolutionalen neuronalen Netzwerks gelöst werden kann. 
-Jedoch fällt bei Laufzeit eines komplexen neuronalen Netzes auf, dass das Laden und Benutzen der interne Zustandsmaschine einen relativ hohen Hauptspeicher-Bedarf mit sich bringt.
-Der Vorteil der sich jedoch hierdurch bietet ist, dass Bilder nicht statisch analysiert werden, sondern das Netz dynamisch auf Bilder und Verhältnisse, wie zum Beispiel Perspektive und Wetter, trainiert wird.
+In der Arbeit \cite{hkkDhbw} wurde ein sogenanntes "`konvolutionales"' neuronales Netz für die Erkennung von stockendem Verkehr auf Bildern verwendet.
+Diese Netze nutzen unter anderem auch Faltungskerne (siehe~\ref{sec:Faltungskerne}) um Objektklassifizierung auf einem Bild durchzuführen.
 \newline\newline
 \textbf{Fazit}\newline
+Bei der Laufzeit eines komplexen neuronalen fällt Netzes auf, dass das Laden und Benutzen der Neuronen einen relativ hohen Hauptspeicher-Bedarf mit sich bringt.
+Der Vorteil der sich jedoch hierdurch bietet ist, dass Bilder nicht statisch analysiert werden, sondern das Netz dynamisch auf Bilder und Verhältnisse, wie zum Beispiel Perspektive und Wetter, trainiert wird.
 Dieses Verfahren wurde für die folgende Implementierung nicht gewählt, da diese Arbeit einen besonderen Fokus auf die Ressourcensparsamkeit des Verfahrens setzt.
-* Gewählter Ansatz des letzten Jahrgangs\newline
-* Vermutlich bester Ansatz, da keine statische Analyse der Bilder durchgeführt wird\newline
-	sondern dynamisch auf konkrete Bilder und Verhältnisse (Perspektive und Situation) trainiert wird
-* Nicht durchgeführt, da feststand, dass der Ansatz zu Ressourcenintensiv ist und Ziel der Arbeit war Ressourcen zu sparen\newline
 
 \subsubsection{Background Subtraction}
 \textbf{Beschreibung}\newline
