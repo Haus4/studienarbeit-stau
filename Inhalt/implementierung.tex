@@ -293,3 +293,10 @@ Um die Sprachausgabe auch über eine Freisprechanlage in einem Auto zu ermöglic
 Ist ein kompatibles Gerät gekoppelt, übermittelt der {\em Speaker} an das System, dass der Bluetooth-SCO-Modus für die Audiowiedergabe aktiviert werden soll. Das sorgt dafür, dass Töne nicht mehr über reguläre Lautsprecher ausgegeben werden sollen, sondern über ein Bluetooth-Headset.
 
 Nun gilt es den Verkehrszustand über die Sprachausgabe zu übermitteln.
+Optimal wäre es, vor jeder möglichen Ausfahrt anzusagen, ob Stau ist oder nicht, um noch rechtzeitig abfahren zu können.
+Da das erkennen der Ausfahrten mit rechtzeitiger ansage an die Funktionalität eines eigenständigen Navigationssystems grenzt, übersteigt dieser Ansatz den Rahmen der Arbeit.
+Stattdessen wird Stau für jede Kamera individuell angesagt.
+Ist jedoch kein Stau auf den Kameras erkennbar, soll einmalig angesagt werden, dass kein Stau erkannt wurde.
+Da die Kameras jedoch zu unterschiedlichen Zeitpunkten ausgewertet werden, wird zunächst, nach Auswertung einer Kamera, geprüft, ob für die jeweilige Kamera bereits eine Ansage getätigt wurde, sofern auch Stau erkannt wurde. Falls nicht, wird der Name und der Standort der Kamera mit der ausgerechneten Stauwahrscheinlichkeit an den {\em Speaker übergeben und angesagt}. Liegt für jede relevante Kamera eine Auswertung vor, wobei bei keiner Kamera ein Stau erkannt wurde, so wird eine Ansage an das System übergeben, die dem Nutzer vermittelt, dass kein Stau erkannt wurde.
+
+Ändern sich nun die relevanten Kameras, weil der Nutzer beispielsweise an einigen vorbeigefahren ist, so wird erkannter Stau bei einer neuen Kamera zwar angesagt, jedoch nicht, wenn bei der Kamera bereits ein Stau erkannt wurde. Wurde nach Aktualisierung der Kameras immer noch kein Stau erkannt, so wird der Nutzer nicht erneut informiert.
