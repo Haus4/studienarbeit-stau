@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 
 import com.momo5502.stauanalyse.R;
@@ -26,6 +28,7 @@ import com.momo5502.stauanalyse.position.Direction;
 import com.momo5502.stauanalyse.position.Position;
 import com.momo5502.stauanalyse.speech.Speaker;
 import com.momo5502.stauanalyse.view.CameraRow;
+import com.momo5502.stauanalyse.view.DebugView;
 import com.momo5502.stauanalyse.vision.EvaluatedImage;
 
 import org.opencv.android.OpenCVLoader;
@@ -62,9 +65,13 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     private Map<Camera, CameraRow> cameraStatusMap = new HashMap<>();
     private TableLayout statusTable;
 
+    private DebugView debugView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        debugView = new DebugView(this);
 
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "StauWakeLock:");
@@ -110,6 +117,11 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     }
 
     private void setupApplication() {
+        LinearLayout detailsLayout = findViewById(R.id.detailsLayout);
+        if(detailsLayout != null) {
+            detailsLayout.addView(debugView.getView());
+        }
+
         if (map != null) {
             map.setTileSource(TileSourceFactory.MAPNIK);
             map.setBuiltInZoomControls(true);
@@ -250,6 +262,8 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     @Override
     public void onCamerasLoaded(List<Camera> cameras) {
+        debugView.markCamerasFetched();
+
         List<OverlayItem> markers = cameras.stream().map(c -> new OverlayItem(c.getId(), c.getTitle(), c.getLocation().getGeoPoint())).collect(Collectors.toList());
 
         ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(markers,
@@ -274,6 +288,8 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     @Override
     public void onPositionChanged(Position position) {
+        debugView.markGpsInitialized();
+
         if (map != null) {
             IMapController mapController = map.getController();
             mapController.setCenter(position.getGeoPoint());
@@ -282,6 +298,8 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     @Override
     public void onRelevantCamerasChanged(List<Camera> cameras, Optional<Direction> direction) {
+        debugView.markCamerasDetected();
+
         removeOldCameras(cameras);
 
         evaluationExecutor.updateDirection(direction);
@@ -297,11 +315,13 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     @Override
     public void onImageEvaluation(Camera camera, EvaluatedImage evaluatedImage) {
+        debugView.markCameraAnalyzed();
         updateStatus(camera, evaluatedImage);
     }
 
     @Override
     public void onDirectionChanged(Direction direction) {
+        debugView.maskDirectionDetected();
         /*if (direction == Direction.Frankfurt) {
             speaker.speak("Du gehst richtung Frankfurt.");
         } else if (direction == Direction.Basel) {
