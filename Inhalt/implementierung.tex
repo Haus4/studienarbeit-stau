@@ -256,7 +256,6 @@ Um nun einzuschätzen, ob Stau ist oder nicht, wird der Anzahl der Konturen mit 
 
 Liegt das Limit einer Kamera bei beispielsweise 40 Autos und es wurden 30 Autos erkannt, so ist die Hälfte des Limits (20) überschritten. Es wird also versucht eine Aussage über die Wahrscheinlichkeit zu treffen. Da 30 Autos genau in der Mitte zwischen der Hälfte und dem gesamten Limit liegen, wird eine Stauwahrscheinlichkeit von 50\% angenommen.
 
-\subsection{Benutzeroberfläche}
 \subsection{Bluetooth}
 Ein Wunsch war es, dass sich die Anwendung automatisch startet, sobald mit dem Auto gefahren wird.
 Hierfür muss demnach erkannt werden, wann ein Nutzer im Auto sitzt.
@@ -276,6 +275,28 @@ Dieser kann dem System mitteilen, welche Ereignisse für ihn relevant sind, soda
 Für den Start der Stauanalyse wird also ein Service mit dem namen {\em BluetoothService} registriert, welcher auf Events, bzw. Intents des Typs {\em android.bluetooth.device.action.ACL\_CONNECTED} hören. Dieses Ereignis wird ausgelöst, wenn eine neue Bluetooth-Verbindung aufgebaut wurde.
 
 Innerhalb des {\em BluetoothService} kann nun bei eintreffen der Benachrichtigung mit dem {\em BluetoothDeviceChecker} geprüft werden, ob das Gerät den Start der App auslösen soll. Ist das der Fall, so kann zum Start der Anwendung ein neuer Intent ausgelöst werden. Über diesen Intent kann dem System mitgeteilt werden, dass die Anwendung gestartet werden soll, falls sie nicht bereits gestartet wurde.
+
+\subsection{Benutzeroberfläche}
+Obwohl die Anwendung hauptsächlich akustisch mit dem Nutzer kommuniziert, wird eine graphische Oberfläche benötigt.
+Dennoch ist das Aussehen und die Funktionalität der Oberfläche sehr schlicht, da diese nur eine sekundäre Rolle spielt.
+
+Untergliedert wird die Anwendung dabei in 3 verschiedene Tabs, durch die navigiert werden kann:
+
+\paragraph*{Map}
+Die erste Ansicht ist eine Landkarte, die auf dem freien Kartendienst OpenStreetMaps basiert. % Vlt. Referenz?
+Diese soll sowohl den Standort des Nutzers anzeigen, als auch alle geladenen Kameras anzeigen, sodass der Nutzer eine Übersicht hat,
+welche Kameras es gibt, und wo sie positioniert sind.
+
+\paragraph*{Details}
+Die Detailseite zeigt dem Nutzer Details zum Analyseprozess.
+Zum einen lässt sich in einer Debugansicht sehen, welche Schritte des Analyseprozesses durchlaufen wurden (beispielsweise Feststellung des Standorts, Feststellung der Richtung, Laden der Kameras, Analyse der Bilder, usw.).
+Darüberhinaus hat der Nutzer auch die Möglichkeit zu jeder analysierten Kamera das zuletzt ausgewertete Bild zu sehen, auf welchem die erkannten Autos markiert wurden. Anhanddessen kann der Nutzer dann selbst noch einmal Einschätzen, ob die Aussage der Anwendung zur Verkehrslage korrekt ist, oder nicht.
+
+\paragraph*{Settings}
+Die Einstellungsseite dient zur Konfiguration der Bluetooth-Geräte.
+Hierbei sieht der Nutzer eine Liste aller mit dem Handy gepaarten Geräte und hat durch Anklicken dieser die Möglichkeit das Gerät zu speichern, sodass die Kupplung den Start der App auslöst.
+
+Ebenfalls gibt es eine zweite Liste, über die der Nutzer Geräte wieder entfernen kann, sodass diese den Start der App nicht mehr auslösen.
 
 \subsection{Stauansage}
 Die Ansage des Staus untergliedert sich technisch in zwei Teile. Im ersten Teil wird die grundsätzliche Textansage realisiert und zusätzlich die Integration einer Bluetooth-Freisprechanlage ermöglicht.
