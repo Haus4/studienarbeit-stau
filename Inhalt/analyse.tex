@@ -176,14 +176,28 @@ Um dennoch darauf zugreifen zu können, kann der {\em Referer} HTTP-Header mit d
 \subsection{Vergleichsdatensätze generieren}
 Bevor verschiedene Verfahren getestet und miteinander verglichen werden können, wird zunächst ein Vergleichsdatensatz benötigt.
 
-Hierzu reicht es jedoch nicht einfach Bilder herunterzuladen und diese selbst zu klassifizieren, denn manche Verfahren müssen zunächst trainiert werden. Background-Subtraction benötigt beispielsweise 5-10 Bilder als Training, um Hintergrund von Vordergrund unterscheiden zu können.
+%Hierzu reicht es jedoch nicht einfach Bilder herunterzuladen und diese selbst zu klassifizieren, denn manche Verfahren müssen zunächst trainiert werden. Background-Subtraction benötigt beispielsweise 5-10 Bilder als Training, um Hintergrund von Vordergrund unterscheiden zu können.
 
-* Zur Auswertung der Ansätze sind Vergleichsdaten nötig\newline
-* Viele Bilder zu Verschiedenen Verkehrskameras laden\newline
-* Verschiedene Tageszeiten verwenden (morgens, mittags, abends, nachts)\newline
-* Verschiedene Witterungsverhältnisse einbeziehen sofern möglich (Nebel, Regen, Sonne, ...)\newline
-* Auswertung ob Stau oder kein Stau (bzw. Verkehrslage einschätzen)\newline
-* Bilder über einen Ansatz Vorkategorisieren und manuell nachbessern\newline
+%Es muss also immer eine Gruppe von zeitlich nahe beieinanderliegenden Bildern vorliegen, um diese Auswerten zu können.
+
+Um nun den Datensatz zu generieren wird ein Python-Skript verwendet.
+Wird dieses gestartet, fängt es an periodisch für einige der Kameras auf der A5 Bilder herunterzuladen.
+
+Neben den Bildern selbst wird auch eine Metadatei im JSON-Format generiert.
+Diese enthält zunächst einen Zeitstempel, wann das Bild erstellt wurde.
+Außerdem enthält diese auch noch, wie viele Autos jeweils auf der linken und rechten Spur zu sehen sind, und ob anhand dessen Stau ist oder nicht.
+
+Um diese Informationen zu generieren, wird ein sehr prototypischer Algorithmus verwendet. Die Resultate sind dementsprechend nicht gerade akkurat, weshalb ein Mensch diese zusätzlich verifizieren muss. Um jedoch den Menschen dabei zu unterstützen, ist eine grobe Vorauswertung sehr Hilfreich.
+
+Um als Mensch die Bilder auswerten zu können, kann ein zweites Skript Abhilfe schaffen.
+
+Dazu gibt es in den Metadaten ein Feld, welches speichert, ob ein Bild bereits von einem Menschen verifiziert wurde.
+Mit dem Skript werden nun nacheinander alle noch nicht ausgewerteten Bilder angezeigt, wobei abwechselnd die linke, bzw. rechte Spur maskiert werden. Zusätzlich sieht man, ob die Vorauswertung für die angezeigte Spur Stau erkannt hat, oder nicht.
+
+Als Mensch hat man nun die Möglichkeit durch das Drücken der Enter-Taste zu speichern, dass Stau auf dem Bild zu sehen ist, bzw. durch das Drücken einer anderen Taste zu bestätigen, dass kein Stau zu sehen ist.
+
+Anschließend wird das nächste Bild, bzw. die nächste Spur angezeigt.
+Dies passiert solange, bis keine Bilder mehr ausgewertet werden müssen, bzw. der Nutzer das Skript beendet.
 
 \section{Auswahl des Verfahrens}
 * Augenmerk auf Genauigkeit
