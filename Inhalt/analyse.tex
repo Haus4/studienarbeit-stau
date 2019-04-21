@@ -174,6 +174,10 @@ Jedoch verbietet die Straßenverkehrszentrale den Zugriff auf die Bilder von au�
 Um dennoch darauf zugreifen zu können, kann der {\em Referer} HTTP-Header mit dem Hostnamen der Verkehrszentrale (http://svz-bw.de) beim Abrufen des Bildes mitgesendet werden, wodurch der Zugriff gewährt wird. 
 
 \subsection{Vergleichsdatensätze generieren}
+Bevor verschiedene Verfahren getestet und miteinander verglichen werden können, wird zunächst ein Vergleichsdatensatz benötigt.
+
+Hierzu reicht es jedoch nicht einfach Bilder herunterzuladen und diese selbst zu klassifizieren, denn manche Verfahren müssen zunächst trainiert werden. Background-Subtraction benötigt beispielsweise 5-10 Bilder als Training, um Hintergrund von Vordergrund unterscheiden zu können.
+
 * Zur Auswertung der Ansätze sind Vergleichsdaten nötig\newline
 * Viele Bilder zu Verschiedenen Verkehrskameras laden\newline
 * Verschiedene Tageszeiten verwenden (morgens, mittags, abends, nachts)\newline
