@@ -86,14 +86,27 @@ Als "`dynamische Verfahren"' werden im folgenden Verfahren beschrieben, die nur 
 \textbf{Beschreibung}\newline
 Neuronale Netze sind ein Beispiel für Verfahren aus dem maschinellen Lernen.
 Hierbei wird versucht die Arbeitsweise des menschlichen Gehirns nachzuempfinden.
-Neuronale Netze besitzen daher auch eine Art Speicher der antrainiertes Wissen abbildet.
+Neuronale Netze besitzen daher auch eine Art internen Speicher der antrainiertes Wissen abbildet.
 Ein neuronales Netz kann somit für eine bestimmte Aufgabe trainiert werden, welche dann relativ zuverlässig von dem Netz gelöst werden kann.
 Ziel von dem Training ist hierbei durch Anwendung des Netzes die Fehlerquote zu minimieren.
 Sobald ein neuronales Netz fertig trainiert wurde kann der Zustand des Netzes serialisiert und abgespeichert werden, damit es in der Zukunft weiterverwendet werden kann.
 \newline\newline
 \textbf{Literatur}\newline
-In der Arbeit \cite{hkkDhbw} wurde ein sogenanntes "`konvolutionales"' neuronales Netz für die Erkennung von stockendem Verkehr auf Bildern verwendet.
+In der Arbeit \cite{hkkDhbw} wurden sogenannte "`konvolutionale"' neuronale Netze für die Erkennung von stockendem Verkehr auf Bildern verwendet (siehe Abbildung~\ref{CNN}).
 Diese Netze nutzen unter anderem auch Faltungskerne (siehe~\ref{sec:Faltungskerne}) um Objektklassifizierung auf einem Bild durchzuführen.
+
+Diverse Schichten von Neuronen werden in einem der verwendeten neuronalen Netze verwendet, um die aus den Pixelwerten gewonnenen Informationen auf eine konkrete Einschätzung bezüglich des Verkehrsflusses herunterzubrechen.
+So kann eine Pixelmatrix als Eingabe an das neuronale Netzwerk weitergegeben werden und als Ausgabe ein einfacher boolescher Wert (eins oder null) empfangen werden. 
+Eine Eins wäre beispielsweise eine positive Rückmeldung dafür dass auf dem Bild stockender Verkehr sichtbar ist.
+
+Wichtig hierbei sind die einzelnen Verbindungen zwischen den Neuronen-Schichten, welche je nach Training und Zustand des Netzes unterschiedlich gewichtet werden.
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=15cm]{Bilder/cnn-visualized} \\
+ \caption{Visualisierung der Schichten eines konvolutionalen neuronalen Netzwerks (unten Eingang - oben Ausgabe)}
+ \source{http://scs.ryerson.ca/~aharley/vis/}{12.4.2019}
+ \label{fig:CNN}
+\end{figure}
 \newline\newline
 \textbf{Fazit}\newline
 Bei der Laufzeit eines komplexen neuronalen fällt Netzes auf, dass das Laden und Benutzen der Neuronen einen relativ hohen Hauptspeicher-Bedarf mit sich bringt.
