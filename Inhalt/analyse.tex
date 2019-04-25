@@ -92,7 +92,7 @@ Ziel von dem Training ist hierbei durch Anwendung des Netzes die Fehlerquote zu 
 Sobald ein neuronales Netz fertig trainiert wurde kann der Zustand des Netzes serialisiert und abgespeichert werden, damit es in der Zukunft weiterverwendet werden kann.
 \newline\newline
 \textbf{Literatur}\newline
-In der Arbeit \cite{hkkDhbw} wurden sogenannte "`konvolutionale"' neuronale Netze für die Erkennung von stockendem Verkehr auf Bildern verwendet (siehe Abbildung~\ref{CNN}).
+In der Arbeit \cite{hkkDhbw} wurden sogenannte "`konvolutionale"' neuronale Netze für die Erkennung von stockendem Verkehr auf Bildern verwendet (siehe Abbildung~\ref{fig:CNN}).
 Diese Netze nutzen unter anderem auch Faltungskerne (siehe~\ref{sec:Faltungskerne}) um Objektklassifizierung auf einem Bild durchzuführen.
 
 Diverse Schichten von Neuronen werden in einem der verwendeten neuronalen Netze verwendet, um die aus den Pixelwerten gewonnenen Informationen auf eine konkrete Einschätzung bezüglich des Verkehrsflusses herunterzubrechen.
@@ -213,14 +213,15 @@ Anschließend wird das nächste Bild, bzw. die nächste Spur angezeigt.
 Dies passiert solange, bis keine Bilder mehr ausgewertet werden müssen, bzw. der Nutzer das Skript beendet.
 
 \section{Auswahl des Verfahrens}
-* Augenmerk auf Genauigkeit
+Zur Auswahl des bestmöglichen Verfahrens werden verschiedene Ansätze anhand des Testdatensatzes ausgewertet.
 
 \subsection{Helligkeit}
-* Histogramm des Bildes bilden\newline
-* Grauwertklassen auswerten\newline
-* Anhand von Otsu über Schwellwert Klassifikation des Bildes vornehmen\newline
-* Benötigt wenig Ressourcen, aber schlechte Performance weil zugrundeliegende Bilder \newline
-	natürlich sind und Otsu am besten auf binarisierten Bildern arbeitet (schwarz weiß)
+Das erste Verfahren Klassifiziert ein Bild lediglich anhand der Häufigkeit der Intensitätswerte.
+Dazu werden zunächst, wie beim Histogramm, die Intensitätswerte zwischen 0 und 255 aufsummiert.
+Anhand eines Schwellwertes, in unserem Fall der Grauwert 40, wird dann versucht das Bild zu klassifizieren.
+Gibt es in Summe mehr Grauwerte unter dem Schwellwert, als darüber, wird Stau auf dem Bild angenommen.
+Die Überlegung dahinter ist, dass die Straße einen sehr neutralen bis hellen Grauton aufweist. Fahren nun Autos auf der Fahrbahn, dann können diese in verschiedensten Farben, sowohl über, als auch unter dem Schwellwert auftreten.
+Jedoch werden von den Autos auch Schatten geworfen, welche die Straße verdunkeln, und so die Intensitätswerte reduzieren.
 	
 \subsection{Haar-Features}
 * Erkennen der Autos auf Bildern über Haar-Features und Anschließend zählen, um Stau festzustellen\newline
