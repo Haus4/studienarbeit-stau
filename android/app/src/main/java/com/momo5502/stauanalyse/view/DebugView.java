@@ -15,6 +15,7 @@ public class DebugView {
     private boolean camerasFetched = false;
     private boolean camerasDetected = false;
     private boolean cameraAnalyzed = false;
+    private boolean voiceTriggered = false;
 
     private TextView textView;
 
@@ -49,6 +50,11 @@ public class DebugView {
         update();
     }
 
+    public void markVoiceTriggered() {
+        voiceTriggered = true;
+        update();
+    }
+
     public void update() {
         new Handler(Looper.getMainLooper()).post(this::updateInternal);
     }
@@ -60,7 +66,8 @@ public class DebugView {
                     "Direction detected: " + formatValue(directionDetected) + "<br>" +
                     "Cameras fetched: " + formatValue(camerasFetched) + "<br>" +
                     "Cameras detected: " + formatValue(camerasDetected) + "<br>" +
-                    "Cameras analyzed: " + formatValue(cameraAnalyzed) + "<br>";
+                    "Cameras analyzed: " + formatValue(cameraAnalyzed) + "<br>" +
+                    "Voice triggered: " + formatValue(voiceTriggered) + "<br>";
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 textView.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY), TextView.BufferType.SPANNABLE);

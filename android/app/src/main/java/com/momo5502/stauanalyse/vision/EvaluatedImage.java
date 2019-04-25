@@ -1,7 +1,7 @@
 package com.momo5502.stauanalyse.vision;
 
-import org.opencv.core.Rect;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 
 import java.util.List;
 

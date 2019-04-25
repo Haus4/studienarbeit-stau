@@ -60,6 +60,11 @@ public class PositionExecuter implements Executer {
         //update();
     }
 
+    @Override
+    public void onTerminate() {
+
+    }
+
     private void onPositionChanged(Location location, Exception error) {
         Position position = new Position(location);
         onPositionChanged(position);

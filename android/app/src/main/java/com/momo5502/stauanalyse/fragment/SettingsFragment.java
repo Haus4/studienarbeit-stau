@@ -52,7 +52,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void updateDevices() {
-        Set<BluetoothDevice> newDevices = BluetoothDeviceChecker.getDevices();
+        Set<BluetoothDevice> newDevices = BluetoothDeviceChecker.getPairedDevices();
 
         if (devices != null && newDevices != null) {
             if (devices.containsAll(newDevices) && newDevices.containsAll(devices)) {

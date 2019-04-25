@@ -8,6 +8,8 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.UtteranceProgressListener;
 
+import com.momo5502.stauanalyse.activity.MainActivity;
+
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Queue;
@@ -49,6 +51,10 @@ public class Speaker implements OnInitListener {
     }
 
     public void speak(String text) {
+        if(context instanceof MainActivity) {
+            ((MainActivity)context).getDebugView().markVoiceTriggered();
+        }
+
         synchronized (messageQueue) {
             if (!initialized) {
                 messageQueue.add(text);

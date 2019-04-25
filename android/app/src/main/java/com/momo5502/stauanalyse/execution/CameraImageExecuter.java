@@ -53,6 +53,11 @@ public class CameraImageExecuter implements Executer {
         }
     }
 
+    @Override
+    public void onTerminate() {
+
+    }
+
     private void onImagesReceived(CameraImages images, Exception error) {
         eventListener.onImagesReceived(images);
     }

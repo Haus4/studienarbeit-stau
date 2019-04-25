@@ -1,6 +1,7 @@
 package com.momo5502.stauanalyse.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,7 +11,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 
 import com.momo5502.stauanalyse.R;
@@ -67,6 +67,30 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     private DebugView debugView;
 
+    public DebugView getDebugView() {
+        return debugView;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if(intent.getBooleanExtra("kill", false)) {
+            //this.finish();
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+    }
+
+    private void doFinishStuff() {
+        positionExecuter.onTerminate();
+        cameraImageExecuter.onTerminate();
+        evaluationExecutor.onTerminate();
+
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +115,25 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
         delayUntilLoaded();
     }
+
+    /*private void runBluetoothKiller() {
+        Intent intent = getIntent();
+        boolean bluetooth = intent.getBooleanExtra("bluetooth", true);
+        if(bluetooth) {
+           final MainActivity activity = this;
+
+           new Thread(() -> {
+               while(BluetoothDeviceChecker.isConnectedToStoredDevice(activity)) {
+                   try {
+                       Thread.sleep(3 * 1000);
+                   } catch (Exception e) {
+                   }
+               }
+
+               activity.finish();
+           }).start();
+        }
+    }*/
 
     private void delayUntilLoaded() {
         new Thread(() -> {
@@ -332,11 +375,14 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        doFinishStuff();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (wakeLock != null && wakeLock.isHeld()) {
-            wakeLock.release();
-        }
+        doFinishStuff();
     }
 }

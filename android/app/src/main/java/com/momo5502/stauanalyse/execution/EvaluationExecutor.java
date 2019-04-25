@@ -38,6 +38,11 @@ public class EvaluationExecutor implements Executer {
 
     }
 
+    @Override
+    public void onTerminate() {
+
+    }
+
     public void updateDirection(Optional<Direction> direction) {
         synchronized (this) {
             if (!direction.isPresent() || this.direction == direction.get()) return;

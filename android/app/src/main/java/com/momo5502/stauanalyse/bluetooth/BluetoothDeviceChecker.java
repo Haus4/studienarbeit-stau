@@ -22,16 +22,12 @@ public class BluetoothDeviceChecker {
     private static Gson gson = new Gson();
     private static final ReentrantLock lock = new ReentrantLock();
 
-    public static boolean isConnectedToStoredDevice() {
-        Set<BluetoothDevice> devices = getDevices();
+    public static boolean isStoredDevice(BluetoothDevice device) {
         Set<StoredBluetoothDevice> storedDevices = getStoredDevices();
-
-        return devices.stream() //
-                .filter(d -> storedDevices.contains(new StoredBluetoothDevice(d))) //
-                .count() > 0;
+        return storedDevices.contains(new StoredBluetoothDevice(device));
     }
 
-    public static Set<BluetoothDevice> getDevices() {
+    public static Set<BluetoothDevice> getPairedDevices() {
         return BluetoothAdapter.getDefaultAdapter().getBondedDevices();
     }
 
