@@ -75,16 +75,16 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if(intent.getBooleanExtra("kill", false)) {
+        if (intent.getBooleanExtra("kill", false)) {
             //this.finish();
             android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
 
     private void doFinishStuff() {
-        positionExecuter.onTerminate();
-        cameraImageExecuter.onTerminate();
-        evaluationExecutor.onTerminate();
+        if (positionExecuter != null) positionExecuter.onTerminate();
+        if (cameraImageExecuter != null) cameraImageExecuter.onTerminate();
+        if (evaluationExecutor != null) evaluationExecutor.onTerminate();
 
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
     private void setupApplication() {
         LinearLayout detailsLayout = findViewById(R.id.detailsLayout);
-        if(detailsLayout != null) {
+        if (detailsLayout != null) {
             detailsLayout.addView(debugView.getView());
         }
 
