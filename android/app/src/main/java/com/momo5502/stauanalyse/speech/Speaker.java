@@ -3,6 +3,7 @@ package com.momo5502.stauanalyse.speech;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
@@ -19,12 +20,12 @@ import static android.content.Context.AUDIO_SERVICE;
 public class Speaker implements OnInitListener {
 
     private TextToSpeech textToSpeech;
-    private Context context;
+    private ContextWrapper context;
     private boolean initialized = false;
     private volatile int id = 1;
     private Queue<String> messageQueue = new LinkedList<>();
 
-    public Speaker(Context context) {
+    public Speaker(ContextWrapper context) {
         this.context = context;
         textToSpeech = new TextToSpeech(context, this);
         textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
@@ -78,7 +79,7 @@ public class Speaker implements OnInitListener {
     private void setBluetoothSco(boolean value) {
         if (!hasBluetoothConnection()) return;
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+        AudioManager audioManager = (AudioManager) context.getApplicationContext().getSystemService(AUDIO_SERVICE);
 
         if (value && !audioManager.isBluetoothScoOn()) {
             audioManager.setMode(AudioManager.MODE_IN_CALL);

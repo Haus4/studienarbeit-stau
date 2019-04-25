@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements PositionExecuter.
 
         setupTabs();
 
-        speaker = new Speaker(getApplicationContext());
+        speaker = new Speaker(this);
         jamAnnouncer = new JamAnnouncer(speaker);
 
         delayUntilLoaded();
