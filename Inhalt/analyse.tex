@@ -249,13 +249,20 @@ Die Überlegung dahinter ist, dass die Straße einen sehr neutralen bis hellen G
 Jedoch werden von den Autos auch Schatten geworfen, welche die Straße verdunkeln, und so die Intensitätswerte reduzieren.
 	
 \subsection{Haar-Features}
-* Erkennen der Autos auf Bildern über Haar-Features und Anschließend zählen, um Stau festzustellen\newline
-* OpenCV hat Features für Autos vorgegeben\newline
-* Erkennt Autos nicht immer verlässlich\newline
-* Arbeitet besser auf Bildreihen (Videos) um Bewegung der speziellen Autos zur verfolgen\newline
-* Verkehrskameras liefern über die Zeit zwar viele Bilder, aber mit zu großem zeitlichen Abstand\newline
-* Einzelne Autos also nicht verfolgbar\newline
-* Schlechte Resultate zur Stauerkennung\newline
+Der Ansatz zur Stauerkennung über Haar-Features verläuft etwas anders als die Erkennung über die Helligkeit.
+Hierbei wird versucht über Autos zu klassifizieren, um diese anschließend zu zählen und abzuschätzen, ob Stau ist, oder nicht.
+
+Zur Klassifizierung der Autos kann ein von OpenCV mitgelieferter Cascade-Classifier zur Erkennung von Autos genutzt werden.
+Dieser ist standardmäßig bei OpenCV verfügbar und soll über Haar-Features Autos auf Bildern erkennen können.
+Solche Kaskaden werden als XML-Dateien mitgeliefert, welche über die Methode {\em CascadeClassifier} geladen werden können.
+
+Anschließend kann damit ein Bild untersucht werden. Als Ergebnis erhält man eine Liste von Konturen, welche Autos auf dem Bild darstellen sollen.
+
+% TODO: Insert image
+
+Die Ergebnisse dieses Verfahrens sind jedoch nicht so gut, da die Auflösung der Kameras zu gering sind, sodass die Merkmale von Autos nicht deutlich genug sind, um diese als Autos klassifizieren zu können.
+Besser arbeiten Classifier auf Bild-Sequenzen, wie z.B. Videos, da diese dabei helfen Autos über die Sequenzen hinweg zu verfolgen.
+Da die Straßenverkehrszentrale jedoch nur Einzelbilder liefert, sind die Ergebnisse nicht sehr genau.
 
 \subsection{Edge detection}
 * Erkennen der Kanten über Canny\newline
