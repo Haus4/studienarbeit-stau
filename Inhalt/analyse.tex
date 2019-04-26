@@ -45,6 +45,7 @@ So kann zum Beispiel der Lichtkegel eines Scheinwerfers bei Nacht das Ergebnis v
  \sourceref{bin2001vehicle}
  \label{fig:Pixelanalysis}
 \end{figure}
+\newpage
 \subsubsection{Kantenerkennung}
 \textbf{Beschreibung}\newline
 Kantenerkennung bezeichnet eine Klasse von Verfahren, bei welchen Kanten im Bild über abrupte Intensitätswert-Übergänge gefunden werden. 
@@ -56,11 +57,21 @@ Um leicht überlagernde Objektkanten voneinander zu trennen können morphologisc
 Diese werden auch verwendet um kleine irrelevante Kanten aus dem Bild zu entfernen.
 \newline\newline
 \textbf{Literatur}\newline
-Gupte und Papanikolopoulos stellen eine exemplarische Implementierung  des Verfahrens in ihrer Arbeit~\cite{gupte2000algorithms} vor. Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. Das Ergebnis wird anschließend mithilfe von der Anwendung von mehreren Dilatation-Operationen verbessert, da nicht geschlossene und im Objekt liegende Kanten zur einer großen Kante verbunden werden (Abbildung~\ref{fig:gupte2}).
+Gupte und Papanikolopoulos stellen eine exemplarische Implementierung  des Verfahrens in ihrer Arbeit~\cite{gupte2000algorithms} vor. 
+Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. 
+Dies ermöglicht das erkennen von Veränderungen zwischen den beiden Bildern der Verkehrskamera.
+Mögliche Veränderungen können in diesem Fall auf ein bewegliches Objekt, wie zum Beispiel ein Auto, hindeuten.
+
+Das Ergebnis wird anschließend mithilfe von der Anwendung von mehreren Dilatation-Operationen verbessert, da nicht geschlossene und im Objekt liegende Kanten zur einer großen Kante verbunden werden (Abbildung~\ref{fig:gupte2}).
+Für den Fall das nach der Anwendung der jeweiligen Operationen immer noch unverbundene Kanten vorliegen werden nah benachbarte Kanten durch ein großes Rechteck umkreist.
+Das resultierende Rechteck ist in diesem Fall dann das erkannte Objekt.
 \newline\newline
 \textbf{Fazit}\newline
 Dieses Verfahren ist ebenfalls wenig komplex und lässt sich einfach implementieren. 
 Jedoch besitzt es auch einige Nachteile, wie zum Beispiel, dass sich Schattenwurf negativ auf das Ergebnis auswirkt und eine Perspektive im Bild vorausgesetzt wird.
+Wettereinflüsse wie Regen oder Schnee würden sich ebenfalls sehr negativ auf das Ergebnis auswirken.
+Es existieren viele Implementierungen des Verfahrens, wobei die Arbeit von Gupte und Papanikolopoulos nur ein Beispiel ist.
+So lassen sich auch durch Vorverarbeitung oder Maskierung der Bilder möglicherweise das Ergebnis verbessern.
 
 \begin{figure}[ht]
   \centering
@@ -112,22 +123,35 @@ Wichtig hierbei sind die einzelnen Verbindungen zwischen den Neuronen-Schichten,
 Bei der Laufzeit eines komplexen neuronalen fällt Netzes auf, dass das Laden und Benutzen der Neuronen einen relativ hohen Hauptspeicher-Bedarf mit sich bringt.
 Der Vorteil der sich jedoch hierdurch bietet ist, dass Bilder nicht statisch analysiert werden, sondern das Netz dynamisch auf Bilder und Verhältnisse, wie zum Beispiel Perspektive und Wetter, trainiert wird.
 Dieses Verfahren wurde für die folgende Implementierung nicht gewählt, da diese Arbeit einen besonderen Fokus auf die Ressourcensparsamkeit des Verfahrens setzt.
+\newpage
 
 \subsubsection{Background Subtraction}
 \textbf{Beschreibung}\newline
-Background Subtraction, auch als Foreground Detection bekannt, ist eine Klasse von Verfahren, bei denen einer Serie von Bildern analysiert wird, um Objekte im Vordergrund des Bildes vom Hintergrund zu trennen. 
-Hierfür wird ein sogenanntes Hintergrund-Modell aus den ersten Bilder der Serie generiert, welches dann auf das letzte Bild angewandt wird, um ein Objekt im Vordergrund zu erkennen.
+Background Subtraction, auch als Foreground Detection bekannt, ist eine Klasse von Verfahren, bei denen einer Serie von Bildern auf Veränderungen analysiert wird.
+Ziel ist es sich bewegende Objekte im Vordergrund des Bildes vom Hintergrund zu trennen.
+Hierfür wird ein sogenanntes Hintergrund-Modell aus den ersten Bilder der Serie generiert, welches dann auf das letzte Bild angewandt wird, um ein Objekt im Vordergrund zu erkennen. 
+Diese verwenden Statistiken, welche über alle Bilder der Serie generiert werden, um Gemeinsamkeiten zwischen den Bildern zu erkennen.
+
 In dem Artikel \cite{mcivor2000background} werden mehrere dieser Hintergrund-Modelle im Detail beschrieben.
 Bei der Auswahl des geeigneten Hintergrund-Modells sind mehrere Parameter zu berücksichtigen, wie zum Beispiel Perspektive und Farb- und Intensitäts-Spektrum.
 \newline\newline
 \textbf{Literatur}\newline
 Akoum beschreibt im Artikel \cite{akoumBSIP} wie das Hintergrund-Modell "`Gaussian mixture Models"', oft auch als "`Mixtures of Gaussians"' beschrieben, auf ein Video einer Verkehrskamera angewandt werden kann.
+Bei diesem Hintergrund-Modell werden alle Intensitätswerte der Pixel eines Bildes mithilfe eines Gaußschen Mischmodells modelliert.
+
+Ein Gaußsches Mischmodell ist dabei ein statistisches Clusterverfahren, welches die Hintergrundpixel kategorisiert.
+Alle Pixel die nicht über das Mischmodell kategorisiert werden konnten sind somit Vordergrund-Pixel und somit auch mögliche Objekte im Vordergrund.
 Objekte die im Bild durch das Verfahren erkannt wurden sind im Anschluss weiß eingefärbt, während der Hintergrund schwarz eingefärbt wird.
 Das Ergebnis des Verfahrens wird mit Dilatations- und Erosions-Filtern im Anschluss verbessert. 
 Der Dilatations-Filter sorgt dabei für die Verbindung von nicht geschlossenen Kanten, während der Erosions-Filter kleine unwichtige Kanten aus dem Bild entfernt.
 \newline\newline
 \textbf{Fazit}\newline
 Das Verfahren ist relativ komplex, bietet dafür aber eine sehr gute Genauigkeit. 
+Aufgrund des Hintergrund-Modells müssen jedoch mehrere sich unterscheidende Bilder für das Verfahren verwendet werden.
+Im Falle der Verkehrsanalyse sollte dies kein Problem darstellen, da eine fixierte Kamera bereits gegeben ist, welche jede Minute ein neues Bild aufnimmt.
+Parameter die für das anwenden des Hintergrund-Modells benötigt werden müssen im Hauptspeicher vorbehalten werden.
+Daher hat dieses Verfahren auch nicht die beste Speichereffizienz.
+Dennoch können durch die jeweiligen Hintergrund-Modelle auch Wetter- und Lichtveränderungen miteinbezogen werden, was potentielle Fehlerquellen in den statischen Verfahren waren.
 Weiterhin gibt es bereits einige Implementierungen diverser Hintergrund-Modelle in der Bibliothek OpenCV (siehe \ref{sec:OpenCV}).
 \begin{figure}[!ht]
    \centering
@@ -136,6 +160,7 @@ Weiterhin gibt es bereits einige Implementierungen diverser Hintergrund-Modelle 
  \sourceref{akoumBSIP}
  \label{fig:BSSoftware}
 \end{figure}
+\newpage
 
 \section{Bestimmung des Testdatensatzes}
 \subsection{Verkehrskameras laden}
