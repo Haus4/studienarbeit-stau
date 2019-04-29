@@ -1,20 +1,51 @@
 \chapter{Implementierung}
 Im folgenden Kapitel wird die praktische Implementierung der in der Arbeit erarbeiteten Methode beschrieben. Die Implementierung umfasst dabei die Schnittstelle zum Nutzer, sowie die Erhebung, Verarbeitung und Persistenz von relevanten Daten.
 \section{Backend}
-Für die Implementierung der Arbeit wurde ein Backend konzipiert, welches Informationen und Bilder von Verkehrskameras für Clients vorenthält. Das Ziel ist es dabei Daten der Straßenverkehrszentrale regelmäßig anzufragen und für den Client zu persistieren. Somit wird ermöglicht, dass der Client auch auf ältere Datensätze der Straßenverkehrszentrale zugreifen kann. Weiterhin ermöglicht soll das Backend die Daten in einem möglichst kompakten Format an den Client senden können, damit auch über schwache zelluläre Netzwerkverbindungen von Clients die Daten relativ zügig empfangen können. 
+Für die Implementierung der Arbeit wurde ein Backend konzipiert, welches Informationen und Bilder von Verkehrskameras für Clients vorenthält. 
+Das Ziel ist es dabei Daten der Straßenverkehrszentrale regelmäßig anzufragen und für den Client zu persistieren. 
+Somit wird ermöglicht, dass der Client auch auf ältere Datensätze der Straßenverkehrszentrale zugreifen kann. 
+Weiterhin ermöglicht soll das Backend die Daten in einem möglichst kompakten Format an den Client senden können, damit auch über schwache zelluläre Netzwerkverbindungen von Clients die Daten relativ zügig empfangen können. 
 \subsection{Infrastruktur}
-Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die zu verwendenden Technologien beachtet. So soll die resultierende Anwendung auf dem Apache Server eines geteilten Webhosts laufen. Der Apache Server des Webhosts erlaubt das Ausführen von PHP-Skripten, welche für Anfragen und Verarbeitung von Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden können. Für die Persistenz von Daten besitzt der Webhost alternativ zum Dateisystem auch eine MySQL-Datenbank.
+\label{sec:infrastructure}
+Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die zu verwendenden Technologien beachtet. 
+So soll die resultierende Anwendung auf dem Apache Server eines geteilten Webhosts laufen. 
+Der Apache Server des Webhosts erlaubt das Ausführen von PHP-Skripten, welche für das Ansteuern von Anfragen und die Verarbeitung von Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden können. 
+
+Für die Persistenz von Daten besitzt der Webhost alternativ zum Dateisystem auch eine MySQL-Datenbank.
+Die Datenbank ist für die Implementierung besser geeignet als das Dateisystem, da sie Transaktionen sowie eine relationale Abbildung der persistierten Datensätzen ermöglicht.
+So ermöglicht die Datenbank auch das einfache Abspeichern von Metadaten für Verkehrskameras und die Vernetzung zwischen Metadaten und Kamerabildern über Fremdschlüssel.
+
+Ein weiterer Grund warum für den Anwendungsfall die Datenbank dem Dateisystem zu bevorzugen ist, ist der, dass Datensätze einfach und schnell geordnet und gefiltert werden können.
+Dies wird über die SQL-Sprache ermöglicht, die sowohl "`SELECT FROM WHERE"'-Klauseln sowie Aggregationsfunktionen wie "`SUM"' oder "`MAX"' für das Filtern von Datensätzen bietet.
+
+Auf Abbildung~\ref{fig:serverarch} ist zu sehen, dass die Verbindung zum Client über das HTTP-Protokoll verläuft. 
+Der Vorteil ist hierbei, dass das Protokoll bereits von dem Apache Server unterstützt wird und eine Verschlüsselung über TLS eingesetzt werden kann.
+
+Ein weiterer Bestandteil der Backend-Infrastruktur ist der Cron-Daemon des Linux Betriebssystem des Host-Systems.
+Über diesen lassen sich periodisch wiederholende Aufgaben einplanen, welche für das Backend nützlich sein könnten.
+Ein Beispiel hierfür ist zum Beispiel das regelmäßige Abfragen von Bildern einer Verkehrskameras der Straßenverkehrszentrale.
+
+Die letzte Komponente der Infrastruktur ist die Applikation "`cURL"' die sich auf dem Betriebssystem des Hosts befindet.
+cURL unterstützt die Übertragung von Daten über diverse Protokolle und lässt sich auch über Schnittstellen anderen Programmen und Programmiersprachen kontrollieren.
+So ermöglicht dies auch das Anstoßen von HTTP-Anfragen über PHP-Skripte des Apache Servers.
+cURL bietet zusätzlich auch die Funktionalität verschiedene Parameter der Anfragen einzustellen.
+Einstellbare Parameter umfassen dabei unter anderem:
+\begin{itemize}
+\item{HTTP-Header (auch Referer-Header)}
+\item{Timeout der Anfrage}
+\item{Überprüfung von SSL-Zertifikaten (z.B. bei HTTPS)}
+\item{Empfangen von spezifischen Headern (z.B. Last-Modified)}
+\end{itemize}
 \begin{figure}[hp]
    \centering
      \includegraphics[width=13cm]{Bilder/server-arch} \\
  \caption{Server Architektur}
  \label{fig:serverarch}
 \end{figure}
-
-Auf Abbildung~\ref{fig:serverarch} ist zu sehen, dass die Verbindung zum Client über das HTTP-Protokoll verläuft. Der Vorteil ist hierbei, dass das Protokoll bereits von dem Apache Server unterstützt wird und eine Verschlüsselung über TLS eingesetzt werden kann.
+\newpage
 \subsection{Datenerhebung}
 \label{sec:datenerhebung}
-Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Diese können mithilfe der cURL-API in PHP angestoßen werden. Bei "`cURL"' handelt es sich dabei um eine Programm-Bibliothek, mithilfe welcher sich Daten über verschiedene Protokolle übertragen lassen.
+Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Diese können mithilfe der cURL-API in PHP angestoßen werden.
 
 Informationen über die jeweiligen Kameras werden über den SVZ-Server in verschieden Formaten bereitgestellt. So sind die Metadaten der Kameras als Textdatei abgespeichert, während die Bilder direkt im JPEG-Format abgerufen werden können. Unter Metadaten der Verkehrskameras sind bei folgende Informationen zu verstehen: 
 \begin{itemize}
@@ -24,9 +55,13 @@ Informationen über die jeweiligen Kameras werden über den SVZ-Server in versch
 \item{Position der Kamera}
 \end{itemize}
 Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras von der SVZ alle 30 Sekunden erneuert werden. 
-Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
+Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. 
+Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
+Ein Cronjob ist dabei eine der in Abschnitt~\ref{sec:infrastructure} angesprochene Aufgaben die über den Cron-Daemon periodisch ausgeführt werden.
+
 Ein Datensatz der nicht über HTTP-Aufrufe erhoben werden kann sind Masken für Bilder einer Verkehrskameras.
 Dabei handelt es sich um Bilder im PNG-Format, welche zur Vorverarbeitung von Bildern verwendet wird. Diese müssen manuell erstellt und in die Datenbank eingepflegt werden, da im Rahmen der Arbeit kein vollständig korrekter Algorithmus zur Automatisierung dieser Aufgabe gefunden wurde.
+\newpage
 
 \subsection{Datenpersistenz}
 Für die Persistenz von Daten wurde während der Implementierung auf das Dateisystem verzichtet und nur die MySQL-Datenbank verwendet, da diese die Vorteile einer relationalen Datenbank, sowie sichere Transaktionen bietet.
@@ -54,6 +89,7 @@ Da sich die Implementierung in dieser Arbeit auf eine MySQL-Unterstützung besch
 Damit die Datenbank mit Bildern, welche alle 30 Sekunden gespeichert werden, vollläuft gibt es einen Lösch-Mechanismus der alte Datensätze automatisch aufräumt. 
 Dieser ist in PHP implementiert und überprüft nach dem Einfügen eines Datensatzes, ob mehr als 10 Datensätze vorhanden sind.
 Falls dies der Fall ist werden alle Datensätze, welche älter als der zehnt älteste Datensatz sind, gelöscht.
+\newpage
 
 \subsection{Datenbereitstellung}
 Daten lassen sich vom Client, wie auf Abbildung~\ref{fig:serverarch} zu sehen, über HTTP-Anfragen an PHP-Skripten abrufen. Es gibt hierbei unterschiedliche Skripte, die für jeweils unterschiedliche Datensätze und Darstellungsarten verantwortlich sind:
@@ -62,7 +98,7 @@ Daten lassen sich vom Client, wie auf Abbildung~\ref{fig:serverarch} zu sehen, �
 \item{fetchmask.php: Zuständig für die Abfrage einer Maske für eine Verkehrskamera}
 \item{fetcher.php: Zuständig für Abfragen von Bildern einer Verkehrskamera}
 \end{itemize}
-Das Skript "`kameras.php"' gibt bei einer Anfrage eine leerzeichen-separierte Liste aller Kennungen von Kameras zurück, welche eine Maske besitzen und einen Referenzzähler größer eins. 
+Das Skript "`kameras.php"' gibt bei einer Anfrage eine mit Leerzeichen separierte Liste aller Kennungen von Kameras zurück, welche eine Maske besitzen und einen Referenzzähler größer eins. 
 Der Referenzzähler ist dabei eine Hilfsvariable für das Backend, welche Kameras von Clients benötigt werden und daher die Bilder von ihnen heruntergeladen werden sollten.
 Ein Client kann für eine oder mehrere Kameras den Referenzzähler inkrementieren, indem er das "`refcounter.php"' Skript mit den jeweiligen PHP-Skripten aufruft.
 
