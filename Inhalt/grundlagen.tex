@@ -100,6 +100,7 @@ Wendet man diesen Filter auf ein Bild an, erhält man folgendes Ergebnis:
 Aufgrund eines hohen Rauschanteils in natürlichen Bildern liefert dieser Filter jedoch nicht immer gute Resultate.
 
 \subsection{Sobel-Operator}
+\label{sec:Sobel}
 Um auf natürlichen Bildern Kanten zuverlässig zu erkennen, kombiniert der Sobel-Operator die Ideen des Gauß- und Laplace-Filters.
 Hierbei wird das Bild in eine Richtung über die zentrale Differenz {\em (1 0 -1)} abgeleitet, andere Richtung jedoch über einen Gauß-Filter {\em (1 2 1)} geglättet,
 um Rauschanteile zu reduzieren.
@@ -125,7 +126,7 @@ Die beiden erhaltenen Ergebnisse können nun vereint werden, um alle Kanten inne
  \label{fig:Sobel}
 \end{figure}
 
-\section{Canny-Edge-Detection} % Mi
+%\section{Canny-Edge-Detection} % Mi
 % Vlt. raus?
 
 \section{Otsu} % Mi

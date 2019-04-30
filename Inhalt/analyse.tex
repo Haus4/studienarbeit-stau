@@ -264,25 +264,50 @@ Die Ergebnisse dieses Verfahrens sind jedoch nicht so gut, da die Auflösung der
 Besser arbeiten Classifier auf Bild-Sequenzen, wie z.B. Videos, da diese dabei helfen Autos über die Sequenzen hinweg zu verfolgen.
 Da die Straßenverkehrszentrale jedoch nur Einzelbilder liefert, sind die Ergebnisse nicht sehr genau.
 
-\subsection{Edge detection}
-* Erkennen der Kanten über Canny\newline
-* Anhand der Kanten Bild Segmentieren und Konturen herausarbeiten zur Erkennung von Merkmalen und Klassifikation\newline
-* Auflösung der Kamerabilder zu gering und Bilder recht unscharf mit viel zu Rauschen\newline
-* Zu viele Kanten werden erkannt, um Autos verlässlich erkennen zu können\newline
-* Mittelung des Bildes über Gauß zeigt keine signifikante Verbesserung aufgrund der zu niedrigen Qualität\newline
+\subsection{Edge-Detection}
+Ein weiteres Verfahren, um Stau zu erkennen, kann mittels des Canny-Algorithmus umgesetzt werden.
+Der Canny-Algorithmus erlaubt es Kanten innerhalb eines Bildes zu erkennen und verwendet dafür den Sobel-Operator~\ref{sec:Sobel}.
+
+Umsetzen lässt sich der Algorithmus über die in OpenCV verfügbare Funktion {\em Canny}.
+Dieser wandelt das Bild in ein Graustufenbild um, auf welchem die Kanten weiß dargestellt sind, und der Hintergrund schwarz.
+
+Anschließend können über OpenCV die Konturen aus dem Bild entnommen werden und diese gezählt werden.
+Die Zahl der Konturen sollte der Zahl der Autos entsprechen, wobei ein Teil davon den Hintergrund repräsentiert, welcher jedoch relativ statisch sein sollte, da sich der Hintergrund fast nie ändert.
+
+Aufgrund der stark verrauschten Bilder der Kameras werden jedoch zu viele Kanten erkannt, um verlässlich Fahrzeuge erkennen zu können.
+Eine vorherige Mittlung des Bildes mit Gauß verbessert das Ergebnis zwar, jedoch werden die Kanten nicht als getrennte Konturen ersichtlich welche von OpenCV entnommen werden könnten.
 	
-\subsection{Background Subtraction}
-* Viele Bilder über möglichst kurzen Zeitabstand aufsummieren\newline
-* Anhanddessen Hintegrund errechnen\newline
-* Hintegrund vom Zielbild abziehen\newline
-* Übrig bleiben nur noch Autos\newline
-* Morphologische Operatoren zur Nachoptimierung\newline
-* Konturen zählen -> Anzahl der Autos\newline
-* Über Anzahl der Autos Rückschlüsse über Verkehrssituation ziehen\newline
-* Verschiedene BGS algorithmen in OpenCV verfügbar (GSOC, KNN, CNT, GMG, LSBP, MOG, MOG2)\newline
-* MOG liefert beste Ergebnisse für konkretes Einsatzgebiet\newline
-* Jedoch mehrere Bilder nötig, um Hintergrund verlässlich zu erkennen\newline
-* Bei absolutem Stau (keine Bewegung der Autos über längere Zeit ~10min) keine Erkennung des Hintergrundes möglich\newline
+\subsection{Background-Subtraction}
+Das Problem beim Canny-Algorithmus war, dass der Hintergrund zu viel Einfluss auf das Resultat hatte.
+Daher versucht dieser Ansatz den Hintergrund zu entfernen. Hierfür werden Background-Subtraction Techniken angewendet, die den Hintergrund
+vom Hauptbild herausrechnen. Übrig bleiben sollten danach lediglich die Autos.
+
+Der Background-Subtraction Algorithmus benötigt jedoch eine Reihe von Trainingsbildern, um zu lernen, was der Hintergrund ist.
+Daher werden, bevor ein Bild analysiert werden kann, ca. 5-10 Vorlaufbilder benötigt.
+
+Nun gibt es ebenfalls verschiedene Background-Subtraction Algorithmen, welche verwendet werden können. Beispielsweise gibt es {\em GSOC}, {\em KNN}, {\em MOG} oder {\em MOG2}, welche jeweils andere Ansätze verwenden, um den Hintergrund zu entfernen.
+
+{\em MOG} liefert bei der Bildqualität der Kameras die besten Ergebnisse.
+
+Der Algorithmus wird vor der Analyse also Trainiert und berechnet anschließend ein Schwarz-Weiß-Bild, wobei weiße Pixel Objekte im Vordergrund darstellen.
+
+Anhand der Konturenerkennung können dann Autos auf dem Bild gezählt werden. Bei überschreiten Schwellwerts kann so Stau erkannt werden.
 
 \subsection{Auswahl}
-* BGS is top
+Für die Auswahl des Verfahrens wurden die einzelnen Algorithmen und Verfahren anhand der Testdatensätze verglichen und bewertet.
+
+\paragraph{Helligkeit}
+In Bezug auf Ressourceneffizienz ist der Helligkeitsvergleich extrem gut, da sehr wenige primitive Berechnungen durchgeführt werden.
+Jedoch liefert dieses Verfahren sehr schlechte Resultate. Unterschiedliche Tageszeiten, Lichtverhältnisse oder Autofarben haben einen zu großen Einfluss auf das Ergebnis, weshalb keine verlässlichen Ergebnisse generiert werden.
+
+\paragraph{Haar-Features}
+Haar-Features liefen aufgrund der niedrigen Auflösung der Bilder keine verlässliche Erkennung von Autos. Bei einer höheren werden Autos zwar gut erkannt, aber nicht auf Bildern der Verkehrszentrale. Zusätzlich ist die Berechnung deutlich aufwendiger, was sich in Bezug auf Ressourcensparsamkeit negativ auswirkt.
+
+\paragraph{Edge-Detection}
+Bei der Edge-Detection ist die Ressourcensparsamkeit ziemlich gut erfüllt, da Kantenerkennung auf einfachen Faltungen basiert, welche sich effizient berechnen lassen.
+Das Problem ist jedoch, dass Autos und Hintergrund nicht unterschieden werden können und Autos nicht verlässlich erkannt werden.
+
+\paragraph{Background-Subtraction}
+Background-Subtraction benötigt zwar Vorlaufbilder, welche zunächst von der Straßenverkehrszentrale nicht verfügbar sind, da lediglich das aktuellste Bild abgerufen werden kann, und nicht Bilder aus der Vergangenheit, jedoch ist nach Abschluss eines einmaligen Trainings der Algorithmus in der Lage jedes weitere Bild effizient zu verarbeiten. Zudem werden Autos verlässlich erkannt.
+
+Demnach bietet Background-Subtraction die Grundlage für die Implementierung der Stauerkennung.
