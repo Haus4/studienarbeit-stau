@@ -1,13 +1,25 @@
 \chapter{Bewertung}
-*Vergleich zum Legacy System.\newline
-*Schwer direkt mit legacy system zu Vergleichen <-> unterschiedliche Infrastruktur.\newline
-*Kriterien finden.\newline
+In diesem Kapitel wird das im vorherigen Kapitel beschriebene System beurteilt und mit dem vorhergehenden System verglichen.
+Aufgrund der sich unterscheidenden Infrastrukturen der beiden Systeme, ist es nicht möglich einen direkten Vergleich durchzuführen.
+Stattdessen müssen verschiedene Kennzahlen bezüglich der zu erfüllenden Anforderungen gefunden werden, um einen Vergleich zwischen den Kennzahlen des jeweiligen Systems durchzuführen.
 
 \section{Abweichungen der Systeme}
+Das in dieser Arbeit beschriebene System wurde besonders im Hinblick auf Ressourceneffizienz optimiert.
+Somit gibt es auch starke Unterscheidungen zum alten System, welches lediglich ergebnisorientiert entworfen wurde und daher einen erhöhten Ressourcenverbrauch besitzt.
+
+Um weniger Ressourcen zu verbrauchen wurde zum einen auch die Auswertung von Verkehrskamerabildern vereinfacht.
+Statt der Verwendung eines neuronalen Netzes, welches einen sehr hohen Ressourcenbedarf mit sich zieht, wird nun ein weniger komplexer Background Subtraction Algorithmus verwendet.
+
+Die Auswertung wird dadurch so stark vereinigt, dass sie sich auch auf die Clients auslagern lässt.
+Das Backend kann also als einfacher Zwischenspeicher für Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden und ist somit auch für den Nutzen auf einem Shared Webhost optimiert.
+
+Durch die Auslagerung der Auswertung auf die Clients ist jedoch auch nun der Großteil der Berechnung auf dem Client zu finden.
+Es ist daher wichtig bestimmte Kenngrößen zu finden, um das eher client-lastige neue System mit dem server-lastigen Altsystem zu vergleichen.
+
 *Auswertung Client vs Auswertung Server\newline
 *Optimiert für Nutzen auf Shared Webhost\newline
 
-\section{Kriterien}
+\section{Kennzahlen}
 *Serverlast\newline
 *Clientlast\newline
 *Genauigkeit\newline
