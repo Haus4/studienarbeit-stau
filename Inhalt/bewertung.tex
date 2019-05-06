@@ -37,33 +37,60 @@ Wohingegen Energieverbrauch und CPU-Last meist nicht an konkrete Limitierungen g
 
 Da Sekundärspeicher in der heutigen Zeit relativ günstig ist und das System keinen hohen Gebrauch des Speichers macht, wurde dieser nicht für den Vergleich gemessen.
 Ebenfalls wurde die Auswirkung von mehreren Clients auf das Ressourcen-Last nicht berücksichtigt, da das System in der Zielumgebung keine großen Nutzermengen unterstützen muss.
-
-
 \newpage
 
 \section{Datenerhebung}
-*Wie sind Metriken messbar? Task-Manager, ...\newline
-*Wie wurden Daten aufgenommen\newline
-\paragraph*{CPU-Last}
-\paragraph*{Arbeitsspeicher-Last}
-\paragraph*{Energieverbrauch}
-\paragraph*{Genauigkeit}
+Die beschriebenen Kennzahlen müssen nun zur Laufzeit im jeweiligen System gemessen werden.
+Hierzu stehen verschiedene Methoden und Programme zur Verfügung, welche das Messen der jeweiligen Kenngröße ermöglichen.
+Im folgenden wird die für die Arbeit angemessene Herangehensweise beschrieben, um die jeweilige Kennzahl während der Laufzeit zu messen.\newline\newline
+\textbf{Arbeitsspeicher-Last des Systems}\newline
+Die Arbeitsspeicher-Last des Systems gilt an zwei Stellen zu messen: am Client und am Server.
+Für die Messung der Arbeitsspeicher-Last am Server wurde zur Laufzeit das Programm "`htop"' verwendet.
+htop ist dabei ein Programm welches auf dem Linux Betriebssystem installiert werden kann und eine Übersicht der derzeit laufende Prozesse bietet.
+Zusätzlich werden auch alle belegten Systemressourcen für die jeweiligen Prozesse angegeben.\newline\newline
+\textbf{CPU-Last des Servers}\newline
+Die CPU-Last des Servers lässt sich ebenfalls über das Programm htop ermitteln. 
+Da die CPU-Last während der Laufzeit jedoch stark schwankt macht es mehr Sinn hierfür einen Mittelwert über die Laufzeit zu erstellen.\newline\newline
+\textbf{Energieverbrauch des Clients}\newline
+Der Energieverbrauch des Clients lässt sich über die Profiler-Ansicht von Android Studio ermitteln.
+Der sogenannte "`Energy Profiler"' überwacht dabei zusätzlich zur CPU auch andere Peripheriegeräte, wie zum Beispiel den eingebauten GPS Sensor in dem jeweiligen Smartphone.
+Weiterhin werden auch System-Events, wie Alarme, Jobs oder Ortungsanfragen analysiert, welche ebenfalls den Energieverbrauch einer App beeinflussen können.\newline\newline
+\textbf{Genauigkeit des Systems}\newline
+Needed?...
+
 \newpage
 
 
 \section{Auswertung}
+\subsection{Backend}
 \begin{figure}[ht]
    \centering
      \includegraphics[width=15cm]{Bilder/server-ihatestau} \\
- \caption{Ressourcenverbrauch alter Server}
+ \caption{Ressourcenverbrauch alter Server in htop}
  \label{fig:ihatestau-res}
 \end{figure}
 \begin{figure}[ht]
    \centering
      \includegraphics[width=15cm]{Bilder/server-new} \\
- \caption{Ressourcenverbrauch neuer Server}
- \label{fig:ihatestau-res}
+ \caption{Ressourcenverbrauch neuer Server in htop}
+ \label{fig:new-server-res}
 \end{figure}
+
+Auf den Abbildungen~\ref{fig:ihatestau-res} und~\ref{fig:new-server-res} wird der Arbeitsspeicher- und CPU-Nutzungs-Bedarf des alten und neuen Backends visualisiert.
+
+Bei dem Anblick der Abbildung wird auch klar, dass das alte System eher auf ein Anwendungsszenario im Großbetrieb ausgelegt war, da es sehr starken Gebrauch von Nebenläufigkeit und mehreren Threads macht.
+Dies ist für ein Szenario in dem sehr viele Benutzer unterstützt werden sollen durchaus sinnvoll.
+Jedoch bedeutet dies auch, dass das System einen hohen initialen Bedarf an Ressourcen hat, der sich pro Benutzer auch noch steigert.
+Im Abbildung~\ref{fig:new-server-res} sieht man daher nur wenige Prozesse und keine Threads die explizit von dem System verwendet werden.
+Somit ist der Ressourcenverbrauch beim Starten des Systems stark reduziert.
+
+Weiterhin werden auch weniger Ressourcen pro Benutzer benötigt.
+Was hier jedoch ganz klar ein Nachteil im neuen System darstellt ist, dass es nicht mehr für große Nutzermengen ausgelegt ist.
+Es nutzt keine Skalierungsmaßnahmen wie Threads und Nebenläufigkeit aus und kann daher leicht bei großen Nutzerzahlen an die Systemgrenzen stoßen.
+
+Diese Arbeit konzentriert sich auf den Betrieb des Backends für eine sehr kleine Nutzermenge, daher ist dieser Nachteil für das Ergebnis unerheblich.
+
+\subsection{Frontend}
 \begin{figure}[ht]
   \centering
 	\begin{minipage}[b]{0.4\textwidth}
@@ -78,7 +105,19 @@ Ebenfalls wurde die Auswirkung von mehreren Clients auf das Ressourcen-Last nich
 		\label{fig:res-app-new}
 	\end{minipage}
 \end{figure}
-\newpage
 
-*Darstellung ggf. über Diagramme\newline
-*Weniger genau aber auch weniger Ressourcen\newline
+Abbildung~\ref{fig:res-app-new} visualisiert einen Anstieg des Arbeitsspeicher-Verbrauchs im Vergleich zu dem alten Client, wessen Kennzahlen auf Abbildung~\ref{fig:res-app-old} zu sehen sind.
+Dabei handelt es sich fast um eine Vervierfachung des ursprünglichen Arbeitsspeicherbedarfs.
+Dies lässt sich natürlich vor allem durch die client-seitige Auswertung von Bildern erklären, da der hierfür benötigte Algorithmus mehrere Bilder im Arbeitsspeicher behält (siehe Abschnitt~\ref{sec:backsub-algo}).
+Jedoch befindet sich der Arbeitsspeicherbedarf, selbst beim neuen Client, immer noch unter einem halben Gigabyte.
+
+Mit den derzeitigen Hardware-Standards für Smartphones lässt sich dies gut vereinbaren, da aktuelle Smartphones bereits über mehrere Gigabytes an Arbeitsspeicher besitzen.
+So lassen sich auch andere Applikationen parallel zur Verwendung des Clients nutzen.
+Die Android Applikation "`YouTube"' benötigt beispielsweise ebenfalls etwa einen halben Gigabyte an Arbeitspeicher bei Benutzung.
+
+Der Energiebedarf des neuen Clients ist laut dem Energy Profiler von Android Studio im Vergleich zum alten System gleich geblieben.
+Dies lässt sich durch die wenigen Anfragen erklären, die der Client im Vergleich zum alten System tätigen muss.
+Da der Client in einer Anfrage an das Backend direkt alle nötigten Bilder gesendet bekommt, muss er nicht einzeln anfragen.
+Weiterhin verwendet der neue Client keine Google-APIs mehr, welche auch zusätzlichen Energiebedarf mit sich bringen.
+
+Der gezeigte Wert für den Energieverbrauch ist jedoch nur gemittelt und als Rangmerkmal beschrieben, so kann es sein dass einzelne Ausreißer im Energieverbrauch der Applikation existieren. Um diese Ausreißer festzustellen müsste jedoch eine konkrete Analyse der Applikation auf dem Betriebssystem des Smartphones stattfinden, welche im Rahmen dieser Arbeit übersprungen wurde.

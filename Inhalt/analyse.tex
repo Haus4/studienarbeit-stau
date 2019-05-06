@@ -126,6 +126,7 @@ Dieses Verfahren wurde für die folgende Implementierung nicht gewählt, da dies
 \newpage
 
 \subsubsection{Background Subtraction}
+\label{sec:backsub-algo}
 \textbf{Beschreibung}\newline
 Background Subtraction, auch als Foreground Detection bekannt, ist eine Klasse von Verfahren, bei denen einer Serie von Bildern auf Veränderungen analysiert wird.
 Ziel ist es sich bewegende Objekte im Vordergrund des Bildes vom Hintergrund zu trennen.
@@ -303,8 +304,8 @@ Jedoch liefert dieses Verfahren sehr schlechte Resultate. Unterschiedliche Tages
 \paragraph{Haar-Features}
 Haar-Features liefen aufgrund der niedrigen Auflösung der Bilder keine verlässliche Erkennung von Autos. Bei einer höheren werden Autos zwar gut erkannt, aber nicht auf Bildern der Verkehrszentrale. Zusätzlich ist die Berechnung deutlich aufwendiger, was sich in Bezug auf Ressourcensparsamkeit negativ auswirkt.
 
-\paragraph{Edge-Detection}
-Bei der Edge-Detection ist die Ressourcensparsamkeit ziemlich gut erfüllt, da Kantenerkennung auf einfachen Faltungen basiert, welche sich effizient berechnen lassen.
+\paragraph{Kantenerkennung}
+Bei der Kantenerkennung ist die Ressourcensparsamkeit ziemlich gut erfüllt, da Kantenerkennung auf einfachen Faltungen basiert, welche sich effizient berechnen lassen.
 Das Problem ist jedoch, dass Autos und Hintergrund nicht unterschieden werden können und Autos nicht verlässlich erkannt werden.
 
 \paragraph{Background-Subtraction}
