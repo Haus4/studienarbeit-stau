@@ -2,17 +2,35 @@
 
 % Kritische, inhaltliche Reflexion von Theorie und Praxis 
 \section{Fazit}
-*Ziel erreicht - Anforderungen erfüllt
-*Optimierter Algorithmus und optimierte Implementierung\newline
-*Effizenz vs Genauigkeit\newline
-*weniger dynamisch als machine learning\newline
-*
+Das im Rahmen der Arbeit entwickelte System erfüllt die gestellten Anforderungen an die Ressourceneffizienz.
+Dennoch bedeutet eine Neuentwicklung auch Veränderungen im Vergleich zum alten System, welche nicht zwingend die Benutzbarkeit des Systems fördern.
+
+Ein Beispiel hierfür ist der neue optimierte Algorithmus zur Bildauswertung, welcher durchaus weniger Ressourcen verbraucht, aber auch etwas ungenauer als der alte Algorithmus ist.
+So musste während der Auswahl des Algorithmus auch ein Ausgleich zwischen Effizient und Genauigkeit geschaffen werden.
+Weiterhin kann das System durch den optimierten Algorithmus auch weniger dynamisch auf Veränderungen des Wetters und der Umgebung reagieren.
+
+Der Vorteil der sich hierdurch bietet ist der, dass die Implementierung des Algorithmus auch auf den Betrieb im zukünftigen Host-System ausgerichtet ist.
+So soll das Backend das System zukünftig auch auf einem geteilten Webhost der Firma 1\&1 laufen können.
+Wie bereits in Abschnitt~\ref{sec:infrastructure} angesprochen erfüllt die Infrastruktur des neuen Systems die Anforderungen für den Betrieb in einem geteilten Webhost.
+
+Schlussendlich gab es auch Veränderungen am Frontend des Systems.
+So wurde die Benutzerschnittstelle vereinfacht und es gibt eine Audio-Ausgabe über Bluetooth, welche eine Unterstützung von Freisprechanlagen im Auto bietet.
+Benutzer des Systems können somit einfach die App starten und sich mit der Freisprechanlage des Autos verbinden, um die komplette Funktionalität des Systems ausnutzen zu können.
 \newpage
 
 \section{Ausblick}
-*Besseres Background-Model?\newline
-*Mehr Vor-/Nach-Verarbeitung?\newline
-*Genauere/Automatische Schwellwerte?\newline
-*Alternative Datenquelle finden?\newline
-*Mehr Features (Ausfahrten erkennung, Entfernung zur Ausfahrt)\newline
-*Mehr UI-Features (Replay von Voice, Auswahl Kameras/Strecke)\newline
+Die Implementierung des neuen Systems bietet weiterhin Freiraum für neue Verbesserungen und Features, welche während der Arbeit nicht implementiert werden konnten.
+
+So könnte man auch die Genauigkeit des Systems durch ein optimiertes Background-Modell für den Background Subtraction Algorithmus verbessern.
+Eine weitere Möglichkeit die Genauigkeit des Systems zu Verbessern bietet sich durch das Einfügen weiterer Vor- beziehungsweise Nachbereitungs-Schritten während der Auswertung von Verkehrskamera-Bildern.
+Zusätzlich könnte der Schwellwert für die Trennung zwischen stockendem und fließendem Verkehr durch einen Algorithmus dynamisch bestimmt werden.
+
+Die Straßenverkehrszentrale bietet nicht immer eine zuverlässige Auskunft für Verkehrskamerabilder.
+Es könnte daher auch vorkommen das die Server für Verkehrskamerabilder der Straßenverkehrszentrale für mehrere Tage nicht erreichbar sind.
+Um auch in Zukunft eine Ausfallfreiheit des Systems zu garantieren würde es daher Sinn machen eine alternative Datenquelle zur Straßenverkehrszentrale zu finden.
+
+Zusätzlich lässt sich die Benutzerfreundlichkeit des Frontends verbessern, indem man Verbesserungen wie die Erkennung der Entfernung zu Ausfahrten einführen würde.
+Weiterhin würde ein Knopf auf der Benutzeroberfläche, welcher die letzte Audio-Ausgabe wiederholt, die Benutzerfreundlichkeit fördern.
+
+Schlussendlich muss die Implementierung des System erstmals ausgiebig auf dem geteilten Webhost getestet werden, bevor neue Verbesserungen eingeführt werden sollten.
+Somit wird sichergestellt, dass das System auch weiterhin alle Anforderungen erfüllt und korrekt ist.
