@@ -259,9 +259,7 @@ Solche Kaskaden werden als XML-Dateien mitgeliefert, welche über die Methode {\
 
 Anschließend kann damit ein Bild untersucht werden. Als Ergebnis erhält man eine Liste von Konturen, welche Autos auf dem Bild darstellen sollen.
 
-% TODO: Insert image
-
-Die Ergebnisse dieses Verfahrens sind jedoch nicht so gut, da die Auflösung der Kameras zu gering sind, sodass die Merkmale von Autos nicht deutlich genug sind, um diese als Autos klassifizieren zu können.
+Die Ergebnisse dieses Verfahrens sind jedoch nicht gut, falls die Auflösung der Kameras zu gering sind, da Merkmale von Autos nicht deutlich genug sind, um diese als Autos klassifizieren zu können.
 Besser arbeiten Classifier auf Bild-Sequenzen, wie z.B. Videos, da diese dabei helfen Autos über die Sequenzen hinweg zu verfolgen.
 Da die Straßenverkehrszentrale jedoch nur Einzelbilder liefert, sind die Ergebnisse nicht sehr genau.
 
@@ -295,20 +293,92 @@ Der Algorithmus wird vor der Analyse also Trainiert und berechnet anschließend 
 Anhand der Konturenerkennung können dann Autos auf dem Bild gezählt werden. Bei überschreiten Schwellwerts kann so Stau erkannt werden.
 
 \subsection{Auswahl}
-Für die Auswahl des Verfahrens wurden die einzelnen Algorithmen und Verfahren anhand der Testdatensätze verglichen und bewertet.
+Für die Auswahl des Verfahrens werden die einzelnen Algorithmen und Verfahren anhand der Testdatensätze verglichen und bewertet.
+Von insgesamt 252 Bildern gab es 62 auf denen Stau zu sehen ist und 190 ohne Stau.
+Die Verfahren werden nun darauf getestet, wie gut sie Stau erkennen bei Bildern, die tatsächlich Stau andeuten (true positives), bzw. wie gut kein Stau auf Bildern ohne Stau erkannt wird (true negatives).
+
+\paragraph{Vergleichsalgorithmus}
+Dieser Algorithmus sagt für jedes Bild voraus, dass kein Stau zu sehen ist. Er dient zum Vergleich und soll sicherstellen, dass lediglich davon auszugehen, dass kein Stau vorhanden ist, nicht besser sein kann, als die verwendeten Verfahren.
+
+\begin{center}
+\scriptsize
+    \begin{tabular}{ | l | l | l |}
+    \hline
+		True Positives & True Negatives & Total \\ \hline
+    0\% &
+		100\% &
+		76.86\% \\
+    \hline
+    \end{tabular}
+\end{center}
 
 \paragraph{Helligkeit}
 In Bezug auf Ressourceneffizienz ist der Helligkeitsvergleich extrem gut, da sehr wenige primitive Berechnungen durchgeführt werden.
 Jedoch liefert dieses Verfahren sehr schlechte Resultate. Unterschiedliche Tageszeiten, Lichtverhältnisse oder Autofarben haben einen zu großen Einfluss auf das Ergebnis, weshalb keine verlässlichen Ergebnisse generiert werden.
 
+\begin{center}
+\scriptsize
+    \begin{tabular}{ | l | l | l |}
+    \hline
+		True Positives & True Negatives & Total \\ \hline
+    20\% &
+		48\% &
+		41.74\% \\
+    \hline
+    \end{tabular}
+\end{center}
+
+In lediglich 20\% der Fälle, in denen Stau war, wurde auch tatsächlich Stau erkannt, bzw. nur in 48\% der Fälle in denen kein Stau war wurde auch kein Stau erkannt.
+Mit einer Gesamtgenauigkeit von 41.74\% ist dieses Verfahren deutlich schlechter als der Vergleichsalgorithmus, weshalb es sich nicht für die weitere Entwicklung eignet.
+
 \paragraph{Haar-Features}
 Haar-Features liefen aufgrund der niedrigen Auflösung der Bilder keine verlässliche Erkennung von Autos. Bei einer höheren werden Autos zwar gut erkannt, aber nicht auf Bildern der Verkehrszentrale. Zusätzlich ist die Berechnung deutlich aufwendiger, was sich in Bezug auf Ressourcensparsamkeit negativ auswirkt.
+
+\begin{center}
+\scriptsize
+    \begin{tabular}{ | l | l | l |}
+    \hline
+		True Positives & True Negatives & Total \\ \hline
+    0\% &
+		100\% &
+		76.86\% \\
+    \hline
+    \end{tabular}
+\end{center}
+
+Zu erkennen ist, dass dieses Verfahren selben Ergebnisse wie der Vergleichsalgorithmus liefert. Es wird also gar nicht erst Stau erkannt, sondern bei jedem Bild davon ausgegangen es sei kein Stau. Daher eignet sich dieses Verfahren nicht.
 
 \paragraph{Kantenerkennung}
 Bei der Kantenerkennung ist die Ressourcensparsamkeit ziemlich gut erfüllt, da Kantenerkennung auf einfachen Faltungen basiert, welche sich effizient berechnen lassen.
 Das Problem ist jedoch, dass Autos und Hintergrund nicht unterschieden werden können und Autos nicht verlässlich erkannt werden.
 
+\begin{center}
+\scriptsize
+    \begin{tabular}{ | l | l | l |}
+    \hline
+		True Positives & True Negatives & Total \\ \hline
+    30\% &
+		77\% &
+		67.36\% \\
+    \hline
+    \end{tabular}
+\end{center}
+
+Mit einer Gesamtgenauigkeit von 67.36\% ist die Kantenerkennung zwar immer noch schlechter, als der Vergleichsalgorithmus, liefert jedoch immerhin in 30\% der Stau-Fälle eine korrekte Aussage, und sogar 77\% bei keinem Stau. Ingesamt sind die Ergebnisse jedoch viel zu ungenau, um für die weitere Arbeit zu genügen.
+
 \paragraph{Background-Subtraction}
 Background-Subtraction benötigt zwar Vorlaufbilder, welche zunächst von der Straßenverkehrszentrale nicht verfügbar sind, da lediglich das aktuellste Bild abgerufen werden kann, und nicht Bilder aus der Vergangenheit, jedoch ist nach Abschluss eines einmaligen Trainings der Algorithmus in der Lage jedes weitere Bild effizient zu verarbeiten. Zudem werden Autos verlässlich erkannt.
 
-Demnach bietet Background-Subtraction die Grundlage für die Implementierung der Stauerkennung.
+\begin{center}
+\scriptsize
+    \begin{tabular}{ | l | l | l |}
+    \hline
+		True Positives & True Negatives & Total \\ \hline
+    79\% &
+		90\% &
+		87.6\% \\
+    \hline
+    \end{tabular}
+\end{center}
+
+Mit einer Gesamtgenauigkeit von 87.6\% ist Background-Subtraction das mit Abstand beste Verfahren. Im Gegensatz zum Vergleichsalgorithmus erkennt es zwar nur in 90\% der Fälle, dass kein Stau ist, wenn auch wirklich kein Stau ist, dafür erkennt es Stau in 79\% der Fälle und liefert ausreichend gute Ergebnisse für die Implementierung der Arbeit.
