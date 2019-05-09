@@ -71,7 +71,7 @@ def isValid(contour):
     return contour[1] >= size and contour[2] >= size
 
 def findVehicles(img):
-    im, contours, hierarchy = cv2.findContours(
+    contours, hierarchy = cv2.findContours(
         img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
 
     matches = []

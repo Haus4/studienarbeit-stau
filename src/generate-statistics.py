@@ -92,7 +92,7 @@ def buildImageList(cameras):
 
     return imageList
 
-def evaluateImage(processor, image, procname):
+def evaluateImage(processor, image, procname, _list):
     #printMutex.acquire()
     #print(procname)
     #printMutex.release()
@@ -100,6 +100,9 @@ def evaluateImage(processor, image, procname):
 
     leftResult = result[0]["jam"] == image["info"]["left"]["jam"]
     rightResult = result[1]["jam"] == image["info"]["right"]["jam"]
+
+    _list.append((result[0]["jam"], image["info"]["left"]["jam"]))
+    _list.append((result[1]["jam"], image["info"]["right"]["jam"]))
 
     accuracy = 0
 
@@ -113,11 +116,12 @@ def evaluateImage(processor, image, procname):
     
 
 def analyzeGroup(camera, group, proc):
+    _list = []
     processor = proc[0](camera)
-    result = [[evaluateImage(processor, image, proc[1]), image] for image in group]
+    result = [[evaluateImage(processor, image, proc[1], _list), image] for image in group]
     result = [res[0] for i, res in enumerate(result) if i >= skipImages and (not onlyVerified or ("verified" in res[1]["info"] and res[1]["info"]["verified"]))]
 
-    return result
+    return (result, _list)
 
 def analyzeCamera(data, proc):
     camera = data["camera"]
@@ -125,10 +129,11 @@ def analyzeCamera(data, proc):
 
     result = [return_thread.start(target=analyzeGroup, args=(camera, group, proc,)) for group in groups]
     result = [t.join() for t in result]
-    result = reduce(lambda x,y: x + y, result, [])
+    _lists = reduce(lambda x,y: x + y[1], result, [])
+    result = reduce(lambda x,y: x + y[0], result, [])
     accuracy = reduce(lambda x,y: x + y, result, 0)
 
-    return [camera, accuracy, len(result), result]
+    return [camera, accuracy, len(result), result, _lists]
 
 def buildStatisticSummary(res):
     data = [x for x in res if x[2] > 0]
@@ -150,6 +155,30 @@ def buildStatisticSummary(res):
     totalAccuracy /= totalCount
     totalperc = round(totalAccuracy, 2)
     print("\tTotal: " + str(totalperc) + "%")
+
+    _lists = reduce(lambda x,y: x + y[4], res, [])
+    totalPositives = 0
+    truePositives = 0
+
+    totalNegatives = 0
+    trueNegatives = 0
+
+    for x in _lists:
+        if x[1]:
+            totalPositives += 1
+            if x[0]:
+                truePositives += 1
+        else:
+            totalNegatives += 1
+            if not x[0]:
+                trueNegatives += 1
+
+    truePositivesPerc = round((truePositives * 100) / totalPositives, 2)
+    trueNegativesPerc = round((trueNegatives * 100) / totalNegatives, 2)
+    #print("\tTotal Positives: " + str(totalPositives))
+    #print("\tTotal Negatives: " + str(totalNegatives))
+    print("\tTrue Positives: " + str(truePositivesPerc) + "%")
+    print("\tTrue Negatives: " + str(trueNegativesPerc) + "%")
 
     return totalperc
     

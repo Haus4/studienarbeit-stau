@@ -1,0 +1,24 @@
+{
+    "right": {
+        "jam": false, 
+        "vehicles": 9
+    }, 
+    "verified": true, 
+    "timestamp": 1549985684.0, 
+    "time_parsed": [
+        2019, 
+        2, 
+        12, 
+        16, 
+        34, 
+        44, 
+        0, 
+        1, 
+        -1
+    ], 
+    "time": "Tue, 12 Feb 2019 16:34:44 GMT", 
+    "left": {
+        "jam": true, 
+        "vehicles": 11
+    }
+}
