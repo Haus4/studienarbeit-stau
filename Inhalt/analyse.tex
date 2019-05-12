@@ -6,13 +6,13 @@ Hierbei werden auch die jeweilige Ressourcenlast und Effizienz gemessen.
 Das geeignetste Verfahren wird für den weiteren Verlauf der Arbeit bestimmt.
 
 \section{Stand der Technik}
-Bildverarbeitung ist ein Thema, dass schon sehr lange im Bereich der Informationstechnik und Informatik erforscht wird.
+Bildverarbeitung ist ein Thema, das schon sehr lange im Bereich der Informationstechnik und Informatik erforscht wird.
 Besonders durch derzeitige Entwicklungen in der künstlichen Intelligenz und der Objekterkennung bekommt das Thema in der heutigen Zeit eine hohe Bedeutung für die technische Entwicklung. Im folgenden Kapitel werden einige der zum derzeitigen Zeitpunkt etablierten Verfahren der Bildverarbeitung im Kontext der Aufgabenstellung evaluiert und bewertet.
 
 \subsection{Statische Verfahren}
 Verfahren, welche ohne einen speziellen Kontext direkt auf die Pixelwerte eines Bildes angewendet werden können, werden im folgenden als "`statische Verfahren"' beschrieben. 
 
-Diese Verfahren benötigen keine Vorverarbeitung oder Trainingsdaten um verwendet zu werden.
+Diese Verfahren benötigen keine Vorverarbeitung oder Trainingsdaten, um verwendet zu werden.
 In den meisten Fällen sind diese Verfahren besonders ressourceneffizient, da sie mit weniger Speicher- und Zeitkomplexität auskommen.
 \subsubsection{Pixelorientierte Bildanalyse}
 \textbf{Beschreibung}\newline
@@ -30,9 +30,9 @@ Dieser Teilbereich wird von den Autoren auch als "`Detektor"' beschrieben und be
 So werden auf Straßen mit mehreren Fahrbahnen auch mehrere solcher Detektoren benötigt.
 
 Ziel ist es, wie bereits beschrieben die Intensität in dem Bereich eines Bildes zu überwachen. 
-Sobald es einen stark abweichenden Wert gibt, wird davon ausgegangen das ein Auto den Streckenabschnitt des Detektors durchfährt und ein Zähler wird inkrementiert.
+Sobald es einen stark abweichenden Wert gibt, wird davon ausgegangen, dass ein Auto den Streckenabschnitt des Detektors durchfährt und ein Zähler wird inkrementiert.
 Die Länge eines stockenden Verkehrsflusses kann ebenfalls über diese Methode ermittelt werden. 
-Hierfür wird in der Arbeit der beiden Autoren ein länglicher Detektor verwendet der sich über den kompletten im Bild ersichtlichen Streckenabschnitt zieht.
+Hierfür wird in der Arbeit der beiden Autoren ein länglicher Detektor verwendet, der sich über den kompletten im Bild ersichtlichen Streckenabschnitt zieht.
 Weiterhin werden die Farbwechsel innerhalb der Detektoren ausgewertet, um die einzelnen Objekte voneinander zu trennen.
 \newline\newline
 \textbf{Fazit}\newline
@@ -54,12 +54,12 @@ Dabei werden in der Regel Faltungskerne (siehe \ref{sec:Faltungskerne}) verwende
 Das bedeutet für die Anwendung des Verfahrens muss das Bild in den Grauwert-Bereich übertragen werden.
 Die entstandenen Kanten (Abbildung~\ref{fig:gupte1}) können dann anschließend für die Objekterkennung verwendet werden. 
 Um leicht überlagernde Objektkanten voneinander zu trennen können morphologische Operatoren verwendet werden (siehe \ref{sec:MorphologischeOperatoren}).
-Diese werden auch verwendet um kleine irrelevante Kanten aus dem Bild zu entfernen.
+Diese werden auch verwendet, um kleine irrelevante Kanten aus dem Bild zu entfernen.
 \newline\newline
 \textbf{Literatur}\newline
 Gupte und Papanikolopoulos stellen eine exemplarische Implementierung  des Verfahrens in ihrer Arbeit~\cite{gupte2000algorithms} vor. 
 Dabei werden Kanten auf zwei Bildern einer Verkehrskamera erkannt und dann beide Kantenbilder per XOR vereinigt. 
-Dies ermöglicht das erkennen von Veränderungen zwischen den beiden Bildern der Verkehrskamera.
+Dies ermöglicht das Erkennen von Veränderungen zwischen den beiden Bildern der Verkehrskamera.
 Mögliche Veränderungen können in diesem Fall auf ein bewegliches Objekt, wie zum Beispiel ein Auto, hindeuten.
 
 Das Ergebnis wird anschließend mithilfe von der Anwendung von mehreren Dilatation-Operationen verbessert, da nicht geschlossene und im Objekt liegende Kanten zur einer großen Kante verbunden werden (Abbildung~\ref{fig:gupte2}).
@@ -100,7 +100,7 @@ Hierbei wird versucht die Arbeitsweise des menschlichen Gehirns nachzuempfinden.
 Neuronale Netze besitzen daher auch eine Art internen Speicher der antrainiertes Wissen abbildet.
 Ein neuronales Netz kann somit für eine bestimmte Aufgabe trainiert werden, welche dann relativ zuverlässig von dem Netz gelöst werden kann.
 Ziel von dem Training ist hierbei durch Anwendung des Netzes die Fehlerquote zu minimieren.
-Sobald ein neuronales Netz fertig trainiert wurde kann der Zustand des Netzes serialisiert und abgespeichert werden, damit es in der Zukunft weiterverwendet werden kann.
+Sobald ein neuronales Netz fertig trainiert wurde, kann der Zustand des Netzes serialisiert und abgespeichert werden, damit es in der Zukunft weiterverwendet werden kann.
 \newline\newline
 \textbf{Literatur}\newline
 In der Arbeit \cite{hkkDhbw} wurden sogenannte "`konvolutionale"' neuronale Netze für die Erkennung von stockendem Verkehr auf Bildern verwendet (siehe Abbildung~\ref{fig:CNN}).
@@ -108,7 +108,7 @@ Diese Netze nutzen unter anderem auch Faltungskerne (siehe~\ref{sec:Faltungskern
 
 Diverse Schichten von Neuronen werden in einem der verwendeten neuronalen Netze verwendet, um die aus den Pixelwerten gewonnenen Informationen auf eine konkrete Einschätzung bezüglich des Verkehrsflusses herunterzubrechen.
 So kann eine Pixelmatrix als Eingabe an das neuronale Netzwerk weitergegeben werden und als Ausgabe ein einfacher boolescher Wert (eins oder null) empfangen werden. 
-Eine Eins wäre beispielsweise eine positive Rückmeldung dafür dass auf dem Bild stockender Verkehr sichtbar ist.
+Eine Eins wäre beispielsweise eine positive Rückmeldung dafür, dass auf dem Bild stockender Verkehr sichtbar ist.
 
 Wichtig hierbei sind die einzelnen Verbindungen zwischen den Neuronen-Schichten, welche je nach Training und Zustand des Netzes unterschiedlich gewichtet werden.
 \begin{figure}[ht]
@@ -130,7 +130,7 @@ Dieses Verfahren wurde für die folgende Implementierung nicht gewählt, da dies
 \textbf{Beschreibung}\newline
 Background Subtraction, auch als Foreground Detection bekannt, ist eine Klasse von Verfahren, bei denen einer Serie von Bildern auf Veränderungen analysiert wird.
 Ziel ist es sich bewegende Objekte im Vordergrund des Bildes vom Hintergrund zu trennen.
-Hierfür wird ein sogenanntes Hintergrund-Modell aus den ersten Bilder der Serie generiert, welches dann auf das letzte Bild angewandt wird, um ein Objekt im Vordergrund zu erkennen. 
+Hierfür wird ein sogenanntes Hintergrund-Modell aus den ersten Bildern der Serie generiert, welches dann auf das letzte Bild angewendet wird, um ein Objekt im Vordergrund zu erkennen. 
 Diese verwenden Statistiken, welche über alle Bilder der Serie generiert werden, um Gemeinsamkeiten zwischen den Bildern zu erkennen.
 
 In dem Artikel \cite{mcivor2000background} werden mehrere dieser Hintergrund-Modelle im Detail beschrieben.
@@ -141,8 +141,8 @@ Akoum beschreibt im Artikel \cite{akoumBSIP} wie das Hintergrund-Modell "`Gaussi
 Bei diesem Hintergrund-Modell werden alle Intensitätswerte der Pixel eines Bildes mithilfe eines Gaußschen Mischmodells modelliert.
 
 Ein Gaußsches Mischmodell ist dabei ein statistisches Clusterverfahren, welches die Hintergrundpixel kategorisiert.
-Alle Pixel die nicht über das Mischmodell kategorisiert werden konnten sind somit Vordergrund-Pixel und somit auch mögliche Objekte im Vordergrund.
-Objekte die im Bild durch das Verfahren erkannt wurden sind im Anschluss weiß eingefärbt, während der Hintergrund schwarz eingefärbt wird.
+Alle Pixel, die nicht über das Mischmodell kategorisiert werden konnten sind somit Vordergrund-Pixel und somit auch mögliche Objekte im Vordergrund.
+Objekte, die im Bild durch das Verfahren erkannt wurden sind im Anschluss weiß eingefärbt, während der Hintergrund schwarz eingefärbt wird.
 Das Ergebnis des Verfahrens wird mit Dilatations- und Erosions-Filtern im Anschluss verbessert. 
 Der Dilatations-Filter sorgt dabei für die Verbindung von nicht geschlossenen Kanten, während der Erosions-Filter kleine unwichtige Kanten aus dem Bild entfernt.
 \newline\newline
@@ -150,9 +150,9 @@ Der Dilatations-Filter sorgt dabei für die Verbindung von nicht geschlossenen K
 Das Verfahren ist relativ komplex, bietet dafür aber eine sehr gute Genauigkeit. 
 Aufgrund des Hintergrund-Modells müssen jedoch mehrere sich unterscheidende Bilder für das Verfahren verwendet werden.
 Im Falle der Verkehrsanalyse sollte dies kein Problem darstellen, da eine fixierte Kamera bereits gegeben ist, welche jede Minute ein neues Bild aufnimmt.
-Parameter die für das anwenden des Hintergrund-Modells benötigt werden müssen im Hauptspeicher vorbehalten werden.
+Parameter die für das Anwenden des Hintergrund-Modells benötigt werden müssen im Hauptspeicher vorbehalten werden.
 Daher hat dieses Verfahren auch nicht die beste Speichereffizienz.
-Dennoch können durch die jeweiligen Hintergrund-Modelle auch Wetter- und Lichtveränderungen miteinbezogen werden, was potentielle Fehlerquellen in den statischen Verfahren waren.
+Dennoch können durch die jeweiligen Hintergrund-Modelle auch Wetter- und Lichtveränderungen miteinbezogen werden, was potenzielle Fehlerquellen in den statischen Verfahren waren.
 Weiterhin gibt es bereits einige Implementierungen diverser Hintergrund-Modelle in der Bibliothek OpenCV (siehe \ref{sec:OpenCV}).
 \begin{figure}[!ht]
    \centering
@@ -179,8 +179,8 @@ Diese liegen in einer durch Tabulatorzeichen separierten Tabellenstruktur vor.
     572330.13 &
 		5361095.33 &
 		... &
-		/.../kameradetail.php?id=EXT006 &
 		... &
+		/.../kameradetail.php?id=EXT006 &
 		... &
 		16,16 &
 		-8,-8 \\
@@ -189,16 +189,16 @@ Diese liegen in einer durch Tabulatorzeichen separierten Tabellenstruktur vor.
 \end{center}
 
 Die Werte {\em lat} und {\em lon} beschreiben die Position der Kamera durch Längen und Breitengrad.
-Der Eintrag {\em title} enthält einen ausfühlicheren Titel der Kamera. Mit {\em description} hat man die Möglichkeit eine detailiertere Beschreibung der Kamera zu erhalten, welche jedoch mit HTML Tags angereichert ist. {\em Linkextern} ist die Webadresse, über welche auf die Kamera zugegriffen werden kann. {\em Icon}, {\em iconSize} und {\em iconOffset} sind Informationen, die das Straßenverkehrszentrum selbst benötigt, um das Kameraicon auf einer Landkarte anzuzeigen.
+Der Eintrag {\em title} enthält einen ausführlicheren Titel der Kamera. Mit {\em description} hat man die Möglichkeit eine detailliertere Beschreibung der Kamera zu erhalten, welche jedoch mit HTML Tags angereichert ist. {\em Linkextern} ist die Webadresse, über welche auf die Kamera zugegriffen werden kann. {\em Icon}, {\em iconSize} und {\em iconOffset} sind Informationen, die das Straßenverkehrszentrum selbst benötigt, um das Kameraicon auf einer Landkarte anzuzeigen.
 
 Relevant sind also zunächst die Koordinaten, der Titel und der Link, da nur über diesen die ID der Kamera aufgelöst werden kann.
-Das erste Problem hierbei ist, dass die Koordinaten der Kamera nicht der üblichen Projektion der Weltkugel entsprechen. Gebräuchlich ist die Projektion {\em WGS 84}~\cite{wgs84}, welche auch von Navigationssystemen oder herkömlichen Kartendiensten genutzt wird und den Globus von -180° westlich bis 180° nördlich, bzw. -90° südlich bis 90° nördlich einteilt.
+Das erste Problem hierbei ist, dass die Koordinaten der Kamera nicht der üblichen Projektion der Weltkugel entsprechen. Gebräuchlich ist die Projektion {\em WGS 84}~\cite{wgs84}, welche auch von Navigationssystemen oder herkömmlichen Kartendiensten genutzt wird und den Globus von -180° westlich bis 180° nördlich, bzw. -90° südlich bis 90° nördlich einteilt.
 
 Das Straßenverkehrszentrum nutzt jedoch das Referenzsystem {\em ETRS89 / UTM zone 32N}~\cite{etrs89}, welches für Europa ausgelegt ist.
-Um Position der Kameras mit gängigen Kartendiensten nutzen zu können müssen die Koordinaten in die übliche Projektionsform überführt werden.
+Um Position der Kameras mit gängigen Kartendiensten nutzen zu können, müssen die Koordinaten in die übliche Projektionsform überführt werden.
 
 Außerdem muss die ID der Kamera aus dem Link extrahiert werden, da es keinen Eintrag in der Tabelle gibt, der lediglich die ID enthält.
-Da die Link immer dem selben Format folgt ({\em /<pfad>/kameradetail.php?id=<id>}), kann einfach nach dem Vorkommen der Teilzeichenkette {\em ?id=} gesucht werden, und alles davor abgeschnitten werden.
+Da der Link immer demselben Format folgt ({\em /<pfad>/kameradetail.php?id=<id>}), kann einfach nach dem Vorkommen der Teilzeichenkette {\em ?id=} gesucht werden, und alles davor abgeschnitten werden.
 
 Somit lassen sich alle relevanten Informationen, welche für die Weiterverarbeitung der Kameras benötigt werden, abrufen.
 
@@ -215,10 +215,6 @@ Um dennoch darauf zugreifen zu können, kann der {\em Referer} HTTP-Header mit d
 \subsection{Vergleichsdatensätze generieren}
 Bevor verschiedene Verfahren getestet und miteinander verglichen werden können, wird zunächst ein Vergleichsdatensatz benötigt.
 
-%Hierzu reicht es jedoch nicht einfach Bilder herunterzuladen und diese selbst zu klassifizieren, denn manche Verfahren müssen zunächst trainiert werden. Background-Subtraction benötigt beispielsweise 5-10 Bilder als Training, um Hintergrund von Vordergrund unterscheiden zu können.
-
-%Es muss also immer eine Gruppe von zeitlich nahe beieinanderliegenden Bildern vorliegen, um diese Auswerten zu können.
-
 Um nun den Datensatz zu generieren wird ein Python-Skript verwendet.
 Wird dieses gestartet, fängt es an periodisch für einige der Kameras auf der A5 Bilder herunterzuladen.
 
@@ -226,23 +222,23 @@ Neben den Bildern selbst wird auch eine Metadatei im JSON-Format generiert.
 Diese enthält zunächst einen Zeitstempel, wann das Bild erstellt wurde.
 Außerdem enthält diese auch noch, wie viele Autos jeweils auf der linken und rechten Spur zu sehen sind, und ob anhand dessen Stau ist oder nicht.
 
-Um diese Informationen zu generieren, wird ein sehr prototypischer Algorithmus verwendet. Die Resultate sind dementsprechend nicht gerade akkurat, weshalb ein Mensch diese zusätzlich verifizieren muss. Um jedoch den Menschen dabei zu unterstützen, ist eine grobe Vorauswertung sehr Hilfreich.
+Um diese Informationen zu generieren, wird ein sehr prototypischer Algorithmus verwendet. Die Resultate sind dementsprechend nicht gerade akkurat, weshalb ein Mensch diese zusätzlich verifizieren muss. Um jedoch den Menschen dabei zu unterstützen, ist eine grobe Vorauswertung sehr hilfreich.
 
 Um als Mensch die Bilder auswerten zu können, kann ein zweites Skript Abhilfe schaffen.
 
 Dazu gibt es in den Metadaten ein Feld, welches speichert, ob ein Bild bereits von einem Menschen verifiziert wurde.
-Mit dem Skript werden nun nacheinander alle noch nicht ausgewerteten Bilder angezeigt, wobei abwechselnd die linke, bzw. rechte Spur maskiert werden. Zusätzlich sieht man, ob die Vorauswertung für die angezeigte Spur Stau erkannt hat, oder nicht.
+Mit dem Skript werden nun nacheinander alle noch nicht ausgewerteten Bilder angezeigt, wobei abwechselnd die linke bzw. rechte Spur maskiert werden. Zusätzlich sieht man, ob die Vorauswertung für die angezeigte Spur Stau erkannt hat, oder nicht.
 
 Als Mensch hat man nun die Möglichkeit durch das Drücken der Enter-Taste zu speichern, dass Stau auf dem Bild zu sehen ist, bzw. durch das Drücken einer anderen Taste zu bestätigen, dass kein Stau zu sehen ist.
 
-Anschließend wird das nächste Bild, bzw. die nächste Spur angezeigt.
+Anschließend wird das nächste Bild bzw. die nächste Spur angezeigt.
 Dies passiert solange, bis keine Bilder mehr ausgewertet werden müssen, bzw. der Nutzer das Skript beendet.
 
 \section{Auswahl des Verfahrens}
 Zur Auswahl des bestmöglichen Verfahrens werden verschiedene Ansätze anhand des Testdatensatzes ausgewertet.
 
 \subsection{Helligkeit}
-Das erste Verfahren Klassifiziert ein Bild lediglich anhand der Häufigkeit der Intensitätswerte.
+Das erste Verfahren klassifiziert ein Bild lediglich anhand der Häufigkeit der Intensitätswerte.
 Dazu werden zunächst, wie beim Histogramm, die Intensitätswerte zwischen 0 und 255 aufsummiert.
 Anhand eines Schwellwertes, in unserem Fall der Grauwert 40, wird dann versucht das Bild zu klassifizieren.
 Gibt es in Summe mehr Grauwerte unter dem Schwellwert, als darüber, wird Stau auf dem Bild angenommen.
@@ -274,10 +270,10 @@ Anschließend können über OpenCV die Konturen aus dem Bild entnommen werden un
 Die Zahl der Konturen sollte der Zahl der Autos entsprechen, wobei ein Teil davon den Hintergrund repräsentiert, welcher jedoch relativ statisch sein sollte, da sich der Hintergrund fast nie ändert.
 
 Aufgrund der stark verrauschten Bilder der Kameras werden jedoch zu viele Kanten erkannt, um verlässlich Fahrzeuge erkennen zu können.
-Eine vorherige Mittlung des Bildes mit Gauß verbessert das Ergebnis zwar, jedoch werden die Kanten nicht als getrennte Konturen ersichtlich welche von OpenCV entnommen werden könnten.
+Eine vorherige Mittelung des Bildes mit Gauß verbessert das Ergebnis zwar, sorgt jedoch dafür, dass die Kanten nicht als getrennte Konturen ersichtlich werden, um von OpenCV entnommen werden zu können.
 	
 \subsection{Background-Subtraction}
-Das Problem beim Canny-Algorithmus war, dass der Hintergrund zu viel Einfluss auf das Resultat hatte.
+Das Problem beim Canny-Algorithmus ist, dass der Hintergrund zu viel Einfluss auf das Resultat hatte.
 Daher versucht dieser Ansatz den Hintergrund zu entfernen. Hierfür werden Background-Subtraction Techniken angewendet, die den Hintergrund
 vom Hauptbild herausrechnen. Übrig bleiben sollten danach lediglich die Autos.
 
@@ -288,17 +284,17 @@ Nun gibt es ebenfalls verschiedene Background-Subtraction Algorithmen, welche ve
 
 {\em MOG} liefert bei der Bildqualität der Kameras die besten Ergebnisse.
 
-Der Algorithmus wird vor der Analyse also Trainiert und berechnet anschließend ein Schwarz-Weiß-Bild, wobei weiße Pixel Objekte im Vordergrund darstellen.
+Der Algorithmus wird vor der Analyse also trainiert und berechnet anschließend ein Schwarz-Weiß-Bild, wobei weiße Pixel Objekte im Vordergrund darstellen.
 
-Anhand der Konturenerkennung können dann Autos auf dem Bild gezählt werden. Bei überschreiten Schwellwerts kann so Stau erkannt werden.
+Anhand der Konturenerkennung können dann Autos auf dem Bild gezählt werden. Bei überschreiten des Schwellwerts kann so Stau erkannt werden.
 
 \subsection{Auswahl}
 Für die Auswahl des Verfahrens werden die einzelnen Algorithmen und Verfahren anhand der Testdatensätze verglichen und bewertet.
 Von insgesamt 252 Bildern gab es 62 auf denen Stau zu sehen ist und 190 ohne Stau.
-Die Verfahren werden nun darauf getestet, wie gut sie Stau erkennen bei Bildern, die tatsächlich Stau andeuten (true positives), bzw. wie gut kein Stau auf Bildern ohne Stau erkannt wird (true negatives).
+Die Verfahren werden nun darauf getestet, wie gut sie Stau bei Bildern erkennen, die tatsächlich Stau andeuten (true positives), bzw. wie gut kein Stau auf Bildern ohne Stau erkannt wird (true negatives).
 
 \paragraph{Vergleichsalgorithmus}
-Dieser Algorithmus sagt für jedes Bild voraus, dass kein Stau zu sehen ist. Er dient zum Vergleich und soll sicherstellen, dass lediglich davon auszugehen, dass kein Stau vorhanden ist, nicht besser sein kann, als die verwendeten Verfahren.
+Dieser Algorithmus sagt für jedes Bild voraus, dass kein Stau zu sehen ist. Er dient zum Vergleich und soll sicherstellen, dass die Annahme "`kein Stau"' nicht besser sein kann, als mit den verwendeten Verfahren die Bilder tatsächlich auszuwerten.
 
 \begin{center}
 \scriptsize
@@ -311,6 +307,8 @@ Dieser Algorithmus sagt für jedes Bild voraus, dass kein Stau zu sehen ist. Er 
     \hline
     \end{tabular}
 \end{center}
+
+In 0\% der Fällen "`erkennt"' das Verfahren Stau der existiert, aber in 100\% der Fälle wird die Abwesenheit von Stau angenommen. Das bedeutet, dass die anderen Verfahren eine Gesamtgenauigkeit von 76.86\% bei diesem Testdatensatz übertreffen müssen, um einsatztauglich zu sein.
 
 \paragraph{Helligkeit}
 In Bezug auf Ressourceneffizienz ist der Helligkeitsvergleich extrem gut, da sehr wenige primitive Berechnungen durchgeführt werden.
@@ -364,7 +362,7 @@ Das Problem ist jedoch, dass Autos und Hintergrund nicht unterschieden werden k�
     \end{tabular}
 \end{center}
 
-Mit einer Gesamtgenauigkeit von 67.36\% ist die Kantenerkennung zwar immer noch schlechter, als der Vergleichsalgorithmus, liefert jedoch immerhin in 30\% der Stau-Fälle eine korrekte Aussage, und sogar 77\% bei keinem Stau. Ingesamt sind die Ergebnisse jedoch viel zu ungenau, um für die weitere Arbeit zu genügen.
+Mit einer Gesamtgenauigkeit von 67.36\% ist die Kantenerkennung zwar immer noch schlechter, als der Vergleichsalgorithmus, liefert jedoch immerhin in 30\% der Stau-Fälle eine korrekte Aussage, und sogar 77\% bei keinem Stau. Insgesamt sind die Ergebnisse jedoch viel zu ungenau, um für die weitere Arbeit zu genügen.
 
 \paragraph{Background-Subtraction}
 Background-Subtraction benötigt zwar Vorlaufbilder, welche zunächst von der Straßenverkehrszentrale nicht verfügbar sind, da lediglich das aktuellste Bild abgerufen werden kann, und nicht Bilder aus der Vergangenheit, jedoch ist nach Abschluss eines einmaligen Trainings der Algorithmus in der Lage jedes weitere Bild effizient zu verarbeiten. Zudem werden Autos verlässlich erkannt.

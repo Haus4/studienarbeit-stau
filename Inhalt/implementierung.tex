@@ -12,10 +12,10 @@ So soll die resultierende Anwendung auf dem Apache Server eines geteilten Webhos
 Der Apache Server des Webhosts erlaubt das Ausführen von PHP-Skripten, welche für das Ansteuern von Anfragen und die Verarbeitung von Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden können. 
 
 Für die Persistenz von Daten besitzt der Webhost alternativ zum Dateisystem auch eine MySQL-Datenbank.
-Die Datenbank ist für die Implementierung besser geeignet als das Dateisystem, da sie Transaktionen sowie eine relationale Abbildung der persistierten Datensätzen ermöglicht.
+Die Datenbank ist für die Implementierung besser geeignet als das Dateisystem, da sie Transaktionen sowie eine relationale Abbildung der persistierten Datensätze ermöglicht.
 So ermöglicht die Datenbank auch das einfache Abspeichern von Metadaten für Verkehrskameras und die Vernetzung zwischen Metadaten und Kamerabildern über Fremdschlüssel.
 
-Ein weiterer Grund warum für den Anwendungsfall die Datenbank dem Dateisystem zu bevorzugen ist, ist der, dass Datensätze einfach und schnell geordnet und gefiltert werden können.
+Ein weiterer Grund warum für den Anwendungsfall die Datenbank dem Dateisystem zu bevorzugen ist, ist, dass Datensätze einfach und schnell geordnet und gefiltert werden können.
 Dies wird über die SQL-Sprache ermöglicht, die sowohl "`SELECT FROM WHERE"'-Klauseln sowie Aggregationsfunktionen wie "`SUM"' oder "`MAX"' für das Filtern von Datensätzen bietet.
 
 Auf Abbildung~\ref{fig:serverarch} ist zu sehen, dass die Verbindung zum Client über das HTTP-Protokoll verläuft. 
@@ -23,7 +23,7 @@ Der Vorteil ist hierbei, dass das Protokoll bereits von dem Apache Server unters
 
 Ein weiterer Bestandteil der Backend-Infrastruktur ist der Cron-Daemon des Linux Betriebssystem des Host-Systems.
 Über diesen lassen sich periodisch wiederholende Aufgaben einplanen, welche für das Backend nützlich sein könnten.
-Ein Beispiel hierfür ist zum Beispiel das regelmäßige Abfragen von Bildern einer Verkehrskameras der Straßenverkehrszentrale.
+Ein Beispiel hierfür ist das regelmäßige Abfragen von Bildern einer Verkehrskamera der Straßenverkehrszentrale.
 
 Die letzte Komponente der Infrastruktur ist die Applikation "`cURL"' die sich auf dem Betriebssystem des Hosts befindet.
 cURL unterstützt die Übertragung von Daten über diverse Protokolle und lässt sich auch über Schnittstellen anderen Programmen und Programmiersprachen kontrollieren.
@@ -47,7 +47,7 @@ Einstellbare Parameter umfassen dabei unter anderem:
 \label{sec:datenerhebung}
 Die Erhebung von benötigten Daten erfolgt durch HTTP-Anfragen an den Server der Straßenverkehrszentrale. Diese können mithilfe der cURL-API in PHP angestoßen werden.
 
-Informationen über die jeweiligen Kameras werden über den SVZ-Server in verschieden Formaten bereitgestellt. So sind die Metadaten der Kameras als Textdatei abgespeichert, während die Bilder direkt im JPEG-Format abgerufen werden können. Unter Metadaten der Verkehrskameras sind bei folgende Informationen zu verstehen: 
+Informationen über die jeweiligen Kameras werden über den SVZ-Server in verschieden Formaten bereitgestellt. So sind die Metadaten der Kameras als Textdatei abgespeichert, während die Bilder direkt im JPEG-Format abgerufen werden können. Unter Metadaten der Verkehrskameras sind folgende Informationen zu verstehen: 
 \begin{itemize}
 \item{Eine eindeutige alphanumerische Kamerakennung}
 \item{Die entsprechende Autobahnkennung}
@@ -59,13 +59,13 @@ Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt ang
 Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
 Ein Cronjob ist dabei eine der in Abschnitt~\ref{sec:infrastructure} angesprochene Aufgaben die über den Cron-Daemon periodisch ausgeführt werden.
 
-Ein Datensatz der nicht über HTTP-Aufrufe erhoben werden kann sind Masken für Bilder einer Verkehrskameras.
+Ein Datensatz, der nicht über HTTP-Aufrufe erhoben werden kann, sind Masken für Bilder einer Verkehrskamera.
 Dabei handelt es sich um Bilder im PNG-Format, welche zur Vorverarbeitung von Bildern verwendet wird. Diese müssen manuell erstellt und in die Datenbank eingepflegt werden, da im Rahmen der Arbeit kein vollständig korrekter Algorithmus zur Automatisierung dieser Aufgabe gefunden wurde.
 \newpage
 
 \subsection{Datenpersistenz}
 Für die Persistenz von Daten wurde während der Implementierung auf das Dateisystem verzichtet und nur die MySQL-Datenbank verwendet, da diese die Vorteile einer relationalen Datenbank, sowie sichere Transaktionen bietet.
-Bei den Datensätzen die zu persistieren sind handelt es sich dabei um:
+Bei den Datensätzen, die zu persistieren sind, handelt es sich dabei um:
 \begin{itemize}
 \item{Die Metadaten einer Verkehrskamera (siehe \ref{sec:datenerhebung})}
 \item{Die Bilder einer Kamera im JPEG-Format}
@@ -86,13 +86,13 @@ PDO steht dabei für PHP Data-Objects und bietet eine Unterstützung von mehrere
 MySQLi, auch MySQL Improved Extension, begrenzt sich auf die Unterstützung MySQL, bietet aber auch eine erweiterte Unterstützung neuer Funktionen von MySQL.
 Da sich die Implementierung in dieser Arbeit auf eine MySQL-Unterstützung beschränkt wurde die letztere Programmier-Schnittstelle verwendet.
 
-Damit die Datenbank mit Bildern, welche alle 30 Sekunden gespeichert werden, vollläuft gibt es einen Lösch-Mechanismus der alte Datensätze automatisch aufräumt. 
+Damit die Datenbank mit Bildern, welche alle 30 Sekunden gespeichert werden, vollläuft, gibt es einen Lösch-Mechanismus der alte Datensätze automatisch aufräumt. 
 Dieser ist in PHP implementiert und überprüft nach dem Einfügen eines Datensatzes, ob mehr als 10 Datensätze vorhanden sind.
-Falls dies der Fall ist werden alle Datensätze, welche älter als der zehnt älteste Datensatz sind, gelöscht.
+Ist dies der Fall, werden alle Datensätze, die älter als der zehnt älteste Datensatz sind, gelöscht.
 \newpage
 
 \subsection{Datenbereitstellung}
-Daten lassen sich vom Client, wie auf Abbildung~\ref{fig:serverarch} zu sehen, über HTTP-Anfragen an PHP-Skripten abrufen. Es gibt hierbei unterschiedliche Skripte, die für jeweils unterschiedliche Datensätze und Darstellungsarten verantwortlich sind:
+Daten lassen sich vom Client, wie auf Abbildung~\ref{fig:serverarch} zu sehen, über HTTP-Anfragen an PHP-Skripte abrufen. Es gibt hierbei unterschiedliche Skripte, die für jeweils unterschiedliche Datensätze und Darstellungsarten verantwortlich sind:
 \begin{itemize}
 \item{kameras.php: Zuständig für das Abrufen aller erreichbaren Kameras mit deren Kennung}
 \item{fetchmask.php: Zuständig für die Abfrage einer Maske für eine Verkehrskamera}
@@ -102,7 +102,7 @@ Das Skript "`kameras.php"' gibt bei einer Anfrage eine mit Leerzeichen separiert
 Der Referenzzähler ist dabei eine Hilfsvariable für das Backend, welche Kameras von Clients benötigt werden und daher die Bilder von ihnen heruntergeladen werden sollten.
 Ein Client kann für eine oder mehrere Kameras den Referenzzähler inkrementieren, indem er das "`refcounter.php"' Skript mit den jeweiligen PHP-Skripten aufruft.
 
-Das Skript "`fetchmask.php"' wird mit zwei Query-Paramteren aufgerufen: der Kamerakennung und der Ausrichtung, wobei letzteres ein Binärwert ist. 
+Das Skript "`fetchmask.php"' wird mit zwei Query-Paramteren aufgerufen: der Kamerakennung und der Ausrichtung, wobei Letzteres ein Binärwert ist. 
 Es liefert, wie der Name bereits verrät, das PNG-Bild einer Maske für eine Kamera.
 
 Das letzte Skript "`fetcher.php"' wird mit nur einem Query-Parameter für die Kamerakennung aufgerufen. 
@@ -129,7 +129,7 @@ Da für die Umsetzung der Anwendung ein spezieller Background-Subtraction Algori
 Die vorkompilierte Version von OpenCV beinhaltet jedoch nicht die Erweiterungen, sodass diese nicht nutzbar ist.
 
 Um die Bibliothek jedoch nicht selbst für jede Architektur kompilieren zu müssen, gibt es die Möglichkeit die Bibliothek von dritten zu beziehen.
-Entwickler unter dem Namen {\em QuickBird Studios} stellen auf der Plattform {\em GitHub} (\url{https://github.com/quickbirdstudios/opencv-android} eine aktuelle Version von OpenCV mit allen Erweiterungen zur Verfügung, welche ganz einfach in die App eingebunden und genutzt werden kann.
+Entwickler unter dem Namen {\em QuickBird Studios} stellen auf der Plattform {\em GitHub} (\url{https://github.com/quickbirdstudios/opencv-android}) eine aktuelle Version von OpenCV mit allen Erweiterungen zur Verfügung, welche ganz einfach in die App eingebunden und genutzt werden kann.
 
 \subsection{Backend Kommunikation}
 \label{sec:BackendCom}
@@ -167,11 +167,11 @@ Durch Übergabe des Wertes {\em Manifest.permission.ACCESS\_FINE\_LOCATION} an d
 
 
 Sind alle Berechtigungen erteilt, so kann die App den Standort abfragen.
-Hierfür ist in der App die Klasse {\em GlobalPositionManager} verantwortlich. Diese Kapselt die Interaktion mit dem GPS-Modul und kann über an einen übergeben Callback Standortänderungen regelmäßig nach außen hin kommunizieren.
+Hierfür ist in der App die Klasse {\em GlobalPositionManager} verantwortlich. Diese kapselt die Interaktion mit dem GPS-Modul und kann über an einen übergeben Callback Standortänderungen regelmäßig nach außen kommunizieren.
 Hierzu wird zunächst beim {\em LocationManager}, dem System Dienst für die Standortverwaltung des Gerätes, die Lokalisierung angefragt, was dafür sorgt, dass alle 10 Sekunden der aktuelle Standort and den {\em GlobalPositionManager} übergeben wird. Dieser kann anschließend an den Callback übergeben werden und für die weitere Verarbeitung genutzt werden.
 
 \subsection{Richtungsfestellung}
-Hat man nun die Position zur Hand, so ist als nächstes relevant zu wissen, wohin gefahren wird, um die zu analysierende Straßenseite zu erkennen.
+Hat man nun die Position zur Hand, so ist als Nächstes relevant zu wissen, wohin gefahren wird, um die zu analysierende Straßenseite zu erkennen.
 Hierfür gibt es diverse Ansätze, um das Problem zu lösen.
 
 Beispielsweise stellt Google einen Dienst zur Verfügung, über den bei Übergabe von verschiedenen Positionen die befahrene Straße und Richtung erkannt werden kann. Dieser ist jedoch kostenpflichtig und deshalb nicht geeignet.
@@ -189,7 +189,7 @@ Dazu werden die vom {\em GlobalPositionManager} erfassten Positionen durch die K
 Über die bereitgestellten Methoden {\em getStart} und {\em getEnd} werden die Positionen so aufsummiert, dass Startpunkt und Endpunkt ausgelesen werden können.
 
 Anschließend ermittelt die Klasse {\em DirectionCalculator} die euklidische Norm zwischen sowohl Frankfurt, als auch Basel und den Start- und Endpunkten.
-Diese Vernachlässigt zwar die Krümmung der Erdoberfläche und jegliche Höhenunterschiede, ist aber für solch kurze Distanzen völlig ausreichend.
+Diese vernachlässigt zwar die Krümmung der Erdoberfläche und jegliche Höhenunterschiede, ist aber für solch kurze Distanzen völlig ausreichend.
 
 Ist der Startpunkt nun weiter entfernt von Frankfurt als der Endpunkt, so bewegt sich der Nutzer nach Frankfurt, ansonsten in Richtung Basel.
 
@@ -201,7 +201,7 @@ Obwohl diese Form der Richtungsfeststellung nur auf der A5 funktioniert, ist die
 Bevor die Informationen zu den Verkehrskameras von der Straßenverkehrszentrale geladen werden können, muss zunächst geprüft werden, welche Kameras das Backend unterstützt.
 
 Hierfür kann über die Klasse {\em AvailableCamerasLoader}, wie im Abschnitt~\ref{sec:BackendCom} beschrieben, über den {\em BackendConnector} mit der Methode {\em cameras} die Liste der unterstützten Kameras abgerufen werden.
-Die IDs der Kameras Zeilenweise zurückgeliefert. Der {\em AvailableCamerasLoader} verarbeitet die Zeilen anschließend, sodass eine Liste der verfügbaren Kamera IDs zur verfügung steht.
+Die IDs der Kameras zeilenweise zurückgeliefert. Der {\em AvailableCamerasLoader} verarbeitet die Zeilen anschließend, sodass eine Liste der verfügbaren Kamera IDs zur Verfügung steht.
 
 Zusätzlich dazu werden noch die detaillierten Kamerainformationen der Straßenverkehrszentrale benötigt. Dafür kann über den {\em CameraLoader}, wie im Abschnitt~\ref{sec:AnaCam}, die Liste der Kameras mit dem {\em Downloader} empfangen werden und und verarbeitet werden. Hierfür wird das Tabellenformat aufgeschlüsselt und die benötigten Werte wie ID, Name, Beschreibung und Standort der Kamera in einem {\em Camera}-Modell abgelegt werden.
 
@@ -209,8 +209,8 @@ Da der Standort jedoch ein unterschiedliches Koordinatensystem verwendet, muss d
 
 Diese empfangene Liste wird nun anhand den vom Backend unterstützten Kameras gefiltert, sodass nur noch diese verfügbar sind, mit denen auch gearbeitet werden kann.
 
-Schließlich wird beim aktualisieren der Position des Nutzers, bzw. auch der Fahrtrichtung geprüft, welche Kameras für die weiterfahrt relevant sind. Das bedeutet Kameras die nicht auf der Strecke liegen, werden erst gar nicht benötigt. Liegen Kameras zwar auf der Strecke, aber hinter dem Nutzer, also ist der Nutzer bereits an ihnen vorbei gefahren, so sind diese ebenfalls nicht mehr relevant. Lediglich die Kameras, die vor dem Nutzer auf der Strecke sind, werden für die Stauanalyse benötigt. 
-Es wird also nach jeder Positionsänderung geprüft, welche Kameras relevant sind. Diese werden dann Markiert, sodass die spätere Bildanalyse weiß, welche Kameras analysiert werden sollen.
+Schließlich wird beim Aktualisieren der Position des Nutzers, bzw. auch der Fahrtrichtung, geprüft, welche Kameras für die Weiterfahrt relevant sind. Das bedeutet Kameras die nicht auf der Strecke liegen, werden erst gar nicht benötigt. Liegen Kameras zwar auf der Strecke, aber hinter dem Nutzer, also ist der Nutzer bereits an ihnen vorbei gefahren, so sind diese ebenfalls nicht mehr relevant. Lediglich die Kameras, die vor dem Nutzer auf der Strecke sind, werden für die Stauanalyse benötigt. 
+Es wird also nach jeder Positionsänderung geprüft, welche Kameras relevant sind. Diese werden dann markiert, sodass die spätere Bildanalyse weiß, welche Kameras analysiert werden sollen.
 
 \subsection{Bilder laden}
 Das Laden der Bilder gliedert sich in 3 Hierarchiestufen.
@@ -219,14 +219,14 @@ Da das Backend innerhalb dieses Streams alle Bilder liefert, die es zwischen gep
 
 Eine Hierarchieebene darüber regelt der {\em MultiImageLoader} die Verarbeitung.
 Nach Erhalt der Rohdaten des Backends wird der Binärstrom aufgespalten.
-Jedes Teilbild innerhalb des Stroms hat einen Kopf welcher aus 4 Bytes für die Länge des Bildes und 8 Bytes für den Aufnahmezeitpunkt des Bildes besteht.
+Jedes Teilbild innerhalb des Stroms hat einen Kopf, welcher aus 4 Bytes für die Länge des Bildes und 8 Bytes für den Aufnahmezeitpunkt des Bildes besteht.
 Nach den Kopfdaten folgt das eigentliche Bild. Der gesamte Strom besteht nun einer Folge von Kopf und Bild. Wobei zu beachten gilt, dass die Bytereihenfolge des Kopfes {\em Little-Endian} ist, und nicht {\em Big-Endian} wie auf den meisten Android Geräten verwendet.
 
-Es wird also die Länge des Bildes gelesen und konvertiert, danach der Zeitpunkt gelesen und konvertiert und anschließend das Bild über die vorher eingelesene Länge extrahiert. Dieser Vorgang wiederholt sich solange, bis Idealerweise keine Bytes mehr im Strom sind, oder im Fehlerfall die aus dem Kopf entnommene Länge des Bildes länger ist als übrige Bytes im Strom vorhanden sind.
+Es wird also die Länge des Bildes gelesen und konvertiert, danach der Zeitpunkt gelesen und konvertiert und anschließend das Bild über die vorher eingelesene Länge extrahiert. Dieser Vorgang wiederholt sich solange, bis idealerweise keine Bytes mehr im Strom sind, oder im Fehlerfall die aus dem Kopf entnommene Länge des Bildes länger ist, als übrige Bytes im Strom vorhanden sind.
 
 Das Backend liefert standardmäßig jedoch alle Bilder für eine Kamera die es zwischengespeichert hat. Um also nicht bei jeder Anfrage alle Bilder alten Bilder erneut empfangen und verarbeiten zu müssen, wird in der obersten Hierarchiestufe vom {\em CameraImageFetcher} das Strukturierte laden der Bilder koordiniert.
 
-Für jede der relevanten Kameras existiert eine Instanz, die von außerhalb alle 29 aufgefordert wird neue Bilder abzurufen. Das sorgt, dafür, dass mindestens 2 mal innerhalb der Aktualisierungsperiode des Straßenverkehrszentrums auf neue Bilder geprüft wird, um möglichst schnell auf Stau reagieren zu können und die Latenz des Ladens und Verarbeitens der Bilder zu kompensieren.
+Für jede der relevanten Kameras existiert eine Instanz, die von außerhalb alle 29 Sekunden aufgefordert wird neue Bilder abzurufen. Das sorgt, dafür, dass mindestens 2 mal innerhalb der Aktualisierungsperiode des Straßenverkehrszentrums auf neue Bilder geprüft wird, um möglichst schnell auf Stau reagieren zu können und die Latenz des Ladens und Verarbeitens der Bilder zu kompensieren.
 
 Die vom {\em MultiImageLoader} empfangenen Bilder werden also zwischengespeichert. Bei einem neuen Abfrageintervall kann über das Durchreichen des Zeitstempels des letzten empfangenen Bildes an den {\em BackendConnector} das Backend dazu instruiert werden, lediglich die Bilder zu senden, die jünger als der besagte Zeitstempel sind.
 
@@ -234,15 +234,21 @@ Die vom {\em MultiImageLoader} empfangenen Bilder werden also zwischengespeicher
 Die Verarbeitung der Bilder wird von der Klasse {\em EvaluationExecutor} verwaltet.
 Diese hört sowohl auf Änderungen der relevanten Kameras, als auch auf Änderungen der Fahrtrichtung.
 
-Für jede Kamera wird zunächst eine passende Maske für die entsprechende Fahrrichtung vom Backend geladen.
+Für jede Kamera wird zunächst eine passende Maske für die entsprechende Fahrtrichtung vom Backend geladen.
 Hierfür kann über den {\em BackendConnector} mit der {\em mask} die entsprechende Maske angefordert werden.
 
 Diese dient bei der Verarbeitung dazu, die irrelevanten Teile des Bildes, wie beispielsweise Fahrbahnränder oder die Gegenfahrbahn zu verdecken, um das Ergebnis zu optimieren.
 
 Ebenfalls wird der {\em EvaluationExecutor} benachrichtigt, sobald neue Bilder vom Backend empfangen wurden.
-Um diese nun zu Verarbeiten, gibt es für jede Kamera eine Instanz der {\em ImageEvaluator}-Klasse, welche für die eigentliche Verarbeitung der empfangenen Bilder zuständig ist.
+Um diese nun zu verarbeiten, gibt es für jede Kamera eine Instanz der {\em ImageEvaluator}-Klasse, welche für die eigentliche Verarbeitung der empfangenen Bilder zuständig ist.
 
 Die eigentliche Verarbeitung der Bilder gliedert sich in 5 Teilschritte.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=7cm]{Bilder/process/1} \\
+ \caption{Zu verarbeitendes Beispielbild}
+\end{figure}
 
 \paragraph*{Vorverarbeitung}
 Bei der Vorverarbeitung wird ein empfangenes Bild so aufbereitet, dass die nachfolgende Verarbeitung bessere Ergebnisse liefert.
@@ -252,14 +258,26 @@ Mit der von OpenCV bereitgestellten Methode {\em Imgproc.blur} lässt sich ein B
 
 Anschließend wird auf das weichgezeichnete Bild die geladene Maske aufgetragen.
 
-Wichtig ist, dass die Maske nach der Mittlung aufgetragen wird und nicht vorher, da sonst die Maske negative Auswirkungen auf die Qualität des gemittelten Bildes haben kann.
+Wichtig ist, dass die Maske nach der Mittelung aufgetragen wird und nicht vorher, da sonst die Maske negative Auswirkungen auf die Qualität des gemittelten Bildes haben kann.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=7cm]{Bilder/process/2} \\
+ \caption{Ergebnis nach der Vorverarbeitung}
+\end{figure}
 
 \paragraph*{Verarbeitung}
 Bei der Verarbeitung gilt es die Autos vom Hintergrund zu trennen. Dazu wird der von OpenCV bereitgestellte Background-Subtractor namens {\em MOG} verwendet.
 Dieser liefert auf ein übergebenes Bild ein Binärbild zurück, bei welchem schwarze Pixel den Hintergrund symbolisieren und weiße Pixel die Objekte im Vordergrund, welche idealerweise alles Autos sein sollten.
 
 Damit dieser Algorithmus jedoch verlässliche Ergebnisse liefert, muss dieser zunächst trainiert werden. 
-Aus diesem Grund liefert das Backend nicht nur das aktuellste Bild, sondern eine Sequenz von zeitlich eng beieinander liegenden Bildern, mit welchen der Background-Subtractor trainiert werden kann. 
+Aus diesem Grund liefert das Backend nicht nur das aktuellste Bild, sondern eine Sequenz von zeitlich eng beieinanderliegenden Bildern, mit welchen der Background-Subtractor trainiert werden kann. 
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=7cm]{Bilder/process/3} \\
+ \caption{Ergebnis nach der Verarbeitung}
+\end{figure}
 
 \paragraph*{Nachbearbeitung}
 Dieser Schritt und alle Nachfolgenden, sind lediglich für die Bilder relevant, die auch ausgewertet werden sollen, und nicht nur zum Trainieren des Background-Subtractors dienen.
@@ -274,10 +292,16 @@ Anschließend sollen über {\em Opening} kleine weiße Pixel und alleinstehende 
 
 Zuletzt wird mit einer {\em Dilatation} versucht die Konturen der Autos zu verkleinern, um mögliche Verbindungen oder Fehlinterpretationen von Verbindungen zu Transportern zu verhindern.
 
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=7cm]{Bilder/process/4} \\
+ \caption{Ergebnis nach der Nachbearbeitung}
+\end{figure}
+
 \paragraph*{Analyse}
 Bei der Analyse wird versucht Konturen zu erkennen, und diese zu vereinen.
 Über die Methode {\em Imgproc.findContours} von OpenCV, lassen sich Konturzüge aus einem Binärbild auslesen.
-Zur effizienteren Verarbeitung, wird der Polygonkonturzug jedoch auf einfache Rechtecke reduziert, indem der Minimale und Maximale Punkt der Kontur in sowohl X-, als auch Y-Richtung zur Bildung des Rechtecks gewählt wird, wodurch eine Hülle um den Zug gebildet wird.
+Zur effizienteren Verarbeitung wird der Polygonkonturzug jedoch auf einfache Rechtecke reduziert, indem der Minimale und Maximale Punkt der Kontur in sowohl X-, als auch Y-Richtung zur Bildung des Rechtecks gewählt wird, wodurch eine Hülle um den Zug gebildet wird.
 
 Da es trotz Nachbearbeitung vorkommen kann, dass Konturen innerhalb von Konturen erkannt werden, oder einige sich überlappen, wird versucht Konturen zu vereinen.
 
@@ -285,10 +309,23 @@ Dabei werden Konturen innerhalb einer anderen Kontur vollständig entfernt. Übe
 
 Dieser Prozess wird solange iterativ durchgeführt, bis sich keine Kontur mehr verändert.
 
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=7cm]{Bilder/process/5_1}
+		 \includegraphics[width=7cm]{Bilder/process/5_2} \\
+ \caption{Konturen erkennen und schließen}
+\end{figure}
+
 \paragraph*{Klassifikation}
 Bei der Klassifikation wird nun versucht anhand der Konturen eine Aussage über die Verkehrssituation zu treffen.
 Hierbei wird jede erkannte Kontur als Auto betrachtet.
 Um nun einzuschätzen, ob Stau ist oder nicht, wird der Anzahl der Konturen mit einem vordefinierten Limit für die jeweilige Kamera verglichen. Hierbei wird jedoch nicht wie bei einem Thresholding-Verfahren ab überschreiten der Grenze Stau erkannt, sondern versucht ab einer Anzahl an Konturen größer als die Hälfte des Limits eine prozentuale Aussage über die Stauwahrscheinlichkeit zu treffen.
+
+\begin{figure}[ht]
+   \centering
+     \includegraphics[width=7cm]{Bilder/process/6} \\
+ \caption{Vollständig verarbeitetes Bild}
+\end{figure}
 
 Liegt das Limit einer Kamera bei beispielsweise 40 Autos und es wurden 30 Autos erkannt, so ist die Hälfte des Limits (20) überschritten. Es wird also versucht eine Aussage über die Wahrscheinlichkeit zu treffen. Da 30 Autos genau in der Mitte zwischen der Hälfte und dem gesamten Limit liegen, wird eine Stauwahrscheinlichkeit von 50\% angenommen.
 
@@ -301,7 +338,7 @@ Der beste Ansatz hierfür ist es, zu erkennen, wann das Handy eine Bluetooth-Ver
 Diese Aufgabe übernimmt der {\em BluetoothDeviceChecker}. Zunächst ermöglicht er die mit dem Gerät verbundenen Bluetooth-Geräte auszulesen.
 
 Darüber hinaus können Bluetooth-Geräte gespeichert, ausgelesen und gelöscht werden, die einen Start der App bei einer Verbindung auslösen sollen.
-Dazu werden die MAC Adressen (Media-Access-Control) der Geräte als JSON-codierte Liste auf dem Speicher des Smartphones abgelegt.
+Dazu werden die MAC Adressen (Media-Access-Control) der Geräte als JSON codierte Liste auf dem Speicher des Smartphones abgelegt.
 
 Ebenfalls gibt es die Möglichkeit lediglich zu prüfen, ob das Smartphone zurzeit mit einem Gerät gekoppelt ist, welches den Start der App auslösen soll.
 
@@ -313,7 +350,7 @@ Für den Start der Stauanalyse wird also ein Service mit dem namen {\em Bluetoot
 Innerhalb des {\em BluetoothService} kann nun bei eintreffen der Benachrichtigung mit dem {\em BluetoothDeviceChecker} geprüft werden, ob das Gerät den Start der App auslösen soll. Ist das der Fall, so kann zum Start der Anwendung ein neuer Intent ausgelöst werden. Über diesen Intent kann dem System mitgeteilt werden, dass die Anwendung gestartet werden soll, falls sie nicht bereits gestartet wurde.
 
 \subsection{Benutzeroberfläche}
-Obwohl die Anwendung hauptsächlich akustisch mit dem Nutzer kommuniziert, wird eine graphische Oberfläche benötigt.
+Obwohl die Anwendung hauptsächlich akustisch mit dem Nutzer kommuniziert, wird eine grafische Oberfläche benötigt.
 Dennoch ist das Aussehen und die Funktionalität der Oberfläche sehr schlicht, da diese nur eine sekundäre Rolle spielt.
 
 Untergliedert wird die Anwendung dabei in 3 verschiedene Tabs, durch die navigiert werden kann:
@@ -325,19 +362,19 @@ welche Kameras es gibt, und wo sie positioniert sind.
 
 \begin{figure}[ht]
    \centering
-     \includegraphics[width=6cm]{Bilder/app-map} \\
+     \includegraphics[width=5cm]{Bilder/app-map} \\
  \caption{Kartenansicht der Anwendung}
 \end{figure}
 
 \paragraph*{Details}
 Die Detailseite zeigt dem Nutzer Details zum Analyseprozess.
 Zum einen lässt sich in einer Debugansicht sehen, welche Schritte des Analyseprozesses durchlaufen wurden (beispielsweise Feststellung des Standorts, Feststellung der Richtung, Laden der Kameras, Analyse der Bilder, usw.).
-Darüberhinaus hat der Nutzer auch die Möglichkeit zu jeder analysierten Kamera das zuletzt ausgewertete Bild zu sehen, auf welchem die erkannten Autos markiert wurden. Anhanddessen kann der Nutzer dann selbst noch einmal Einschätzen, ob die Aussage der Anwendung zur Verkehrslage korrekt ist, oder nicht.
+Darüber hinaus hat der Nutzer auch die Möglichkeit zu jeder analysierten Kamera das zuletzt ausgewertete Bild zu sehen, auf welchem die erkannten Autos markiert wurden. Anhand dessen kann der Nutzer dann selbst noch einmal einschätzen, ob die Aussage der Anwendung zur Verkehrslage korrekt ist, oder nicht.
 
 \begin{figure}[ht]
    \centering
-     \includegraphics[width=6cm]{Bilder/app-details}
-     \includegraphics[width=6cm]{Bilder/app-details-cam} \\
+     \includegraphics[width=5cm]{Bilder/app-details}
+     \includegraphics[width=5cm]{Bilder/app-details-cam} \\
  \caption{Detailansicht der Anwendung}
 \end{figure}
 
@@ -349,7 +386,7 @@ Ebenfalls gibt es eine zweite Liste, über die der Nutzer Geräte wieder entfern
 
 \begin{figure}[ht]
    \centering
-     \includegraphics[width=6cm]{Bilder/app-settings} \\
+     \includegraphics[width=5cm]{Bilder/app-settings} \\
  \caption{Einstellungen der Anwendung}
 \end{figure}
 
@@ -370,7 +407,7 @@ Ist ein kompatibles Gerät gekoppelt, übermittelt der {\em Speaker} an das Syst
 
 Nun gilt es den Verkehrszustand über die Sprachausgabe zu übermitteln.
 Optimal wäre es, vor jeder möglichen Ausfahrt anzusagen, ob Stau ist oder nicht, um noch rechtzeitig abfahren zu können.
-Da das erkennen der Ausfahrten mit rechtzeitiger ansage an die Funktionalität eines eigenständigen Navigationssystems grenzt, übersteigt dieser Ansatz den Rahmen der Arbeit.
+Da das Erkennen der Ausfahrten mit rechtzeitiger ansage an die Funktionalität eines eigenständigen Navigationssystems grenzt, übersteigt dieser Ansatz den Rahmen der Arbeit.
 Stattdessen wird Stau für jede Kamera individuell angesagt.
 Ist jedoch kein Stau auf den Kameras erkennbar, soll einmalig angesagt werden, dass kein Stau erkannt wurde.
 Da die Kameras jedoch zu unterschiedlichen Zeitpunkten ausgewertet werden, wird zunächst, nach Auswertung einer Kamera, geprüft, ob für die jeweilige Kamera bereits eine Ansage getätigt wurde, sofern auch Stau erkannt wurde. Falls nicht, wird der Name und der Standort der Kamera mit der ausgerechneten Stauwahrscheinlichkeit an den {\em Speaker übergeben und angesagt}. Liegt für jede relevante Kamera eine Auswertung vor, wobei bei keiner Kamera ein Stau erkannt wurde, so wird eine Ansage an das System übergeben, die dem Nutzer vermittelt, dass kein Stau erkannt wurde.

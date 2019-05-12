@@ -3,7 +3,7 @@
 Dieses Kapitel beschreibt Grundlagen, die für das weitere Verständnis der Arbeit benötigt werden.
 
 \section{Straßenverkehrszentrale Baden-Württemberg} % Mi
-Aktuelle Verkehrsinformationen auf den Autobahnen und Bundesstraßen in Baden-Württemberg und der näheren Umgebung lassen sich über das Straßenverkehrszentrale Baden-Württemberg abrufen. Die Straßenverkehrszentrale nimmt sich dabei unter Anderem zum Ziel, Stau auf den Straßen zu reduzieren und Autofahrer über aktuelle Verkehrsbehinderungen zu informieren.
+Aktuelle Verkehrsinformationen auf den Autobahnen und Bundesstraßen in Baden-Württemberg und der näheren Umgebung lassen sich über das Straßenverkehrszentrale Baden-Württemberg abrufen. Die Straßenverkehrszentrale nimmt sich dabei unter anderem zum Ziel, Stau auf den Straßen zu reduzieren und Autofahrer über aktuelle Verkehrsbehinderungen zu informieren.
 Durch verschiedene Verkehrskameras und Sensoren wird der Verkehr auf Straßen analysiert. Über flexible Tempolimits und einer Freigabe von Seitenstreifen wird die Last der Straßen reduziert und der Verkehrsfluss verbessert~\cite{svzbw}.
 
 \section{Histogramm} % Mi
@@ -20,8 +20,8 @@ Hierzu wird der Grauwert jedes Bildpunktes ausgewertet und gezählt wie oft welc
 
 Anhand des Histogramms lässt sich beispielsweise der Kontrast eines Bildes ersehen. 
 Dieser beschreibt die Spannweite zwischen dem dunkelsten und dem hellsten Punktes in einem Bild, bzw. der Klassen in einem Histogramm.
-Dadurch lässt sich auch der Kontrast erhöhen, indem eine Spreizung des Histograms durchgeführt wird, indem
-der Wertebereich der belegten Grauwertklassen auf den Gesamten Farbbereich abgebildet wird.
+Dadurch lässt sich auch der Kontrast erhöhen, indem eine Spreizung des Histogramms durchgeführt wird, indem
+der Wertebereich der belegten Grauwertklassen auf den gesamten Farbbereich abgebildet wird.
 
 \section{Faltungskerne} % Mo
 \label{sec:Faltungskerne}
@@ -77,7 +77,7 @@ Unter einer Kante versteht man hierbei eine rasche Veränderung der Helligkeitsw
 
 Um Kanten zu finden wird ein Operator auf das Bild angewendet, welcher die zweite Ableitung bildet (Laplace-Operator). Abrupte Schwankungen der Intensitätswerte werden dadurch als Nulldurchgänge sichtbar.
 
-Über die Faltung des Operators der Vorwärtsdiffenz {\em (1 -1)} mit sich selbst, lässt sich ein 1-dimensionaler Faltungskern der zweiten Ableitung bilden: {\em (1 -2 1)}.
+Über die Faltung des Operators der Vorwärtsdifferenz {\em (1 -1)} mit sich selbst, lässt sich ein 1-dimensionaler Faltungskern der zweiten Ableitung bilden: {\em (1 -2 1)}.
 Dieser Kern lässt sich transponieren, um ein Bild nicht nur in x-, sondern auch in y-Richtung abzuleiten.
 Beide Kerne kombiniert ergeben den Laplace-Filter:
 
@@ -134,8 +134,8 @@ Das Verfahren von Otsu dient zur Bildsegmentierung.
 Durch die Findung eines geeigneten Schwellwertes sollen Grauwerte eines Bildes über das Histogramm in zwei Klassen eingeteilt werden.
 Die beiden Klassen werden so gewählt, dass die Varianz der Grauwerte innerhalb der Klassen möglichst gering ist, jedoch zwischen den Klassen möglichst groß.
 
-Der Grauwert, der beide Klassen voneinander Trennt ist gleichzeitig der Schwellwert zur Segmentierung des Bildes. Ist der Grauwert eines Pixels unter dem Schwellwert, gehört er zur 1. Klasse, ansonsten zur 2. Klasse.
-Abhängig davon wie das Bild geartet ist, lässt sich eine Klasse als Hintergrund interpretieren und die jeweils andere Beschreibt den Vordergrund, bzw. das gewünschte Objekt.
+Der Grauwert, der beide Klassen voneinander trennt ist gleichzeitig der Schwellwert zur Segmentierung des Bildes. Ist der Grauwert eines Pixels unter dem Schwellwert, gehört er zur 1. Klasse, ansonsten zur 2. Klasse.
+Abhängig davon wie das Bild geartet ist, lässt sich eine Klasse als Hintergrund interpretieren und die jeweils andere beschreibt den Vordergrund, bzw. das gewünschte Objekt.
 
 \begin{figure}[ht]
    \centering
@@ -165,9 +165,9 @@ Das sind Features, die einen Pixelverlauf als Kante, Linie oder Rechteck einstuf
 
 Diese können ebenfalls als Faltungsmatrix dargestellt werden.
 Eine bestimmte Menge und Kombination dieser Features beschreibt anschließend das gesuchte Objekt.
-Diese Features müssen jedoch im Bild zunächst erkannt werden, was selbst bei einer geringen Auflösung sehr aufwändig werden kann.
+Diese Features müssen jedoch im Bild zunächst erkannt werden, was selbst bei einer geringen Auflösung sehr aufwendig werden kann.
 
-Da diese Features auch nur einen geringen Teil des Bild ausmachen, wird die Erkennung dieser in eine Kaskade unterteilt. Das bedeutet das Bild wird zunächst grob nach den Features durchsucht, und anschließend in den Bereichen die Suche verfeinert, in denen die gewünschten Features vorkommen könnten, sodass eine Kaskade von Suchen durchlaufen wird, bis die Features entweder gefunden oder nicht gefunden wurden und das Bild entsprechend eingestuft werden kann.
+Da diese Features auch nur einen geringen Teil des Bildes ausmachen, wird die Erkennung dieser in eine Kaskade unterteilt. Das bedeutet das Bild wird zunächst grob nach den Features durchsucht, und anschließend in den Bereichen die Suche verfeinert, in denen die gewünschten Features vorkommen könnten, sodass eine Kaskade von Suchen durchlaufen wird, bis die Features entweder gefunden oder nicht gefunden wurden und das Bild entsprechend eingestuft werden kann.
 Für weitere Informationen, siehe~\cite{haar}.
 
 \section{Morphologische Operatoren} % Mo
@@ -199,7 +199,7 @@ Der daraus resultierende Effekt ist, wie in Abbildung~\ref{fig:Erosion} ersichtl
 
 \subsection{Dilatation}
 Die Dilatation bildet das Gegenstück zur Erosion. Statt die jeweiligen Strukturen abzutragen, werden diese wachsen gelassen.
-Dabei kann die selbe Maske wie beider Erosion verwendet werden. Diese muss ebenfalls für jeden Pixel auf das Binärbild aufgelegt werden. Ist der Kern der Maske, also das Pixel auf welches die Maske gelegt wurde gesetzt, so werden im resultierenden Bild alle Pixel innerhalb der Maske ebenfalls gesetzt. Hat der Kern jedoch den
+Dabei kann dieselbe Maske wie beider Erosion verwendet werden. Diese muss ebenfalls für jeden Pixel auf das Binärbild aufgelegt werden. Ist der Kern der Maske, also das Pixel auf welches die Maske gelegt wurde gesetzt, so werden im resultierenden Bild alle Pixel innerhalb der Maske ebenfalls gesetzt. Hat der Kern jedoch den
 Wert 0, so verändert sich für dieses Pixel nichts.
 
 Die formale Notation ist $ I \oplus M $, wobei hier Bild {\em I} mit Maske {\em M} dilatiert wird.
@@ -254,4 +254,4 @@ Ein Beispiel ist in Abbildung~\ref{fig:Closing} zu sehen.
 OpenCV ist eine Programmierbibliothek, welche eine Reihe von Bildverarbeitungsalgorithmen zur Verfügung stellt.
 Es gibt Implementierungen in C, C++, Java und einigen weiteren Programmiersprachen. Unter anderem gibt es auch eine Bibliothek für Android Geräte.
 
-Es existieren diverse Hilfsmittel zur Segmentierung und Klassifikation von Bildern. Darüber Hinaus werden auch morphologische Operatoren bereitgestellt. Durch die Kombination verschiedener Algorithmen und Hilfsmittel hat man so als Programmierer die Möglichkeit sich eine Bildverarbeitungspipeline aufzubauen, um seine Bilder zu verarbeiten. Für mehr Informationen, siehe~\cite{opencv}.
+Es existieren diverse Hilfsmittel zur Segmentierung und Klassifikation von Bildern. Darüber hinaus werden auch morphologische Operatoren bereitgestellt. Durch die Kombination verschiedener Algorithmen und Hilfsmittel hat man so als Programmierer die Möglichkeit sich eine Bildverarbeitungspipeline aufzubauen, um seine Bilder zu verarbeiten. Für mehr Informationen, siehe~\cite{opencv}.
