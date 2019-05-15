@@ -219,7 +219,7 @@ Dabei wird ein Bild {\em I} zunächst mit einer Maske {\em M} erodiert und ansch
 
 $$ I \circ M = ( I \ominus M ) \oplus M $$
 
-Die Struktur von hinreichend großen Elementen wird durch diese Operation nicht verändert. Es werden lediglich kleinere Artefakte, welche zumeist durch Störungen oder Rauschen innerhalb des Ursprungsbildes entstanden sind, entfernt, da diese durch die Erosion entfernt werden, aber durch die anschließende Dilatation nicht mehr erzeugt werden können. Es können auch Strukturen, die über eine Verbindungsstelle, welche schmäler als die Maske ist, voneinander getrennt werden, sodass aus einer Struktur zwei getrennte entstehen.
+Die Struktur von hinreichend großen Elementen wird durch diese Operation nicht verändert. Es werden lediglich kleinere Artefakte, welche zumeist durch Störungen oder Rauschen innerhalb des Ursprungsbildes entstanden sind, durch Erosion entfernt. Durch die anschließende Dilatation können diese nicht mehr erzeugt werden. Es können auch Strukturen, die über eine Verbindungsstelle, welche schmäler als die Maske ist, voneinander getrennt werden, sodass aus einer Struktur zwei getrennte entstehen.
 Ein Beispiel lässt sich in Abbildung~\ref{fig:Opening} sehen.
 
 \begin{figure}[ht]
@@ -250,7 +250,7 @@ Ein Beispiel ist in Abbildung~\ref{fig:Closing} zu sehen.
 
 \section{OpenCV} % Mi
 \label{sec:OpenCV}
-OpenCV ist eine Programmierbibliothek, welche eine Reihe von Bildverarbeitungsalgorithmen zur Verfügung stellt.
+OpenCV ist eine Programmierbibliothek, die eine Reihe von Bildverarbeitungsalgorithmen zur Verfügung stellt.
 Es gibt Implementierungen in C, C++, Java und einigen weiteren Programmiersprachen. Unter anderem gibt es auch eine Bibliothek für Android Geräte.
 
-Es existieren diverse Hilfsmittel zur Segmentierung und Klassifikation von Bildern. Darüber hinaus werden auch morphologische Operatoren bereitgestellt. Durch die Kombination verschiedener Algorithmen und Hilfsmittel hat man so als Programmierer die Möglichkeit sich eine Bildverarbeitungspipeline aufzubauen, um seine Bilder zu verarbeiten. Für mehr Informationen, siehe~\cite{opencv}.
+Es existieren diverse Hilfsmittel zur Segmentierung und Klassifikation von Bildern. Darüber hinaus werden auch morphologische Operatoren bereitgestellt. Durch die Kombination verschiedener Algorithmen und Hilfsmittel hat man als Programmierer die Möglichkeit, sich eine Bildverarbeitungspipeline aufzubauen, um seine Bilder zu verarbeiten. Für mehr Informationen, siehe~\cite{opencv}.
