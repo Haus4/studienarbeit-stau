@@ -171,7 +171,8 @@ Hierfür stellt die Verkehrszentrale eine Liste aller Kameras unter dieser Webad
 
 Diese liegen in einer durch Tabulatorzeichen separierten Tabellenstruktur vor.
 
-\begin{center}
+\begin{table}[ht]
+  \centering
 \scriptsize
     \begin{tabular}{ | l | l | l | l | l | l | l | l |}
     \hline
@@ -186,7 +187,8 @@ Diese liegen in einer durch Tabulatorzeichen separierten Tabellenstruktur vor.
 		-8,-8 \\
     \hline
     \end{tabular}
-\end{center}
+		\caption{Tabellenstruktur der Kamerliste}
+\end{table}
 
 Die Werte {\em lat} und {\em lon} beschreiben die Position der Kamera durch Längen und Breitengrad.
 Der Eintrag {\em title} enthält einen ausführlicheren Titel der Kamera. Mit {\em description} hat man die Möglichkeit eine detailliertere Beschreibung der Kamera zu erhalten, welche jedoch mit HTML Tags angereichert ist. {\em Linkextern} ist die Webadresse, über welche auf die Kamera zugegriffen werden kann. {\em Icon}, {\em iconSize} und {\em iconOffset} sind Informationen, die das Straßenverkehrszentrum selbst benötigt, um das Kameraicon auf einer Landkarte anzuzeigen.
@@ -296,7 +298,8 @@ Die Verfahren werden nun darauf getestet, wie gut sie Stau bei Bildern erkennen,
 \paragraph{Vergleichsalgorithmus}
 Dieser Algorithmus sagt für jedes Bild voraus, dass kein Stau zu sehen ist. Er dient zum Vergleich und soll sicherstellen, dass die Annahme "`kein Stau"' nicht besser sein kann, als mit den verwendeten Verfahren die Bilder tatsächlich auszuwerten.
 
-\begin{center}
+\begin{table}[ht]
+  \centering
 \scriptsize
     \begin{tabular}{ | l | l | l |}
     \hline
@@ -306,15 +309,17 @@ Dieser Algorithmus sagt für jedes Bild voraus, dass kein Stau zu sehen ist. Er 
 		76.86\% \\
     \hline
     \end{tabular}
-\end{center}
+		\caption{Ergebnisse des Vergleichsalgorithmus}
+\end{table}
 
 In 0\% der Fällen "`erkennt"' das Verfahren Stau der existiert, aber in 100\% der Fälle wird die Abwesenheit von Stau angenommen. Das bedeutet, dass die anderen Verfahren eine Gesamtgenauigkeit von 76.86\% bei diesem Testdatensatz übertreffen müssen, um einsatztauglich zu sein.
 
-\paragraph{Helligkeit}
+\paragraph{Helligkeitsvergleich}
 In Bezug auf Ressourceneffizienz ist der Helligkeitsvergleich extrem gut, da sehr wenige primitive Berechnungen durchgeführt werden.
 Jedoch liefert dieses Verfahren sehr schlechte Resultate. Unterschiedliche Tageszeiten, Lichtverhältnisse oder Autofarben haben einen zu großen Einfluss auf das Ergebnis, weshalb keine verlässlichen Ergebnisse generiert werden.
 
-\begin{center}
+\begin{table}[ht]
+  \centering
 \scriptsize
     \begin{tabular}{ | l | l | l |}
     \hline
@@ -324,7 +329,8 @@ Jedoch liefert dieses Verfahren sehr schlechte Resultate. Unterschiedliche Tages
 		41.74\% \\
     \hline
     \end{tabular}
-\end{center}
+  \caption{Ergebnisse des Helligkeitsvergleichs}
+\end{table}
 
 In lediglich 20\% der Fälle, in denen Stau war, wurde auch tatsächlich Stau erkannt, bzw. nur in 48\% der Fälle in denen kein Stau war wurde auch kein Stau erkannt.
 Mit einer Gesamtgenauigkeit von 41.74\% ist dieses Verfahren deutlich schlechter als der Vergleichsalgorithmus, weshalb es sich nicht für die weitere Entwicklung eignet.
@@ -332,7 +338,8 @@ Mit einer Gesamtgenauigkeit von 41.74\% ist dieses Verfahren deutlich schlechter
 \paragraph{Haar-Features}
 Haar-Features liefen aufgrund der niedrigen Auflösung der Bilder keine verlässliche Erkennung von Autos. Bei einer höheren werden Autos zwar gut erkannt, aber nicht auf Bildern der Verkehrszentrale. Zusätzlich ist die Berechnung deutlich aufwendiger, was sich in Bezug auf Ressourcensparsamkeit negativ auswirkt.
 
-\begin{center}
+\begin{table}[ht]
+  \centering
 \scriptsize
     \begin{tabular}{ | l | l | l |}
     \hline
@@ -342,7 +349,8 @@ Haar-Features liefen aufgrund der niedrigen Auflösung der Bilder keine verläss
 		76.86\% \\
     \hline
     \end{tabular}
-\end{center}
+  \caption{Ergebnisse der Haar-Features}
+\end{table}
 
 Zu erkennen ist, dass dieses Verfahren selben Ergebnisse wie der Vergleichsalgorithmus liefert. Es wird also gar nicht erst Stau erkannt, sondern bei jedem Bild davon ausgegangen es sei kein Stau. Daher eignet sich dieses Verfahren nicht.
 
@@ -350,8 +358,9 @@ Zu erkennen ist, dass dieses Verfahren selben Ergebnisse wie der Vergleichsalgor
 Bei der Kantenerkennung ist die Ressourcensparsamkeit ziemlich gut erfüllt, da Kantenerkennung auf einfachen Faltungen basiert, welche sich effizient berechnen lassen.
 Das Problem ist jedoch, dass Autos und Hintergrund nicht unterschieden werden können und Autos nicht verlässlich erkannt werden.
 
-\begin{center}
-\scriptsize
+\begin{table}[ht]
+  \centering
+    \scriptsize
     \begin{tabular}{ | l | l | l |}
     \hline
 		True Positives & True Negatives & Total \\ \hline
@@ -360,14 +369,16 @@ Das Problem ist jedoch, dass Autos und Hintergrund nicht unterschieden werden k�
 		67.36\% \\
     \hline
     \end{tabular}
-\end{center}
+  \caption{Ergebnisse der Kantenerkennung}
+\end{table}
 
 Mit einer Gesamtgenauigkeit von 67.36\% ist die Kantenerkennung zwar immer noch schlechter, als der Vergleichsalgorithmus, liefert jedoch immerhin in 30\% der Stau-Fälle eine korrekte Aussage, und sogar 77\% bei keinem Stau. Insgesamt sind die Ergebnisse jedoch viel zu ungenau, um für die weitere Arbeit zu genügen.
 
 \paragraph{Background-Subtraction}
 Background-Subtraction benötigt zwar Vorlaufbilder, welche zunächst von der Straßenverkehrszentrale nicht verfügbar sind, da lediglich das aktuellste Bild abgerufen werden kann, und nicht Bilder aus der Vergangenheit, jedoch ist nach Abschluss eines einmaligen Trainings der Algorithmus in der Lage jedes weitere Bild effizient zu verarbeiten. Zudem werden Autos verlässlich erkannt.
 
-\begin{center}
+\begin{table}[ht]
+  \centering
 \scriptsize
     \begin{tabular}{ | l | l | l |}
     \hline
@@ -377,6 +388,7 @@ Background-Subtraction benötigt zwar Vorlaufbilder, welche zunächst von der St
 		87.6\% \\
     \hline
     \end{tabular}
-\end{center}
+  \caption{Ergebnisse der Background-Subtraction}
+\end{table}
 
 Mit einer Gesamtgenauigkeit von 87.6\% ist Background-Subtraction das mit Abstand beste Verfahren. Im Gegensatz zum Vergleichsalgorithmus erkennt es zwar nur in 90\% der Fälle, dass kein Stau ist, wenn auch wirklich kein Stau ist, dafür erkennt es Stau in 79\% der Fälle und liefert ausreichend gute Ergebnisse für die Implementierung der Arbeit.
