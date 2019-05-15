@@ -8,12 +8,12 @@ Durch verschiedene Verkehrskameras und Sensoren wird der Verkehr auf Straßen an
 
 \section{Histogramm} % Mi
 Ein Histogramm visualisiert die Häufigkeitsverteilung von Grauwertklassen innerhalb eines Grauwertbildes.
-Hierzu wird der Grauwert jedes Bildpunktes ausgewertet und gezählt wie oft welcher Grauwert innerhalb des Bildes vorkommt (Abbildung~\ref{fig:Histogramm}).
+Hierzu wird der Grauwert jedes Bildpunktes ausgewertet und gezählt, wie oft welcher Grauwert innerhalb des Bildes vorkommt (Abbildung~\ref{fig:Histogramm}).
 
 \begin{figure}[ht]
    \centering
      \includegraphics[width=11cm]{Bilder/histogram} \\
- \caption{Histogram über die Helligkeitswerte eines Bildes}
+ \caption{Histogramm über die Helligkeitswerte eines Bildes}
  \source{http://opensource.graphics/tag/histogram/}{13.3.2019}
  \label{fig:Histogramm}
 \end{figure}
@@ -28,7 +28,7 @@ der Wertebereich der belegten Grauwertklassen auf den gesamten Farbbereich abgeb
 Faltungskerne beschreiben Filter in der Bildverarbeitung, die über die diskrete Faltung im 2-dimensionalen
 Raum auf ein Bild angewendet werden.
 
-Grundsätzlich ist die 1-dimensionale Faltung im kontinuierlichen Raum definiert durch die Integration zweier Funktionen {\em g} und {\em f} an einem Punkt {\em t}, wobei die Funktion {\em g} gespiegelt wird, also auf {\em f} gefaltet wird:
+Grundsätzlich ist die 1-dimensionale Faltung im kontinuierlichen Raum durch die Integration zweier Funktionen {\em g} und {\em f} an einem Punkt {\em t} definiert, wobei die Funktion {\em g} gespiegelt wird, also auf {\em f} gefaltet wird:
 
 $$ (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)g(t - \tau) d\tau $$
 
@@ -49,7 +49,7 @@ Faltungskerne sind lokale Operatoren, die die Neuberechnung eines Pixels mittels
 Mit solchen Filtern lassen sich Bilder beispielsweise Schärfen, Glätten. Es lassen sich jedoch auch Kanten finden oder Rauschanteile reduzieren.
 
 \subsection{Gauß-Filter}
-Der Gauß-Filter ist ein Faltungskern, welcher über eine gaußsche Glockenkurve gebildet wird.
+Der Gauß-Filter ist ein Faltungskern, der über eine gaußsche Glockenkurve gebildet wird.
 Mit solch einem Filter lassen sich Bilder glätten und somit Rauschanteile reduzieren.
 Bilder wirken dadurch weicher, bzw. verwaschen.
 
@@ -146,7 +146,7 @@ Abhängig davon wie das Bild geartet ist, lässt sich eine Klasse als Hintergrun
  \label{fig:Otsu}
 \end{figure}
 
-Dadurch, dass ein globaler Schwellwert für das gesamte Bild verwendet wird, haben globale Helligkeitseinflüsse, wie Licht und Schatten starke Auswirkungen auf das Ergebnis des Verfahrens, wie in Abbildung~\ref{fig:Otsu} zu erkennen ist. Um solche Störfaktoren zu umgehen, kann statt eines globalen Schwellwertes auch ein lokaler Schwellwert für jeden Pixel individuell anhand seiner Nachbarschaft bestimmt werden. Dadurch kann es unter Umständen zu genaueren Ergebnissen kommen.
+Dadurch, dass ein globaler Schwellwert für das gesamte Bild verwendet wird, haben globale Helligkeitseinflüsse wie Licht und Schatten starke Auswirkungen auf das Ergebnis des Verfahrens, wie in Abbildung~\ref{fig:Otsu} zu erkennen ist. Um solche Störfaktoren zu umgehen, kann statt eines globalen Schwellwertes auch ein lokaler Schwellwert für jeden Pixel individuell anhand seiner Nachbarschaft bestimmt werden. Dadurch kann es unter Umständen zu genaueren Ergebnissen kommen.
 Für weitere Literatur, siehe~\cite{Otsu}.
 
 \section{Haar Kaskaden} % Mi

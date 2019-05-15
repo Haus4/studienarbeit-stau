@@ -5,19 +5,19 @@
 \label{sec:Motivation}
 Öffentliche Stauinformationen sind oftmals nicht akkurat oder aktuell genug, damit Autofahrer auf die Verkehrslage reagieren können. Deshalb befasst sich diese Arbeit mit der Auswertung von Verkehrsüberwachungskameras der Straßenverkehrszentrale Baden-Württemberg.
 Mit diesem Ansatz kann Autofahrern zeitnah vorgeschlagen werden, eine Alternativroute zu befahren und somit Zeit einzusparen.
-Eine einfache Möglichkeit die Daten an den Nutzer zu übermitteln, ohne dass dieser während des Autofahrens beeinträchtigt wird, ist diese akustisch wiederzugeben.
+Eine einfache Möglichkeit, die Daten an den Nutzer zu übermitteln, ohne dass dieser während des Autofahrens beeinträchtigt wird, ist diese akustisch wiederzugeben.
 Mögliche Schnittstellen bieten hierbei das Autoradio oder das Smartphone des Fahrers.
 Das dynamisch reagierende System präsentiert von M. Herglotz, S. Knab und J. Kümmerlin in \cite{hkkDhbw}, löst das Problem, ist für den produktiven Einsatz jedoch zu ressourcenintensiv.
 
 \section{Ziel der Arbeit}
 \label{sec:ZielDerArbeit}
 In der vorliegenden Arbeit soll eine alternative Methode zur Erkennung von stark stockendem oder zum Stillstand gekommenem Verkehr auf Autobahnen entwickelt werden. 
-Als Methode wird hierbei ein Algorithmus bezeichnet, welcher mit Hilfe von Bildverarbeitungsverfahren die Fahrdynamik auf Verkehrsüberwachungskameras evaluiert.
+Als Methode wird hierbei ein Algorithmus bezeichnet, der mit Hilfe von Bildverarbeitungsverfahren die Fahrdynamik auf Verkehrsüberwachungskameras evaluiert.
 Bilder der Überwachungskameras werden über die Website der Straßenverkehrszentrale Baden-Württemberg minütlich zur Verfügung gestellt. 
 Ausgewertete Ergebnisse sollen dem Nutzer über eine Android Anwendung übermittelt werden. Eine Schnittstelle zum Autoradio des Nutzers wird hierbei über das Übertragungsprotokoll Bluetooth ermöglicht. Falls die Schnittstelle nicht angesprochen werden kann, wird die Standard-Audio-Ausgabe des jeweiligen Android-Gerätes verwendet.
 Die Android Anwendung muss ihre Daten nicht direkt von der Straßenverkehrszentrale beziehen, sondern kann diese auch indirekt über einen bereitgestellten Server abrufen.
 Dieser agiert dabei als Zwischenspeicher für Kamerabilder und bietet eine Historie.
-Die Implementierung der Arbeit soll besonders bezüglich Kennzahlen der Ressourceneffizienz optimiert werden.
+Die Implementierung der Arbeit soll, besonders bezüglich Kennzahlen der Ressourceneffizienz, optimiert werden.
 Die Kennzahlen umfassen hierbei:
 \begin{itemize}
 \item{Energiebedarf}
@@ -25,4 +25,4 @@ Die Kennzahlen umfassen hierbei:
 \item{Sekundärspeicherbedarf}
 \item{Laufzeit}
 \end{itemize}
-Die gefundene Lösung soll nicht genauer als vorherige Ansätze sein, sondern ein ausgewogenes Maß zwischen Genauigkeit und Ressourceneffizienz finden.
+Die Lösung soll nicht genauer als vorherige Ansätze sein, sondern ein ausgewogenes Maß zwischen Genauigkeit und Ressourceneffizienz finden.
