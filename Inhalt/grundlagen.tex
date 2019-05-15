@@ -20,8 +20,7 @@ Hierzu wird der Grauwert jedes Bildpunktes ausgewertet und gezählt, wie oft wel
 
 Anhand des Histogramms lässt sich beispielsweise der Kontrast eines Bildes ersehen. 
 Dieser beschreibt die Spannweite zwischen dem dunkelsten und dem hellsten Punktes in einem Bild, bzw. der Klassen in einem Histogramm.
-Dadurch lässt sich auch der Kontrast erhöhen, indem eine Spreizung des Histogramms durchgeführt wird, indem
-der Wertebereich der belegten Grauwertklassen auf den gesamten Farbbereich abgebildet wird.
+Dadurch lässt sich auch der Kontrast erhöhen, indem eine Spreizung des Histogramms durchgeführt wird: Der Wertebereich der belegten Grauwertklassen wird auf den gesamten Farbbereich abgebildet 
 
 \section{Faltungskerne} % Mo
 \label{sec:Faltungskerne}
@@ -73,9 +72,9 @@ Wendet man diesen Filter auf ein Bild mit der diskreten Faltung an, erhält man 
 
 \subsection{Laplace-Filter}
 Ein Laplace-Filter ist ein Faltungskern zur Kantendetektion innerhalb eines Bildes.
-Unter einer Kante versteht man hierbei eine rasche Veränderung der Helligkeitswerte entlang einer Richtung.
+Unter einer Kante versteht man eine rasche Veränderung der Helligkeitswerte entlang einer Richtung.
 
-Um Kanten zu finden wird ein Operator auf das Bild angewendet, welcher die zweite Ableitung bildet (Laplace-Operator). Abrupte Schwankungen der Intensitätswerte werden dadurch als Nulldurchgänge sichtbar.
+Um Kanten zu finden wird ein Operator auf das Bild angewendet, der die zweite Ableitung bildet (Laplace-Operator). Abrupte Schwankungen der Intensitätswerte werden dadurch als Nulldurchgänge sichtbar.
 
 Über die Faltung des Operators der Vorwärtsdifferenz {\em (1 -1)} mit sich selbst, lässt sich ein 1-dimensionaler Faltungskern der zweiten Ableitung bilden: {\em (1 -2 1)}.
 Dieser Kern lässt sich transponieren, um ein Bild nicht nur in x-, sondern auch in y-Richtung abzuleiten.
@@ -102,9 +101,9 @@ Aufgrund eines hohen Rauschanteils in natürlichen Bildern liefert dieser Filter
 \subsection{Sobel-Operator}
 \label{sec:Sobel}
 Um auf natürlichen Bildern Kanten zuverlässig zu erkennen, kombiniert der Sobel-Operator die Ideen des Gauß- und Laplace-Filters.
-Hierbei wird das Bild in eine Richtung über die zentrale Differenz {\em (1 0 -1)} abgeleitet, andere Richtung jedoch über einen Gauß-Filter {\em (1 2 1)} geglättet,
+Das Bild wird in eine Richtung über die zentrale Differenz {\em (1 0 -1)} abgeleitet, in die andere Richtung jedoch über einen Gauß-Filter {\em (1 2 1)} geglättet,
 um Rauschanteile zu reduzieren.
-Kombiniert man beide Filter miteinander, erhält man den Sobel-Operator
+Kombiniert man beide Filter miteinander, erhält man den Sobel-Operator.
 
 $$ \left( \begin{array}{rrr}
 -1 & 0 & 1 \\
@@ -131,10 +130,10 @@ Die beiden erhaltenen Ergebnisse können nun vereint werden, um alle Kanten inne
 
 \section{Otsu} % Mi
 Das Verfahren von Otsu dient zur Bildsegmentierung.
-Durch die Findung eines geeigneten Schwellwertes sollen Grauwerte eines Bildes über das Histogramm in zwei Klassen eingeteilt werden.
+Durch die Findung eines geeigneten Schwellwertes, sollen Grauwerte eines Bildes über das Histogramm in zwei Klassen eingeteilt werden.
 Die beiden Klassen werden so gewählt, dass die Varianz der Grauwerte innerhalb der Klassen möglichst gering ist, jedoch zwischen den Klassen möglichst groß.
 
-Der Grauwert, der beide Klassen voneinander trennt ist gleichzeitig der Schwellwert zur Segmentierung des Bildes. Ist der Grauwert eines Pixels unter dem Schwellwert, gehört er zur 1. Klasse, ansonsten zur 2. Klasse.
+Der Grauwert, der beide Klassen voneinander trennt, ist gleichzeitig der Schwellwert zur Segmentierung des Bildes. Ist der Grauwert eines Pixels unter dem Schwellwert, gehört er zur 1. Klasse, ansonsten zur 2. Klasse.
 Abhängig davon wie das Bild geartet ist, lässt sich eine Klasse als Hintergrund interpretieren und die jeweils andere beschreibt den Vordergrund, bzw. das gewünschte Objekt.
 
 \begin{figure}[ht]
@@ -146,7 +145,7 @@ Abhängig davon wie das Bild geartet ist, lässt sich eine Klasse als Hintergrun
  \label{fig:Otsu}
 \end{figure}
 
-Dadurch, dass ein globaler Schwellwert für das gesamte Bild verwendet wird, haben globale Helligkeitseinflüsse wie Licht und Schatten starke Auswirkungen auf das Ergebnis des Verfahrens, wie in Abbildung~\ref{fig:Otsu} zu erkennen ist. Um solche Störfaktoren zu umgehen, kann statt eines globalen Schwellwertes auch ein lokaler Schwellwert für jeden Pixel individuell anhand seiner Nachbarschaft bestimmt werden. Dadurch kann es unter Umständen zu genaueren Ergebnissen kommen.
+Dadurch, dass ein globaler Schwellwert für das gesamte Bild verwendet wird, haben globale Helligkeitseinflüsse wie Licht und Schatten starke Auswirkungen auf das Ergebnis des Verfahrens, wie in Abbildung~\ref{fig:Otsu} zu erkennen ist. Um solche Störfaktoren zu umgehen, kann, statt eines globalen Schwellwertes auch ein lokaler Schwellwert für jeden Pixel anhand seiner Nachbarschaft individuell bestimmt werden. So kommt es unter Umständen u genaueren Ergebnissen.
 Für weitere Literatur, siehe~\cite{Otsu}.
 
 \section{Haar Kaskaden} % Mi
@@ -165,22 +164,22 @@ Das sind Features, die einen Pixelverlauf als Kante, Linie oder Rechteck einstuf
 
 Diese können ebenfalls als Faltungsmatrix dargestellt werden.
 Eine bestimmte Menge und Kombination dieser Features beschreibt anschließend das gesuchte Objekt.
-Diese Features müssen jedoch im Bild zunächst erkannt werden, was selbst bei einer geringen Auflösung sehr aufwendig werden kann.
+Sie müssen jedoch im Bild zuerst erkannt werden, was selbst bei einer geringen Auflösung sehr aufwendig werden kann.
 
-Da diese Features auch nur einen geringen Teil des Bildes ausmachen, wird die Erkennung dieser in eine Kaskade unterteilt. Das bedeutet das Bild wird zunächst grob nach den Features durchsucht, und anschließend in den Bereichen die Suche verfeinert, in denen die gewünschten Features vorkommen könnten, sodass eine Kaskade von Suchen durchlaufen wird, bis die Features entweder gefunden oder nicht gefunden wurden und das Bild entsprechend eingestuft werden kann.
+Da diese Features auch nur einen geringen Teil des Bildes ausmachen, wird die Erkennung dieser in eine Kaskade unterteilt: Das Bild wird zunächst grob nach den Features durchsucht, und anschließend in den Bereichen die Suche verfeinert, in denen die gewünschten Features vorkommen könnten, sodass eine Kaskade von Suchen durchlaufen wird, bis die Features entweder gefunden oder nicht gefunden wurden und das Bild entsprechend eingestuft werden kann.
 Für weitere Informationen, siehe~\cite{haar}.
 
 \section{Morphologische Operatoren} % Mo
 \label{sec:MorphologischeOperatoren}
 Morphologische Operatoren werden in der Bildverarbeitung eingesetzt, um die Form von Strukturen innerhalb eines Bildes zu verändern.
-Solche Operatoren können sowohl auf Binär-, als auch auf Grauwertbildern angewendet werden, wobei hier lediglich auf die Anwendung bei Binärbildern
+Sie können sowohl auf Binär-, als auch auf Grauwertbildern angewendet werden, wobei hier lediglich auf die Anwendung bei Binärbildern
 eingegangen wird.
 
-Zunächst gibt es einfache Basisoperationen wie Erosion und Dilatation, welche die Basis für weitere, komplexere morphologische Operatoren wie beispielsweise Opening und Closing bilden.
+Zunächst gibt es einfache Basisoperationen, wie Erosion und Dilatation, die die Basis für weitere, komplexere morphologische Operatoren, wie beispielsweise Opening und Closing, bilden.
 
 \subsection{Erosion}
 Bei der Erosion werden Strukturen, wie der Name vermuten lässt, erodiert bzw. abgetragen.
-Hierfür wird zunächst eine Maske definiert. Üblicherweise ein Raster von 3x3 Pixeln, wobei der Kern der Maske auch der Mittelpunkt des Rasters ist.
+Man definiert hierfür eine Maske, üblicherweise ein Raster von 3x3 Pixeln, wobei der Kern der Maske auch der Mittelpunkt des Rasters ist.
 
 Für jeden gesetzten Pixel (mit Wert 1) innerhalb des Binärbilds wird nun die Maske aufgelegt. Sind dabei nicht alle anderen Pixel innerhalb der Maske ebenfalls gesetzt, so wird das Pixel im resultierenden Bild auf den Wert 0 gesetzt.
 Haben jedoch alle Nachbarn eines Pixels innerhalb der Maske ebenfalls den Wert 1, so verändert sich das Pixel nicht.
@@ -198,8 +197,8 @@ Der daraus resultierende Effekt ist, wie in Abbildung~\ref{fig:Erosion} ersichtl
 \end{figure}
 
 \subsection{Dilatation}
-Die Dilatation bildet das Gegenstück zur Erosion. Statt die jeweiligen Strukturen abzutragen, werden diese wachsen gelassen.
-Dabei kann dieselbe Maske wie beider Erosion verwendet werden. Diese muss ebenfalls für jeden Pixel auf das Binärbild aufgelegt werden. Ist der Kern der Maske, also das Pixel auf welches die Maske gelegt wurde gesetzt, so werden im resultierenden Bild alle Pixel innerhalb der Maske ebenfalls gesetzt. Hat der Kern jedoch den
+Die Dilatation bildet das Gegenstück zur Erosion. Statt die jeweiligen Strukturen abzutragen, lässt man diese wachsen.
+Dabei kann dieselbe Maske wie bei der Erosion verwendet werden. Diese muss ebenfalls für jeden Pixel auf das Binärbild aufgelegt werden. Ist der Kern der Maske, also das Pixel auf welches die Maske gelegt wurde gesetzt, so werden im resultierenden Bild alle Pixel innerhalb der Maske ebenfalls gesetzt. Hat der Kern jedoch den
 Wert 0, so verändert sich für dieses Pixel nichts.
 
 Die formale Notation ist $ I \oplus M $, wobei hier Bild {\em I} mit Maske {\em M} dilatiert wird.
