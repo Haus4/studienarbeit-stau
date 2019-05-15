@@ -2,9 +2,9 @@
 Im folgenden Kapitel wird die praktische Implementierung der in der Arbeit erarbeiteten Methode beschrieben. Die Implementierung umfasst dabei die Schnittstelle zum Nutzer, sowie die Erhebung, Verarbeitung und Persistenz von relevanten Daten.
 \section{Backend}
 Für die Implementierung der Arbeit wurde ein Backend konzipiert, welches Informationen und Bilder von Verkehrskameras für Clients vorenthält. 
-Das Ziel ist es dabei Daten der Straßenverkehrszentrale regelmäßig anzufragen und für den Client zu persistieren. 
+Das Ziel ist es dabei, Daten der Straßenverkehrszentrale regelmäßig anzufragen und für den Client zu persistieren. 
 Somit wird ermöglicht, dass der Client auch auf ältere Datensätze der Straßenverkehrszentrale zugreifen kann. 
-Weiterhin ermöglicht soll das Backend die Daten in einem möglichst kompakten Format an den Client senden können, damit auch über schwache zelluläre Netzwerkverbindungen von Clients die Daten relativ zügig empfangen können. 
+Weiterhin ermöglicht das Backend die Daten in einem möglichst kompakten Format an den Client zu senden, damit auch über schwache Netzwerkverbindungen die Daten empfangen können. 
 \subsection{Infrastruktur}
 \label{sec:infrastructure}
 Im Rahmen der Implementierung des Backends wurden diverse Anforderungen an die zu verwendenden Technologien beachtet. 
@@ -12,7 +12,7 @@ So soll die resultierende Anwendung auf dem Apache Server eines geteilten Webhos
 Der Apache Server des Webhosts erlaubt das Ausführen von PHP-Skripten, welche für das Ansteuern von Anfragen und die Verarbeitung von Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden können. 
 
 Für die Persistenz von Daten besitzt der Webhost alternativ zum Dateisystem auch eine MySQL-Datenbank.
-Die Datenbank ist für die Implementierung besser geeignet als das Dateisystem, da sie Transaktionen sowie eine relationale Abbildung der persistierten Datensätze ermöglicht.
+Die Datenbank ist für die Implementierung besser geeignet als das Dateisystem, da sie Transaktionen sowie eine relationale Abbildung der  Datensätze ermöglicht.
 So ermöglicht die Datenbank auch das einfache Abspeichern von Metadaten für Verkehrskameras und die Vernetzung zwischen Metadaten und Kamerabildern über Fremdschlüssel.
 
 Ein weiterer Grund warum für den Anwendungsfall die Datenbank dem Dateisystem zu bevorzugen ist, ist, dass Datensätze einfach und schnell geordnet und gefiltert werden können.
@@ -25,7 +25,7 @@ Ein weiterer Bestandteil der Backend-Infrastruktur ist der Cron-Daemon des Linux
 Über diesen lassen sich periodisch wiederholende Aufgaben einplanen, welche für das Backend nützlich sein könnten.
 Ein Beispiel hierfür ist das regelmäßige Abfragen von Bildern einer Verkehrskamera der Straßenverkehrszentrale.
 
-Die letzte Komponente der Infrastruktur ist die Applikation "`cURL"' die sich auf dem Betriebssystem des Hosts befindet.
+Die letzte Komponente der Infrastruktur ist die Applikation "`cURL"', die sich auf dem Betriebssystem des Hosts befindet.
 cURL unterstützt die Übertragung von Daten über diverse Protokolle und lässt sich auch über Schnittstellen anderen Programmen und Programmiersprachen kontrollieren.
 So ermöglicht dies auch das Anstoßen von HTTP-Anfragen über PHP-Skripte des Apache Servers.
 cURL bietet zusätzlich auch die Funktionalität verschiedene Parameter der Anfragen einzustellen.
@@ -55,9 +55,9 @@ Informationen über die jeweiligen Kameras werden über den SVZ-Server in versch
 \item{Position der Kamera}
 \end{itemize}
 Die Metadaten der Kameras müssen nur einmalig abgerufen und verarbeitet werden, während die Bilder der Verkehrskameras von der SVZ alle 30 Sekunden erneuert werden. 
-Um immer aktuelle Datensätze zu empfangen werden Bilder im 30-Sekunden-Takt angefragt. 
+Um immer aktuelle Datensätze zu empfangen, werden Bilder im 30-Sekunden-Takt angefragt. 
 Dies lässt sich über PHP und einen Cronjob im Linux Betriebssystem des geteilten Webhosts realisieren.
-Ein Cronjob ist dabei eine der in Abschnitt~\ref{sec:infrastructure} angesprochene Aufgaben die über den Cron-Daemon periodisch ausgeführt werden.
+Ein Cronjob ist dabei eine der in Abschnitt~\ref{sec:infrastructure} angesprochenen Aufgaben, die über den Cron-Daemon periodisch ausgeführt werden.
 
 Ein Datensatz, der nicht über HTTP-Aufrufe erhoben werden kann, sind Masken für Bilder einer Verkehrskamera.
 Dabei handelt es sich um Bilder im PNG-Format, welche zur Vorverarbeitung von Bildern verwendet wird. Diese müssen manuell erstellt und in die Datenbank eingepflegt werden, da im Rahmen der Arbeit kein vollständig korrekter Algorithmus zur Automatisierung dieser Aufgabe gefunden wurde.
@@ -81,14 +81,14 @@ Das Schema für die Datenbank ist auf Abbildung~\ref{fig:dbschema} zu sehen (Pri
  \label{fig:dbschema}
 \end{figure}
 
-Damit PHP-Skripte auf die MySQL-Datenbank zugreifen können gibt es zwei unterschiedliche APIs: Die "`PDO"'-API und die MySQLi-API. 
+Damit PHP-Skripte auf die MySQL-Datenbank zugreifen können, gibt es zwei unterschiedliche APIs: Die "`PDO"'-API und die MySQLi-API. 
 PDO steht dabei für PHP Data-Objects und bietet eine Unterstützung von mehreren Datenbank-Treibern. 
-MySQLi, auch MySQL Improved Extension, begrenzt sich auf die Unterstützung MySQL, bietet aber auch eine erweiterte Unterstützung neuer Funktionen von MySQL.
-Da sich die Implementierung in dieser Arbeit auf eine MySQL-Unterstützung beschränkt wurde die letztere Programmier-Schnittstelle verwendet.
+MySQLi, auch MySQL Improved Extension, begrenzt sich auf die Unterstützung von MySQL, bietet aber auch eine erweiterte Unterstützung neuer Funktionen von MySQL.
+Da sich die Implementierung in dieser Arbeit auf eine MySQL-Unterstützung beschränkt wurde die letztere Programmierschnittstelle verwendet.
 
-Damit die Datenbank mit Bildern, welche alle 30 Sekunden gespeichert werden, vollläuft, gibt es einen Lösch-Mechanismus der alte Datensätze automatisch aufräumt. 
+Damit die Datenbank mit Bildern, welche alle 30 Sekunden gespeichert werden, nicht vollläuft, gibt es einen Lösch-Mechanismus, der alte Datensätze automatisch aufräumt. 
 Dieser ist in PHP implementiert und überprüft nach dem Einfügen eines Datensatzes, ob mehr als 10 Datensätze vorhanden sind.
-Ist dies der Fall, werden alle Datensätze, die älter als der zehnt älteste Datensatz sind, gelöscht.
+Ist dies der Fall, werden die zehn jüngsten Datensätze behalten und der Rest gelöscht.
 \newpage
 
 \subsection{Datenbereitstellung}
@@ -98,7 +98,7 @@ Daten lassen sich vom Client, wie auf Abbildung~\ref{fig:serverarch} zu sehen, �
 \item{fetchmask.php: Zuständig für die Abfrage einer Maske für eine Verkehrskamera}
 \item{fetcher.php: Zuständig für Abfragen von Bildern einer Verkehrskamera}
 \end{itemize}
-Das Skript "`kameras.php"' gibt bei einer Anfrage eine mit Leerzeichen separierte Liste aller Kennungen von Kameras zurück, welche eine Maske besitzen und einen Referenzzähler größer eins. 
+Das Skript "`kameras.php"' gibt bei einer Anfrage eine mit Leerzeichen separierte Liste aller Kennungen von Kameras zurück, welche eine Maske besitzen und einen Referenzzähler größer eins haben.
 Der Referenzzähler ist dabei eine Hilfsvariable für das Backend, welche Kameras von Clients benötigt werden und daher die Bilder von ihnen heruntergeladen werden sollten.
 Ein Client kann für eine oder mehrere Kameras den Referenzzähler inkrementieren, indem er das "`refcounter.php"' Skript mit den jeweiligen PHP-Skripten aufruft.
 
@@ -107,12 +107,12 @@ Es liefert, wie der Name bereits verrät, das PNG-Bild einer Maske für eine Kam
 
 Das letzte Skript "`fetcher.php"' wird mit nur einem Query-Parameter für die Kamerakennung aufgerufen. 
 Dieses Skript liefert einen Binärstrom aller gespeicherten Bilder einer Verkehrskamera, sowie den jeweiligen Zeitpunkt (in Unix-Zeit), wann dieses Bild auf dem SVZ-Server gespeichert wurde. 
-Damit diese Daten korrekt vom Client gelesen werden können werden die Daten in folgender Reihenfolge gesendet: Die Länge in Bytes des Zeitpunktes und des Bildes zusammen, der Zeitpunkt und Unix-Zeit und abschließend die Bytes des zusendenden JPEG-Bildes.
+Damit diese Daten korrekt vom Client gelesen werden können, werden die Daten in folgender Reihenfolge gesendet: Die Länge in Bytes des Zeitpunktes und des Bildes zusammen, der Zeitpunkt und Unix-Zeit und abschließend die Bytes des zusendenden JPEG-Bildes.
 \newpage
 
 \section{Client}
 Der Client wird als eine Android Anwendung realisiert, die durch Kommunikation mit dem Backend und der Straßenverkehrszentrale das Problem der Stauerkennung so effizient und ressourcensparend wie möglich löst.
-Durch das Verlagern der Berechnungen auf das mobile Endgerät bleibt die Last des Backends gering und die Rechenleistung des Smartphones wird soweit ausgeschöpft, dass Berechnungen effizient, aber sparsam durchgeführt werden können.
+Durch das Verlagern der Berechnungen auf das mobile Endgerät, bleibt die Last des Backends gering und die Rechenleistung des Smartphones wird soweit ausgeschöpft, dass Berechnungen effizient, aber sparsam durchgeführt werden können.
 
 \subsection{OpenCV}
 Der Kern der Verarbeitung wird durch Algorithmen der OpenCV Bibliothek~\ref{sec:OpenCV} umgesetzt.
@@ -128,22 +128,22 @@ Da für die Umsetzung der Anwendung ein spezieller Background-Subtraction Algori
 
 Die vorkompilierte Version von OpenCV beinhaltet jedoch nicht die Erweiterungen, sodass diese nicht nutzbar ist.
 
-Um die Bibliothek jedoch nicht selbst für jede Architektur kompilieren zu müssen, gibt es die Möglichkeit die Bibliothek von dritten zu beziehen.
+Um die Bibliothek jedoch nicht selbst für jede Architektur kompilieren zu müssen, gibt es die Möglichkeit, die Bibliothek von dritten zu beziehen.
 Entwickler unter dem Namen {\em QuickBird Studios} stellen auf der Plattform {\em GitHub} (\url{https://github.com/quickbirdstudios/opencv-android}) eine aktuelle Version von OpenCV mit allen Erweiterungen zur Verfügung, welche ganz einfach in die App eingebunden und genutzt werden kann.
 
 \subsection{Backend Kommunikation}
 \label{sec:BackendCom}
 Da das Backend in PHP geschrieben ist, verläuft die Kommunikation über das HTTP-Protokoll an den entsprechenden Webserver.
 Android stellt bei der Kommunikation über HTTP jedoch Ansprüche. Die Kommunikation muss auf dem Gerät asynchron geschehen. Das bedeutet, dass im Haupt-Thread,
-also dem Programmfaden, welcher für das Darstellen der Oberfläche dient, keinerlei Netzwerkkommunikation geschehen darf, da dies unter Umständen dazu führen könnte, dass die Oberfläche einfriert, da, solange auf das Ende der Kommunikation gewartet wird, die Oberfläche nicht neu dargestellt werden kann.
+also dem Programmfaden, welcher für das Darstellen der Oberfläche dient, keinerlei Netzwerkkommunikation geschehen darf. Dies könnte unter Umständen dazu führen, dass die Oberfläche einfriert, da, solange auf das Ende der Kommunikation gewartet wird, die Oberfläche nicht neu dargestellt werden kann.
 
 Um sicherzustellen, dass Kommunikation asynchron verläuft, wird in der Klasse {\em Downloader} jegliche HTTP-Kommunikation gekapselt.
 Hierzu wird innerhalb der Klasse ein neuer Thread gestartet, welcher für die Kommunikation zuständig ist. Vor dem Starten des Threads kann ein Callback-Objekt übergeben werden, welches nach Abschluss der Kommunikation die erhaltenen Daten übergeben bekommt und aufgerufen wird.
 
-Ebenfalls stellt der {\em Downloader} sicher, dass pro Instanz der Klasse nur eine Anfrage zur gleichen Zeit abgehandelt werden darf. Dieses Verhalten wird für das spätere Laden der Bilder relevant.
+Ebenfalls stellt der {\em Downloader} sicher, dass pro Instanz der Klasse nur eine Anfrage zur gleichen Zeit abgehandelt werden darf. Dieses Verhalten ist für das spätere Laden der Bilder relevant.
 Werden dennoch mehrere Verbindungen gleichzeitig benötigt, können einfach mehrere Instanzen der Klasse erstellt werden.
 
-Um letztendlich mit dem Backend kommunizieren zu können ist der {\em BackendConnector} verantwortlich.
+Für die Kommunikation mit dem Backend, ist der {\em BackendConnector} verantwortlich.
 Über den Konstruktor kann die URL des Backends übergeben werden.
 Mit Hilfe der {\em Downloader}-Klasse stellt dieser die Endpunkte des Backends als Methoden zur Verfügung:
 
