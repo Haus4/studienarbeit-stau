@@ -28,7 +28,10 @@ public class BluetoothDeviceChecker {
     }
 
     public static Set<BluetoothDevice> getPairedDevices() {
-        return BluetoothAdapter.getDefaultAdapter().getBondedDevices();
+        BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(defaultAdapter == null) return new HashSet<>();
+
+        return defaultAdapter.getBondedDevices();
     }
 
     public static Set<StoredBluetoothDevice> getStoredDevices() {
