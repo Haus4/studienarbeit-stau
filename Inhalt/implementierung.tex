@@ -153,22 +153,22 @@ Mit Hilfe der {\em Downloader}-Klasse stellt dieser die Endpunkte des Backends a
 \item{{\em mask}: liefert die Maske für eine Kamera in eine gewünschte Fahrtrichtung}
 \end{itemize}
 
-Die Ergebnisse aller Anfragen liegen jedoch im Rohformat als Byte-Array vor. Um die Ergebnisse also nutzen zu können, ist also eine weitere Verarbeitung der Daten in einem späteren Schritt nötig.
+Die Ergebnisse aller Anfragen liegen jedoch im Rohformat als Byte-Array vor. Um die Ergebnisse also nutzen zu können, ist eine weitere Verarbeitung der Daten in einem späteren Schritt nötig.
 
 \subsection{Geolokalisierung}
-Um gezielt Kameras abzufragen und auszuwerten, ist es sinnvoll nur diese auszuwerten, die in unmittelbarer Nähe des Nutzers sind und ebenfalls Relevanz für die Fahrt haben. Hierfür muss demnach die Position des Nutzers ermittelt und ausgewertet werden.
+Um gezielt Kameras abzufragen und auszuwerten, ist es sinnvoll nur jene auszuwerten, die in unmittelbarer Nähe des Nutzers sind und ebenfalls Relevanz für die Fahrt haben. Hierfür muss demnach die Position des Nutzers ermittelt und ausgewertet werden.
 
 Heutige Smartphones besitzen in der Regel ein GPS-Modul, mit welchem sich die Position bestimmen lässt.
 Bevor man jedoch die Möglichkeit hat, mit dem Modul kommunizieren zu können, muss eine Anwendung die erforderlichen Berechtigungen einfordern.
 Dafür muss zunächst in der Manifestdatei der Android-Anwendung die Berechtigung {\em android.permission.ACCESS\_FINE\_LOCATION} hinzugefügt werden.
 Bei neueren Android-Versionen reicht dies allein jedoch nicht mehr aus. Zusätzlich dazu muss der Nutzer explizit bestätigen, dass die Anwendung Zugriff auf den Standort erhält.
 
-Durch Übergabe des Wertes {\em Manifest.permission.ACCESS\_FINE\_LOCATION} an die Funktion {\em requestPermission} der {\em Activity}-Klasse, die den Einstiegspunkt der Android-Anwendung bietet, wird dem Nutzer ein Dialog angezeigt, durch welchen er Zugriff erteilen oder verweigern kann.
+Durch Übergabe des Wertes {\em Manifest.permission.ACCESS\_FINE\_LOCATION} an die Funktion {\em requestPermission} der {\em Activity}-Klasse, die den Einstiegspunkt der Android-Anwendung bietet, wird dem Nutzer ein Dialog angezeigt, durch den er Zugriff erteilen oder verweigern kann.
 
 
-Sind alle Berechtigungen erteilt, so kann die App den Standort abfragen.
+Sind alle Berechtigungen erteilt, kann die App den Standort abfragen.
 Hierfür ist in der App die Klasse {\em GlobalPositionManager} verantwortlich. Diese kapselt die Interaktion mit dem GPS-Modul und kann über an einen übergeben Callback Standortänderungen regelmäßig nach außen kommunizieren.
-Hierzu wird zunächst beim {\em LocationManager}, dem System Dienst für die Standortverwaltung des Gerätes, die Lokalisierung angefragt, was dafür sorgt, dass alle 10 Sekunden der aktuelle Standort and den {\em GlobalPositionManager} übergeben wird. Dieser kann anschließend an den Callback übergeben werden und für die weitere Verarbeitung genutzt werden.
+Hierzu wird zunächst beim {\em LocationManager}, dem Systemdienst für die Standortverwaltung des Gerätes, die Lokalisierung angefragt, was dafür sorgt, dass alle 10 Sekunden der aktuelle Standort an den {\em GlobalPositionManager} übergeben wird. Dieser kann anschließend an den Callback übergeben werden und für die weitere Verarbeitung genutzt werden.
 
 \subsection{Richtungsfestellung}
 Hat man nun die Position zur Hand, so ist als Nächstes relevant zu wissen, wohin gefahren wird, um die zu analysierende Straßenseite zu erkennen.
@@ -180,10 +180,10 @@ Um auch hier den Fokus auf Ressourcensparsamkeit nicht zu verlieren, wurde ein s
 Da die Anwendung primär für eine Nutzung auf der A5 gedacht ist, ist das Ziel zunächst nur die Fahrtrichtung auf der A5 zu erkennen.
 Auf anderen Autobahnen kann daher nicht ohne Weiteres erkannt werden, auf welcher Straßenseite gefahren wird.
 
-Die A5 erstreckt sich von Niederaula, nördlich von Frankfurt am Main bis nach Weil am Rhein, kurz vor vor der Schweizer Grenze. Grob gesehen kann man sagen sie erstreckt sich von Frankfurt nach Basel.
+Die A5 erstreckt sich von Niederaula, nördlich von Frankfurt am Main bis nach Weil am Rhein, kurz vor vor der Schweizer Grenze. Man kann sagen sie erstreckt sich ungefähr von Frankfurt nach Basel.
 
-Um nun die Fahrtrichtung zu erkennen, können die Standorte über die Zeit protokolliert und kumuliert werden, um daraus einen Richtungsvektor zu bilden.
-Dieser kann genutzt werden, um abzuschätzen, ob der sich Nutzer Frankfurt oder Basel nähert.
+Zur Erkennung der Fahrtrichtung, können die Standorte über die Zeit protokolliert und kumuliert werden, um daraus einen Richtungsvektor zu bilden.
+Dieser kann genutzt werden, um abzuschätzen, ob sich der Nutzer Frankfurt oder Basel nähert.
 
 Dazu werden die vom {\em GlobalPositionManager} erfassten Positionen durch die Klasse {\em PositionHistory} protokolliert.
 Über die bereitgestellten Methoden {\em getStart} und {\em getEnd} werden die Positionen so aufsummiert, dass Startpunkt und Endpunkt ausgelesen werden können.
@@ -203,13 +203,13 @@ Bevor die Informationen zu den Verkehrskameras von der Straßenverkehrszentrale 
 Hierfür kann über die Klasse {\em AvailableCamerasLoader}, wie im Abschnitt~\ref{sec:BackendCom} beschrieben, über den {\em BackendConnector} mit der Methode {\em cameras} die Liste der unterstützten Kameras abgerufen werden.
 Die IDs der Kameras zeilenweise zurückgeliefert. Der {\em AvailableCamerasLoader} verarbeitet die Zeilen anschließend, sodass eine Liste der verfügbaren Kamera IDs zur Verfügung steht.
 
-Zusätzlich dazu werden noch die detaillierten Kamerainformationen der Straßenverkehrszentrale benötigt. Dafür kann über den {\em CameraLoader}, wie im Abschnitt~\ref{sec:AnaCam}, die Liste der Kameras mit dem {\em Downloader} empfangen werden und und verarbeitet werden. Hierfür wird das Tabellenformat aufgeschlüsselt und die benötigten Werte wie ID, Name, Beschreibung und Standort der Kamera in einem {\em Camera}-Modell abgelegt werden.
+Zusätzlich werden noch die detaillierten Kamerainformationen der Straßenverkehrszentrale benötigt. Dafür kann über den {\em CameraLoader}, wie im Abschnitt~\ref{sec:AnaCam}, die Liste der Kameras mit dem {\em Downloader} empfangen werden und verarbeitet werden. Hierfür wird das Tabellenformat aufgeschlüsselt und die benötigten Werte wie ID, Name, Beschreibung und Standort der Kamera in einem {\em Camera}-Modell abgelegt werden.
 
 Da der Standort jedoch ein unterschiedliches Koordinatensystem verwendet, muss dieser jedoch noch konvertiert werden. Hierfür kann über die Bibliothek Proj4J~\cite{proj4j} eine Konvertierung durchgeführt werden.
 
-Diese empfangene Liste wird nun anhand den vom Backend unterstützten Kameras gefiltert, sodass nur noch diese verfügbar sind, mit denen auch gearbeitet werden kann.
+Diese empfangene Liste wird nun anhand den vom Backend unterstützten Kameras gefiltert, sodass nur noch die verfügbar sind, mit denen auch gearbeitet werden kann.
 
-Schließlich wird beim Aktualisieren der Position des Nutzers, bzw. auch der Fahrtrichtung, geprüft, welche Kameras für die Weiterfahrt relevant sind. Das bedeutet Kameras die nicht auf der Strecke liegen, werden erst gar nicht benötigt. Liegen Kameras zwar auf der Strecke, aber hinter dem Nutzer, also ist der Nutzer bereits an ihnen vorbei gefahren, so sind diese ebenfalls nicht mehr relevant. Lediglich die Kameras, die vor dem Nutzer auf der Strecke sind, werden für die Stauanalyse benötigt. 
+Schließlich wird beim Aktualisieren der Position des Nutzers, bzw. auch der Fahrtrichtung, geprüft, welche Kameras für die Weiterfahrt relevant sind. Das bedeutet: Kameras, die nicht auf der Strecke liegen, werden erst gar nicht benötigt. Liegen Kameras zwar auf der Strecke, aber hinter dem Nutzer, also ist der Nutzer bereits an ihnen vorbei gefahren, sind diese ebenfalls nicht mehr relevant. Lediglich die Kameras, die vor dem Nutzer auf der Strecke sind, werden für die Stauanalyse benötigt. 
 Es wird also nach jeder Positionsänderung geprüft, welche Kameras relevant sind. Diese werden dann markiert, sodass die spätere Bildanalyse weiß, welche Kameras analysiert werden sollen.
 
 \subsection{Bilder laden}
@@ -220,13 +220,13 @@ Da das Backend innerhalb dieses Streams alle Bilder liefert, die es zwischen gep
 Eine Hierarchieebene darüber regelt der {\em MultiImageLoader} die Verarbeitung.
 Nach Erhalt der Rohdaten des Backends wird der Binärstrom aufgespalten.
 Jedes Teilbild innerhalb des Stroms hat einen Kopf, welcher aus 4 Bytes für die Länge des Bildes und 8 Bytes für den Aufnahmezeitpunkt des Bildes besteht.
-Nach den Kopfdaten folgt das eigentliche Bild. Der gesamte Strom besteht nun einer Folge von Kopf und Bild. Wobei zu beachten gilt, dass die Bytereihenfolge des Kopfes {\em Little-Endian} ist, und nicht {\em Big-Endian} wie auf den meisten Android Geräten verwendet.
+Nach den Kopfdaten folgt das eigentliche Bild. Der gesamte Strom besteht nun aus einer Folge von Kopf und Bild. Wobei zu beachten ist, dass die Bytereihenfolge des Kopfes {\em Little-Endian} ist, und nicht {\em Big-Endian} wie auf den meisten Android Geräten verwendet.
 
 Es wird also die Länge des Bildes gelesen und konvertiert, danach der Zeitpunkt gelesen und konvertiert und anschließend das Bild über die vorher eingelesene Länge extrahiert. Dieser Vorgang wiederholt sich solange, bis idealerweise keine Bytes mehr im Strom sind, oder im Fehlerfall die aus dem Kopf entnommene Länge des Bildes länger ist, als übrige Bytes im Strom vorhanden sind.
 
-Das Backend liefert standardmäßig jedoch alle Bilder für eine Kamera die es zwischengespeichert hat. Um also nicht bei jeder Anfrage alle Bilder alten Bilder erneut empfangen und verarbeiten zu müssen, wird in der obersten Hierarchiestufe vom {\em CameraImageFetcher} das Strukturierte laden der Bilder koordiniert.
+Das Backend liefert standardmäßig jedoch alle Bilder für eine Kamera die es zwischengespeichert hat. Um also nicht bei jeder Anfrage alle Bilder alten Bilder erneut empfangen und verarbeiten zu müssen, wird in der obersten Hierarchiestufe vom {\em CameraImageFetcher} das strukturierte Laden der Bilder koordiniert.
 
-Für jede der relevanten Kameras existiert eine Instanz, die von außerhalb alle 29 Sekunden aufgefordert wird neue Bilder abzurufen. Das sorgt, dafür, dass mindestens 2 mal innerhalb der Aktualisierungsperiode des Straßenverkehrszentrums auf neue Bilder geprüft wird, um möglichst schnell auf Stau reagieren zu können und die Latenz des Ladens und Verarbeitens der Bilder zu kompensieren.
+Für jede der relevanten Kameras existiert eine Instanz, die von außerhalb alle 29 Sekunden aufgefordert wird, neue Bilder abzurufen. Das sorgt, dafür, dass mindestens 2 mal innerhalb der Aktualisierungsperiode des Straßenverkehrszentrums auf neue Bilder geprüft wird, um möglichst schnell auf Stau reagieren zu können und die Latenz des Ladens und Verarbeitens der Bilder zu kompensieren.
 
 Die vom {\em MultiImageLoader} empfangenen Bilder werden also zwischengespeichert. Bei einem neuen Abfrageintervall kann über das Durchreichen des Zeitstempels des letzten empfangenen Bildes an den {\em BackendConnector} das Backend dazu instruiert werden, lediglich die Bilder zu senden, die jünger als der besagte Zeitstempel sind.
 
@@ -267,8 +267,8 @@ Wichtig ist, dass die Maske nach der Mittelung aufgetragen wird und nicht vorher
 \end{figure}
 
 \paragraph*{Verarbeitung}
-Bei der Verarbeitung gilt es die Autos vom Hintergrund zu trennen. Dazu wird der von OpenCV bereitgestellte Background-Subtractor namens {\em MOG} verwendet.
-Dieser liefert auf ein übergebenes Bild ein Binärbild zurück, bei welchem schwarze Pixel den Hintergrund symbolisieren und weiße Pixel die Objekte im Vordergrund, welche idealerweise alles Autos sein sollten.
+Bei der Verarbeitung gilt es, die Autos vom Hintergrund zu trennen. Dazu wird der von OpenCV bereitgestellte Background-Subtractor namens {\em MOG} verwendet.
+Dieser liefert auf ein übergebenes Bild ein Binärbild zurück, bei welchem schwarze Pixel den Hintergrund symbolisieren und weiße Pixel die Objekte im Vordergrund, welche idealerweise Autos sein sollten.
 
 Damit dieser Algorithmus jedoch verlässliche Ergebnisse liefert, muss dieser zunächst trainiert werden. 
 Aus diesem Grund liefert das Backend nicht nur das aktuellste Bild, sondern eine Sequenz von zeitlich eng beieinanderliegenden Bildern, mit welchen der Background-Subtractor trainiert werden kann. 
@@ -280,9 +280,9 @@ Aus diesem Grund liefert das Backend nicht nur das aktuellste Bild, sondern eine
 \end{figure}
 
 \paragraph*{Nachbearbeitung}
-Dieser Schritt und alle Nachfolgenden, sind lediglich für die Bilder relevant, die auch ausgewertet werden sollen, und nicht nur zum Trainieren des Background-Subtractors dienen.
+Dieser Schritt und alle Nachfolgenden sind lediglich für die Bilder relevant, die auch ausgewertet werden sollen, und nicht nur zum Trainieren des Background-Subtractors dienen.
 
-Bei der Nachbearbeitung wird versucht jegliche Artefakte oder Ungenauigkeiten, die bei der Verarbeitung des Bildes entstanden sind, zu entfernen.
+Bei der Nachbearbeitung wird versucht, jegliche Artefakte oder Ungenauigkeiten, die bei der Verarbeitung des Bildes entstanden sind, zu entfernen.
 Beispielsweise werden Autos nicht immer als geschlossene Konturen dargestellt oder es entstehen Verbindungen zwischen Autos und größeren Transportern, die parallel zueinander fahren, wodurch diese als eine einzige Kontur erkannt werden könnten. Darüber hinaus kann es vorkommen, dass vereinzelt weiße Pixel auftauchen, welche vermutlich durch Rauschen, Schatten, oder andere Bedingungen fälschlicherweise als Objekte eingestuft wurden.
 
 Um diese Artefakte zu entfernen, kann eine Kombination von morphologischen Operatoren angewendet werden.
@@ -290,7 +290,7 @@ Um diese Artefakte zu entfernen, kann eine Kombination von morphologischen Opera
 Zunächst wird versucht über {\em Closing} die Konturen der Autos zu schließen, bzw. getrennte Teile eines Autos zu vereinen.
 Anschließend sollen über {\em Opening} kleine weiße Pixel und alleinstehende Artefakte entfernt werden.
 
-Zuletzt wird mit einer {\em Dilatation} versucht die Konturen der Autos zu verkleinern, um mögliche Verbindungen oder Fehlinterpretationen von Verbindungen zu Transportern zu verhindern.
+Zuletzt wird mit einer {\em Dilatation} versucht, die Konturen der Autos zu verkleinern, um mögliche Verbindungen oder Fehlinterpretationen von Verbindungen zu Transportern zu verhindern.
 
 \begin{figure}[ht]
    \centering
@@ -299,7 +299,7 @@ Zuletzt wird mit einer {\em Dilatation} versucht die Konturen der Autos zu verkl
 \end{figure}
 
 \paragraph*{Analyse}
-Bei der Analyse wird versucht Konturen zu erkennen, und diese zu vereinen.
+Bei der Analyse wird versucht, Konturen zu erkennen und diese zu vereinen.
 Über die Methode {\em Imgproc.findContours} von OpenCV, lassen sich Konturzüge aus einem Binärbild auslesen.
 Zur effizienteren Verarbeitung wird der Polygonkonturzug jedoch auf einfache Rechtecke reduziert, indem der Minimale und Maximale Punkt der Kontur in sowohl X-, als auch Y-Richtung zur Bildung des Rechtecks gewählt wird, wodurch eine Hülle um den Zug gebildet wird.
 
@@ -319,7 +319,7 @@ Dieser Prozess wird solange iterativ durchgeführt, bis sich keine Kontur mehr v
 \paragraph*{Klassifikation}
 Bei der Klassifikation wird nun versucht anhand der Konturen eine Aussage über die Verkehrssituation zu treffen.
 Hierbei wird jede erkannte Kontur als Auto betrachtet.
-Um nun einzuschätzen, ob Stau ist oder nicht, wird der Anzahl der Konturen mit einem vordefinierten Limit für die jeweilige Kamera verglichen. Hierbei wird jedoch nicht wie bei einem Thresholding-Verfahren ab überschreiten der Grenze Stau erkannt, sondern versucht ab einer Anzahl an Konturen größer als die Hälfte des Limits eine prozentuale Aussage über die Stauwahrscheinlichkeit zu treffen.
+Um nun einzuschätzen, ob Stau ist oder nicht, wird der Anzahl der Konturen mit einem vordefinierten Limit für die jeweilige Kamera verglichen. Hierbei wird jedoch nicht wie bei einem Thresholding-Verfahren ab überschreiten der Grenze Stau erkannt, sondern versucht, ab einer Anzahl an Konturen größer als die Hälfte des Limits eine prozentuale Aussage über die Stauwahrscheinlichkeit zu treffen.
 
 \begin{figure}[ht]
    \centering
@@ -340,9 +340,9 @@ Diese Aufgabe übernimmt der {\em BluetoothDeviceChecker}. Zunächst ermöglicht
 Darüber hinaus können Bluetooth-Geräte gespeichert, ausgelesen und gelöscht werden, die einen Start der App bei einer Verbindung auslösen sollen.
 Dazu werden die MAC Adressen (Media-Access-Control) der Geräte als JSON codierte Liste auf dem Speicher des Smartphones abgelegt.
 
-Ebenfalls gibt es die Möglichkeit lediglich zu prüfen, ob das Smartphone zurzeit mit einem Gerät gekoppelt ist, welches den Start der App auslösen soll.
+Ebenfalls gibt es die Möglichkeit, lediglich zu prüfen, ob das Smartphone zurzeit mit einem Gerät gekoppelt ist, welches den Start der App auslösen soll.
 
-Um nun vom System benachrichtigt zu werden, wenn ein neues Bluetooth-Gerät verbunden wurde, ohne, dass die Anwendung bereits läuft, gibt es in Android die Möglichkeit einen Service zu registrieren.
+Um nun vom System benachrichtigt zu werden, wenn ein neues Bluetooth-Gerät verbunden wurde, ohne dass die Anwendung bereits läuft, gibt es in Android die Möglichkeit, einen Service zu registrieren.
 Dieser kann dem System mitteilen, welche Ereignisse für ihn relevant sind, sodass das System den Service benachrichtigt, sobald ein solches Ereignis eingetreten ist.
 
 Für den Start der Stauanalyse wird also ein Service mit dem namen {\em BluetoothService} registriert, welcher auf Events, bzw. Intents des Typs {\em android.bluetooth.device.action.ACL\_CONNECTED} hören. Dieses Ereignis wird ausgelöst, wenn eine neue Bluetooth-Verbindung aufgebaut wurde.
@@ -358,7 +358,7 @@ Untergliedert wird die Anwendung dabei in 3 verschiedene Tabs, durch die navigie
 \paragraph*{Map}
 Die erste Ansicht ist eine Landkarte, die auf dem freien Kartendienst OpenStreetMaps basiert. % Vlt. Referenz?
 Diese soll sowohl den Standort des Nutzers anzeigen, als auch alle geladenen Kameras anzeigen, sodass der Nutzer eine Übersicht hat,
-welche Kameras es gibt, und wo sie positioniert sind.
+welche Kameras wo positioniert sind.
 
 \begin{figure}[ht]
    \centering
@@ -369,7 +369,7 @@ welche Kameras es gibt, und wo sie positioniert sind.
 \paragraph*{Details}
 Die Detailseite zeigt dem Nutzer Details zum Analyseprozess.
 Zum einen lässt sich in einer Debugansicht sehen, welche Schritte des Analyseprozesses durchlaufen wurden (beispielsweise Feststellung des Standorts, Feststellung der Richtung, Laden der Kameras, Analyse der Bilder, usw.).
-Darüber hinaus hat der Nutzer auch die Möglichkeit zu jeder analysierten Kamera das zuletzt ausgewertete Bild zu sehen, auf welchem die erkannten Autos markiert wurden. Anhand dessen kann der Nutzer dann selbst noch einmal einschätzen, ob die Aussage der Anwendung zur Verkehrslage korrekt ist, oder nicht.
+Darüber hinaus hat der Nutzer auch die Möglichkeit, zu jeder analysierten Kamera das zuletzt ausgewertete Bild zu sehen, auf welchem die erkannten Autos markiert wurden. Anhand dessen kann der Nutzer dann selbst noch einmal einschätzen, ob die Aussage der Anwendung zur Verkehrslage korrekt ist, oder nicht.
 
 \begin{figure}[ht]
    \centering
@@ -380,7 +380,7 @@ Darüber hinaus hat der Nutzer auch die Möglichkeit zu jeder analysierten Kamer
 
 \paragraph*{Settings}
 Die Einstellungsseite dient zur Konfiguration der Bluetooth-Geräte.
-Hierbei sieht der Nutzer eine Liste aller mit dem Handy gepaarten Geräte und hat durch Anklicken dieser die Möglichkeit das Gerät zu speichern, sodass die Kupplung den Start der App auslöst.
+Hierbei sieht der Nutzer eine Liste aller mit dem Handy gepaarten Geräte und hat durch Anklicken dieser, die Möglichkeit, das Gerät zu speichern, sodass die Kopplung den Start der App auslöst.
 
 Ebenfalls gibt es eine zweite Liste, über die der Nutzer Geräte wieder entfernen kann, sodass diese den Start der App nicht mehr auslösen.
 
@@ -394,20 +394,20 @@ Ebenfalls gibt es eine zweite Liste, über die der Nutzer Geräte wieder entfern
 Die Ansage des Staus untergliedert sich technisch in zwei Teile. Im ersten Teil wird die grundsätzliche Textansage realisiert und zusätzlich die Integration einer Bluetooth-Freisprechanlage ermöglicht.
 Der zweite Teil übernimmt die kontextbezogene Ansage des Verkehrszustandes.
 
-Um überhaupt Informationen per Sprachausgabe vermitteln zu können, wird die interne Android {\em Text-To-Speech}-API verwendet.
+Um überhaupt Informationen per Sprachausgabe übermitteln zu können, wird die interne Android {\em Text-To-Speech}-API verwendet.
 Die Klasse {\em Speaker} übernimmt die Kapselung der Schnittstelle.
 
-Nach außen exponiert die Klasse lediglich eine Methode {\em speak}, die bei Übergabe von Text, eine Sprachausgabe auslösen soll.
+Nach außen exponiert die Klasse lediglich eine Methode {\em speak}, die bei Übergabe von Text eine Sprachausgabe auslösen soll.
 
 Da die interne {\em Text-To-Speech}-API eine unbestimmte Zeit zur Initialisierung benötigt, können Nachrichten nicht direkt ausgegeben werden, sondern werden zunächst in einer Warteschlange gesammelt, bis die Initialisierung abgeschlossen ist.
 
-Um die Sprachausgabe auch über eine Freisprechanlage in einem Auto zu ermöglichen, wird, vor der Übergabe einer Nachricht an das System, geprüft, ob das Gerät mit einem Auto gekoppelt ist. Hierzu kann der {\em BluetootDeviceChecker} genutzt werden.
+Um die Sprachausgabe auch über eine Freisprechanlage in einem Auto zu ermöglichen, wird vor der Übergabe einer Nachricht an das System geprüft, ob das Gerät mit einem Auto gekoppelt ist. Hierzu kann der {\em BluetootDeviceChecker} genutzt werden.
 
 Ist ein kompatibles Gerät gekoppelt, übermittelt der {\em Speaker} an das System, dass der Bluetooth-SCO-Modus für die Audiowiedergabe aktiviert werden soll. Das sorgt dafür, dass Töne nicht mehr über reguläre Lautsprecher ausgegeben werden sollen, sondern über ein Bluetooth-Headset.
 
 Nun gilt es den Verkehrszustand über die Sprachausgabe zu übermitteln.
 Optimal wäre es, vor jeder möglichen Ausfahrt anzusagen, ob Stau ist oder nicht, um noch rechtzeitig abfahren zu können.
-Da das Erkennen der Ausfahrten mit rechtzeitiger ansage an die Funktionalität eines eigenständigen Navigationssystems grenzt, übersteigt dieser Ansatz den Rahmen der Arbeit.
+Da das Erkennen der Ausfahrten mit rechtzeitiger Ansage an die Funktionalität eines eigenständigen Navigationssystems grenzt, übersteigt dieser Ansatz den Rahmen der Arbeit.
 Stattdessen wird Stau für jede Kamera individuell angesagt.
 Ist jedoch kein Stau auf den Kameras erkennbar, soll einmalig angesagt werden, dass kein Stau erkannt wurde.
 Da die Kameras jedoch zu unterschiedlichen Zeitpunkten ausgewertet werden, wird zunächst, nach Auswertung einer Kamera, geprüft, ob für die jeweilige Kamera bereits eine Ansage getätigt wurde, sofern auch Stau erkannt wurde. Falls nicht, wird der Name und der Standort der Kamera mit der ausgerechneten Stauwahrscheinlichkeit an den {\em Speaker übergeben und angesagt}. Liegt für jede relevante Kamera eine Auswertung vor, wobei bei keiner Kamera ein Stau erkannt wurde, so wird eine Ansage an das System übergeben, die dem Nutzer vermittelt, dass kein Stau erkannt wurde.

@@ -14,7 +14,7 @@ Die Auswertung wird dadurch so stark vereinigt, dass sie sich auch auf die Clien
 Das Backend kann also als einfacher Zwischenspeicher für Daten der Straßenverkehrszentrale Baden-Württemberg verwendet werden und ist somit auch für den Nutzen auf einem Shared-Webhost optimiert.
 
 Durch die Auslagerung der Auswertung auf die Clients ist jedoch auch nun der Großteil der Berechnung auf dem Client zu finden.
-Es ist daher wichtig bestimmte Kenngrößen zu finden, um das eher client-lastige neue System mit dem server-lastigen Altsystem zu vergleichen.
+Es ist daher wichtig, bestimmte Kenngrößen zu finden, um das eher client-lastige neue System mit dem server-lastigen Altsystem zu vergleichen.
 
 \section{Kennzahlen}
 Wichtige Kennzahlen für den Vergleich zwischen Neu- und Altsystem sollten vor allem die Anforderungen an das System widerspiegeln.
@@ -44,9 +44,9 @@ Die beschriebenen Kennzahlen müssen nun zur Laufzeit im jeweiligen System gemes
 Hierzu stehen verschiedene Methoden und Programme zur Verfügung, welche das Messen der jeweiligen Kenngröße ermöglichen.
 Im folgenden wird die für die Arbeit angemessene Herangehensweise beschrieben, um die jeweilige Kennzahl während der Laufzeit zu messen.\newline\newline
 \textbf{Arbeitsspeicher-Last des Systems}\newline
-Die Arbeitsspeicher-Last des Systems gilt an zwei Stellen zu messen: am Client und am Server.
+Die Arbeitsspeicher-Last des Systems ist an zwei Stellen zu messen: am Client und am Server.
 Für die Messung der Arbeitsspeicher-Last am Server wurde zur Laufzeit das Programm "`htop"' verwendet.
-htop ist dabei ein Programm welches auf dem Linux Betriebssystem installiert werden kann und eine Übersicht der derzeit laufende Prozesse bietet.
+htop ist dabei ein Programm das auf dem Linux Betriebssystem installiert werden kann und eine Übersicht der derzeit laufende Prozesse bietet.
 Zusätzlich werden auch alle belegten Systemressourcen für die jeweiligen Prozesse angegeben.\newline\newline
 \textbf{CPU-Last des Servers}\newline
 Die CPU-Last des Servers lässt sich ebenfalls über das Programm htop ermitteln. 
@@ -120,4 +120,4 @@ Dies lässt sich durch die wenigen Anfragen erklären, die der Client im Verglei
 Da der Client in einer Anfrage an das Backend direkt alle nötigten Bilder gesendet bekommt, muss er nicht einzeln anfragen.
 Weiterhin verwendet der neue Client keine Google-APIs mehr, welche auch zusätzlichen Energiebedarf mit sich bringen.
 
-Der gezeigte Wert für den Energieverbrauch ist jedoch nur gemittelt und als Rangmerkmal beschrieben, so kann es sein dass einzelne Ausreißer im Energieverbrauch der Applikation existieren. Um diese Ausreißer festzustellen, müsste jedoch eine konkrete Analyse der Applikation auf dem Betriebssystem des Smartphones stattfinden, welche im Rahmen dieser Arbeit übersprungen wurde.
+Der gezeigte Wert für den Energieverbrauch ist jedoch nur gemittelt und als Rangmerkmal beschrieben, so kann es sein, dass einzelne Ausreißer im Energieverbrauch der Applikation existieren. Um diese Ausreißer festzustellen, müsste jedoch eine konkrete Analyse der Applikation auf dem Betriebssystem des Smartphones stattfinden, welche im Rahmen dieser Arbeit übersprungen wurde.
